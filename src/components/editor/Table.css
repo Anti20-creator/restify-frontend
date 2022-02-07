@@ -1,0 +1,201 @@
+.draggable, .table-display {
+    display: inline-block;
+    position: absolute;
+}
+
+.table-display:hover .table-border{
+    background-color: #bfbfc9;
+    transition: 0.4s;
+    cursor: pointer;
+}
+.table-display.in-use .table-border{
+    background-color: #e94225;
+}
+.table-display .table-border{
+    transition: 0.5s;
+}
+
+
+.res-table.normal.average {
+    width: 100px;
+    height: 100px;
+}
+.res-table.normal.small {
+    width: 80px;
+    height: 80px;
+}
+.res-table.normal.large {
+    width: 120px;
+    height: 120px;
+}
+
+.res-table.wide.average {
+    width: 150px;
+    height: 100px;
+}
+.res-table.wide.small {
+    width: 120px;
+    height: 80px;
+}
+.res-table.wide.large {
+    width: 180px;
+    height: 120px;
+}
+.res-table.wide.average.rotated {
+    height: 150px;
+    width: 100px;
+}
+.res-table.wide.small.rotated {
+    height: 120px;
+    width: 80px;
+}
+.res-table.wide.large.rotated {
+    height: 180px;
+    width: 120px;
+}
+
+.res-table.rounded.small {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+.res-table.rounded.average {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+}
+.res-table.rounded.large {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+}
+.res-table.rounded .table-border {
+    border-radius: 50%;
+}
+
+.res-table.rounded .MuiBadge-root {
+    height: 100%;
+    border-radius: 100px;
+    padding: 6.8%;
+}
+
+.res-table.rounded .MuiBadge-anchorOriginTopRightRectangle {
+    transform: scale(1) translate(50%, 58%);
+}
+
+.table-holder {
+    flex: 1;
+    transition: 0.5s;
+}
+
+.table-border {
+    height: 100%;
+    width: 100%;
+    border-radius: 10%;
+    background-color: #e3e3ed;
+}
+
+.res-table.wide.rotated .MuiBadge-root {
+    height: 86.6666667%;
+    width: 100%;
+}
+.MuiBadge-root {
+    border: none !important;
+    width: 100%;
+    height: 80%;
+}
+
+.MuiBadge-anchorOriginTopRightRectangle {
+    font-family: 'Questrial' !important;
+    font-size: 14px !important;
+}
+
+.horizontal-seat {
+    height: 32%;
+    background-color: #aeb1c1;
+    width: 35%;
+    margin: 0px 4px;
+}
+
+
+.vertical-seat {
+    width: 32%;
+    background-color: #aeb1c1;
+    height: 27%;
+    margin: 4px 0px;
+}
+
+
+.res-table.wide.rotated .vertical-seat {
+    width: 35%;
+    background-color: #aeb1c1;
+    height: 25%;
+    margin: 4px 0px;
+}
+
+.res-table.wide .side-seats {
+    width: 6.6666667%;
+    height: 100%;
+}
+.res-table.wide.rotated .side-seats {
+    width: 10%;
+    height: 100%;
+}
+.side-seats {
+    width: 10%;
+    height: 100%;
+}
+
+.res-table.wide.rotated .top-bottom-seats {
+    height: 6.6666667%;
+    width: 100%;
+}
+.top-bottom-seats {
+    height: 10%;
+}
+
+.res-table .table-count {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background-color: white;
+    width: 40%;
+    height: 40%;
+    display: flex;
+    justify-content: center;
+}
+
+.res-table.wide .table-count {
+    width: 26.666667%;
+}
+.res-table.wide.rotated .table-count {
+    height: 26.666667%;
+    width: 40%;
+}
+
+.res-table .table-count p {
+    align-self: center;
+    margin: 0;
+}
+
+.settings-btn-holder {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+}
+.settings-btn-holder .MuiButtonBase-root {
+    background: #eab676;
+    padding: 0.3rem;
+}
+.settings-btn-holder .MuiButtonBase-root:hover {
+    background: rgba(234,182,118, 0.5)
+}
+
+.settings > * {
+    padding: 10px 20px;
+}
+.settings p {
+    margin: 0;
+}

@@ -1,0 +1,19 @@
+.appointments .searchbox input {
+    border: none;
+    padding: 0.2rem 0.5rem;
+}
+.appointments .searchbox-holder {
+    background: white;
+}
+
+.appointments .searchbox input:focus {
+    outline: none;
+}
+
+.appointments .MuiTableContainer-root {
+    height: 90%;
+}
+
+.appointments .book-box {
+    justify-content: flex-end;
+}

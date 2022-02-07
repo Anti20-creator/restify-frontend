@@ -1,0 +1,48 @@
+.team .searchbox input {
+    border: none;
+    padding: 0.2rem 0.5rem;
+}
+.team .searchbox-holder {
+    background: white;
+}
+
+.team .searchbox input:focus {
+    outline: none;
+}
+
+.team .MuiTableContainer-root {
+    height: 90%;
+}
+
+.team .MuiTableRow-root.MuiTableRow-head {
+    z-index: 10;
+}
+
+.team .invite-box {
+    color: #4262ff;
+    justify-content: right;
+}
+
+.team .invite-box .MuiSvgIcon-root{
+    fill: #4262ff;
+}
+
+.team .invite-box > *{
+    margin: 0 0.3rem;
+}
+
+.MuiBox-root {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: '2px solid #000';
+    box-shadow: 24px;
+    background-color: white;
+    padding: 2rem 2.5rem;
+    width: 30rem;
+}
+
+.MuiBox-root .MuiFormControl-root {
+    width: 100%;
+}

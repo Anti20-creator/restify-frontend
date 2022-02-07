@@ -1,0 +1,13 @@
+.logo {
+    width: 60px;
+}
+
+.navbar .notifications {
+    padding-right: 1rem;
+}
+.navbar .notifications > * {
+    margin: 0 0.3rem;
+}
+.navbar .notifications .notification-badge-holder {
+    margin-right: 1.2rem;
+}

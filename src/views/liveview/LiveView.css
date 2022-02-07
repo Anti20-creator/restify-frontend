@@ -1,0 +1,43 @@
+.table-view {
+    height: 90%;
+}
+
+.table-view .checkout {
+    height: 100%;
+    overflow: hidden;
+}
+.table-view .checkout h2 {
+    height: 10%;
+    margin: 0;
+}
+
+.table-view .checkout .MuiTableContainer-root {
+    overflow-y: visible;
+    height: 80%;
+}
+
+.table-view .checkout .pay-button-holder {
+    height: 10%;
+}
+
+.table-view .items {
+    overflow: hidden;
+    height: 100%;
+}
+.table-view .items-holder {
+    height: 90%;
+    overflow-y: auto;
+}
+
+.table-view .searchbox input {
+    border: none;
+    padding: 0.2rem 0.5rem;
+}
+.table-view .searchbox {
+    height: 10%;
+    padding: 1rem 3rem;
+}
+
+.table-view .searchbox input:focus {
+    outline: none;
+}

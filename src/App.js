@@ -1,24 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
 
+import HomePage from './views/homepage/HomePage';
+import { useEffect } from 'react'
+import { ToastContainer } from 'react-toastify';
+import {
+  BrowserRouter
+} from "react-router-dom";
+import { Provider } from 'react-redux'
+import { store } from './store/store'
+import { createSocket } from './communication/socket'
+
 function App() {
+
+  useEffect(() => {
+    const socket = createSocket(store)
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <BrowserRouter>
+        <div className={"wrapper d-flex flex-column h-100"}>
+          <HomePage />
+          <ToastContainer />
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 }
 

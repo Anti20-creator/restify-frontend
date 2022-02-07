@@ -1,0 +1,33 @@
+.menu-card {
+    transition: 0.5s all;
+    position: relative;
+    height: 8rem !important;
+}
+
+.category-card {
+    height: 11rem !important;
+}
+
+.menu-card:hover {
+    cursor: pointer;
+    background-color: #fcd661;
+    transition: 0.4s all;
+}
+
+.menu-card img {
+    transition: 0.5s;
+    width: 50%;
+    padding: 0.7rem;
+    filter: grayscale(0.8);
+    border-radius: 50%;
+    background-color: white;;
+}
+
+.menu-card:hover img {
+    transition: 0.4s;
+    filter: grayscale(0);
+}
+
+.menu-card p {
+    margin: 0;
+}

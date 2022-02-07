@@ -1,0 +1,7 @@
+.MuiFormControl-root input {
+    width: 100%;
+    padding: 0.5rem 0rem;
+}
+.MuiFormControl-root.MuiTextField-root {
+    padding: 0.5rem 0rem;
+}

@@ -1,0 +1,45 @@
+.sidebar {
+    justify-content: center;
+}
+
+.sidebar-row {
+    margin: 0.9rem 1.4rem;
+    align-items: center;
+}
+
+.sidebar a {
+    color: #94918a !important;
+    text-decoration: none !important;
+}
+.sidebar-row .MuiSvgIcon-root {
+    fill: #94918a;
+    transition: 0.4s;
+}
+
+.sidebar-row > p {
+    margin-left: .75rem;
+    margin-bottom: 0px;
+    transition: 0.4s;
+}
+
+.sidebar-row:hover {
+    cursor: pointer;
+}
+
+.sidebar-row:hover p {
+    color: #7a35df;
+    text-shadow:
+    -0.2px -0.2px 0 #7a35df,
+    0.2px -0.2px 0 #7a35df,
+    -0.2px 0.2px 0 #7a35df,
+    0.2px 0.2px 0 #7a35df;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+}
+
+.sidebar-row:hover .MuiSvgIcon-root {
+    fill: #7a35df;
+    transition: 0.5s;
+}

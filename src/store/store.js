@@ -4,6 +4,7 @@ import menuReducer from './features/menuSlice'
 import loadingReducer from './features/loadingSlice'
 import liveReducer from './features/liveSlice'
 import invoiceReducer from './features/invoiceSlice'
+import appointmentsReducer from './features/appointmentsSlice'
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         menu: menuReducer,
         loading: loadingReducer,
         live: liveReducer,
-        invoiceItems: invoiceReducer
+        invoiceItems: invoiceReducer,
+        appointments: appointmentsReducer
     }
 })

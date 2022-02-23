@@ -43,3 +43,19 @@
     fill: #7a35df;
     transition: 0.5s;
 }
+
+.vibrating {
+    animation: vibration 5s linear 2s infinite alternate;
+}
+
+@keyframes vibration {
+    0% {
+        color: #7a35df !important;
+    }
+    50% {
+        color: #94918a !important;
+    }
+    100% {
+        color: #7a35df !important;
+    }
+}

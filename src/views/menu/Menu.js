@@ -1,15 +1,19 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { Box, Button, Card, CardContent, FormControl, MenuItem, Modal, Select, TextField, Typography, IconButton } from '@material-ui/core'
 import './Menu.css'
-import { ArrowBack } from '@material-ui/icons'
+import { ArrowBack, Edit } from '@material-ui/icons'
 import { menuState, addCategory, addItem } from '../../store/features/menuSlice'
 import { useSelector } from 'react-redux'
 import API from '../../communication/API'
 import { useDispatch } from 'react-redux'
+import EditCategory from '../../components/menu/EditCategory'
+import EditItem from '../../components/menu/EditItem'
 
 function Menu() {
 
     const dispatch = useDispatch()
+    const [item, setItem] = useState('')
+    const [editCategory, setEditCategory] = useState('')
     const [addModalOpen, setModalOpen] = useState(false)
     const [category, setCategory] = useState('')
     const [categoryIcon, setCategoryIcon] = useState('')
@@ -73,17 +77,22 @@ function Menu() {
                         <div className="col-sm-5 col-md-3 col-6">
                             <Card onClick={() => setModalOpen(true)} className="m-3 text-center menu-card category-card">
                                 <CardContent className="p-3 d-flex flex-column align-items-center justify-content-center h-100">
-                                    <img src={'/assets/menu-icons/Pie.svg'} />
+                                    <img alt="Category icon" src={'/assets/menu-icons/Pie.svg'} />
                                     <p className="fw-bold m-0 mt-3">Új kategória</p>
                                 </CardContent>
                             </Card>
                         </div>
                         {
                             Object.keys(menu.icons).map((key) => (
-                                <div key={key} className="col-sm-5 col-md-3 col-6">
+                                <div key={key} className="col-sm-5 col-md-3 col-6 position-relative">
+                                    <div className="position-absolute" style={{right: '10%', top: '10%', zIndex: '100'}}>
+                                        <IconButton onClick={() => setEditCategory(key)}>
+                                            <Edit />
+                                        </IconButton>
+                                    </div>
                                     <Card onClick={() => { setCategory(key) }} className="m-3 text-center menu-card category-card">
                                         <CardContent className="p-3 d-flex flex-column align-items-center justify-content-center h-100">
-                                            <img src={'/assets/menu-icons/' + menu.icons[key] + '.svg'} />
+                                            <img alt="Category icon" src={'/assets/menu-icons/' + menu.icons[key] + '.svg'} />
                                             <p className="fw-bold mt-3">{key}</p>
                                         </CardContent>
                                     </Card>
@@ -109,7 +118,7 @@ function Menu() {
                             {
                                 Object.keys(menu.items[category]).map((key) => (
                                     <div key={key} className="col-sm-4 col-md-3 col-6">
-                                        <Card className="m-1 text-center h-100 menu-card">
+                                        <Card onClick={() => {setItem(key) }} className="m-1 text-center h-100 menu-card">
                                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                                                 <p className="fw-bold">{key}</p>
                                                 <p className="fw-light">{menu.items[category][key].price} {priceUnit}</p>
@@ -180,6 +189,8 @@ function Menu() {
                     }
                 </Box>
             </Modal>
+            <EditCategory open={editCategory !== ''} setOpen={setEditCategory} category={editCategory} />
+            <EditItem open={item !== ''} setOpen={setItem} itemName={item} category={category} />
         </div>
     )
 }

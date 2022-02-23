@@ -13,7 +13,11 @@ export const layoutSlice = createSlice({
             state.value = action.payload
         },
         setModifiedLayout: (state, action) => {
-            state.modified = action.payload
+            if (!window.location.href.includes("settings")) {
+                state.value = action.payload
+            }else{
+                state.modified = action.payload
+            }
         },
         refreshLayout: (state) => {
             state.value = state.modified ? state.modified.slice() : []

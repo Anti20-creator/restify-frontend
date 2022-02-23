@@ -1,20 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
     Button, 
     FormControl, 
     InputLabel, 
     MenuItem, 
     Select, 
-    Table, 
+    Table, IconButton,
     TableHead,TableRow, TableCell, TableBody, TableContainer, Typography, Modal, Box, TextField 
 } from '@material-ui/core';
-import { SearchOutlined } from '@material-ui/icons';
+import { SearchOutlined, Delete } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import './Appointments.css'
+import API from '../../communication/API';
+import { getSocket } from '../../communication/socket';
+import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import { appointmentsState, seenAppointments, removeAppointment } from '../../store/features/appointmentsSlice';
+import { tableIds } from '../../store/features/liveSlice';
+import BookingModal from '../../components/appointments/BookingModal';
 
 const columns = [
     { id: 'email', label: 'E-mail' },
@@ -28,157 +35,89 @@ const columns = [
         label: 'Asztal ID',
     },
     { id: 'peopleCount', label: 'Személyek száma'},
+    { id: 'delete', label: ''}
 ];
 
 function Appointments() {
 
-    // mock data
-    const mockTables = [
-        'bfada45648a12',
-        'bfada45648a13',
-        'bfada45648a11',
-        'bfada45648a10',
-    ]
-    const mockAppoinments = [
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'john@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'jane@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'gary@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'kelly@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'john@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'jane@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'gary@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'kelly@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'john@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'jane@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'gary@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'kelly@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'john@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'jane@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'gary@gmail.com'
-        },
-        {
-            'RestaurantId': 'asdasdsa4652acd12',
-            'date': new Date(),
-            'peopleCount': Math.floor(Math.random()*10),
-            'TableId': mockTables[Math.floor(Math.random()*mockTables.length)],
-            'email': 'kelly@gmail.com'
-        },
-    ]
-
     // state variables
-    const [table, setTable] = useState('');
-    const [tables, setTables] = useState([])
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [appointments, setAppointments] = useState([])
+    const dispatch = useDispatch()
+    const table = useRef('')
+    const email = useRef('')
+    const selectedDate = useRef(new Date())
+    const tables = useSelector(tableIds)
+    //const [selectedDate, setSelectedDate] = useState(new Date());
+    const appointments = useSelector(appointmentsState)
+    const [filteredAppointments, setFilteredAppointments] = useState([])
     const [addModalOpen, setModalOpen] = useState(false)
+
+    const setAppointments = () => {
+        const date = new Date(selectedDate.current)
+        setFilteredAppointments(
+            appointments.filter(appointment => 
+                date.getYear() === (new Date(appointment.day)).getYear() &&
+                date.getMonth() === (new Date(appointment.day)).getMonth() &&
+                date.getDate() === (new Date(appointment.day)).getDate() &&
+                (appointment.TableId === table.current || table.current === '') &&
+                appointment.email.toLowerCase().includes(email.current.toLowerCase())
+        ))
+        console.log(appointments.filter(appointment => 
+            date.getYear() === (new Date(appointment.day)).getYear() &&
+            date.getMonth() === (new Date(appointment.day)).getMonth() &&
+            date.getDate() === (new Date(appointment.day)).getDate() &&
+            (appointment.TableId === table.current || table.current === '') &&
+            appointment.email.toLowerCase().includes(email.current.toLowerCase())))
+    }
     
     // event handlers
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
+    const handleDateChange = (newDate) => {
+        selectedDate.current = newDate
+
+        setAppointments()
+    }
     const handleChange = (event) => {
-        setTable(event.target.value);
+        table.current = event.target.value
+
+        setAppointments()
     };
 
     const filterAppoinments = (e) => {
-        setAppointments(mockAppoinments.filter(appointment => appointment.email.toLowerCase().includes(e.target.value.toLowerCase())))
+        email.current = e.target.value
+
+        setAppointments()
+    }
+
+    const deleteAppointment = (id) => {
+        API.delete('/api/appointments/delete-appointment/' + id).then(response => {
+            if(response.data.success) {
+                dispatch(removeAppointment(id))
+            }else{
+                toast.error('Hiba a rendelés törlése során!')
+            }
+        })
     }
     
     // useEffect hook
     useEffect(() => {
         console.log('effect')
-        setTables(mockTables)
-        setAppointments(mockAppoinments)
+        getSocket().emit('join-appointment')
+        API.get('api/appointments').then(response => {
+            if(response.data.success) {
+                dispatch(seenAppointments())
+            }else{
+                toast.error('Hiba a foglalások betöltése során!', {
+                    autoClose: 1500
+                })
+            }
+        })
+
+        return () => getSocket().emit('leave-appointment')
     }, [])
+
+    useEffect(() => {
+        console.log(selectedDate.current)
+        setAppointments()
+    }, [appointments])
     
 
     return (
@@ -193,11 +132,11 @@ function Appointments() {
                         <FormControl variant="filled" className={"m-2"} style={{minWidth: 120}}>
                             <InputLabel id="demo-simple-select-label">Asztal</InputLabel>
                             <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={table}
-                            onChange={handleChange}
-                            >
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={table.current}
+                                onChange={handleChange}
+                                >
                                 {tables.map((table) => 
                                     (<MenuItem key={table} value={table}>{table}</MenuItem>)
                                 )}
@@ -213,7 +152,7 @@ function Appointments() {
                                 margin="normal"
                                 id="date-picker-inline"
                                 label="Date picker inline"
-                                value={selectedDate}
+                                value={selectedDate.current}
                                 onChange={handleDateChange}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
@@ -244,15 +183,15 @@ function Appointments() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {appointments
+                    {filteredAppointments
                     .map((appointment) => {
                         return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={Math.random() * 100000}>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={appointment._id}>
                             <TableCell>
                                 {appointment.email}
                             </TableCell>
                             <TableCell>
-                                {appointment.date.toISOString().slice(0, 10)}
+                                {appointment.day + ' ' + appointment.time} {/*.toISOString().slice(0, 10)*/}
                             </TableCell>
                             <TableCell>
                                 {appointment.TableId}
@@ -260,35 +199,18 @@ function Appointments() {
                             <TableCell>
                                 {appointment.peopleCount}
                             </TableCell>
-
+                            <TableCell>
+                                <IconButton onClick={() => deleteAppointment(appointment._id)}>
+                                    <Delete />
+                                </IconButton>
+                            </TableCell>
                         </TableRow>
                         );
                     })}
                 </TableBody>
                 </Table>
             </TableContainer>
-            <Modal
-            open={addModalOpen}
-            onClose={() => setModalOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            >
-                <Box>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Időpont keresése
-                    </Typography>
-                    <form className="text-center">
-                        <TextField name="email" label="E-mail" variant="standard" type="email" className="my-4" />
-                        <br />
-                        <Button variant="contained" color="primary" className="m-auto" type="submit">
-                            Foglalás
-                        </Button>
-                        <Button variant="contained" color="secondary" className="m-auto error" type="submit">
-                            Mégsem
-                        </Button>
-                    </form>
-                </Box>
-            </Modal>
+            <BookingModal addModalOpen={addModalOpen} setModalOpen={setModalOpen} />
       </div>
   )
 }

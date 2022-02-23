@@ -1,9 +1,7 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import { Badge, IconButton, makeStyles, Popover, Typography } from '@material-ui/core'
+import React, { useState } from 'react'
+import { Badge, IconButton, Popover } from '@material-ui/core'
 import './Table.css'
 import { Add, Delete, Remove, RotateRight, Settings } from '@material-ui/icons'
-import { useSelector } from 'react-redux'
-import { tablesInUseSelector } from '../../store/features/liveSlice'
 
 function Table({rounded, tableCount, type='normal', size='average', rotated=false, coordinates, id, removePeople, addPeople, rotateTable, editable, removeTable, inUse}) {
 

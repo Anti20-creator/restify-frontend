@@ -30,5 +30,6 @@ export const tablesInUseSelector = state => {
     })
     return result
 }
+export const tableIds = state => Object.keys(state.live.tables)
 
 export default liveSlice.reducer

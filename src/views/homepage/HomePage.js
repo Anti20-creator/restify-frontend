@@ -18,6 +18,13 @@ import API from '../../communication/API';
 import { updateLayout } from '../../store/features/layoutSlice'
 import { updateMenu } from '../../store/features/menuSlice'
 import { updateTables } from '../../store/features/liveSlice';
+import TableDialog from '../../components/liveview/TableDialog';
+import { updateAppointments } from '../../store/features/appointmentsSlice';
+import { store } from '../../store/store'
+import { createSocket } from '../../communication/socket'
+import RegisterEmployee from '../register-employee/RegisterEmployee';
+import RegisterAdmin from '../register-admin/RegisterAdmin';
+import Settings from '../settings/Settings'
 
 function HomePage() {
 
@@ -26,8 +33,8 @@ function HomePage() {
     const dataLoading = useSelector(loadingState)
     const dispatch = useDispatch()
     
-    useEffect(async () => {
-        await API.get('api/users/getdata').then(result => {
+    useEffect(() => {
+        API.get('api/users/getdata').then(result => {
             setAuthenticated(result.data.email !== null)
             dispatch(setLoading(true))
             setUserLoading(false)
@@ -36,22 +43,30 @@ function HomePage() {
             dispatch(setLoading(false))
             setUserLoading(false)
         })
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
     
-    useEffect(async () => {
-        if(authenticated) {
-            const layout = await API.get('/api/layouts')
-            dispatch(updateLayout(layout.data.message))
+    useEffect(() => {
+        async function pullData() {
+            if(authenticated) {
+                createSocket(store)
 
-            const menu = await API.get('/api/menu')
-            dispatch(updateMenu(menu.data.message))
-
-            const tables = await API.get('/api/tables')
-            dispatch(updateTables(tables.data.message))
-
-            dispatch(setLoading(false))
+                const layout = await API.get('/api/layouts')
+                dispatch(updateLayout(layout.data.message))
+    
+                const menu = await API.get('/api/menu')
+                dispatch(updateMenu(menu.data.message))
+    
+                const tables = await API.get('/api/tables')
+                dispatch(updateTables(tables.data.message))
+    
+                const appointments = await API.get('/api/appointments')
+                dispatch(updateAppointments(appointments.data.message))
+    
+                dispatch(setLoading(false))
+            }
         }
-    }, [authenticated])
+        pullData()
+    }, [authenticated]) // eslint-disable-line react-hooks/exhaustive-deps
     
     const login = async (e) => {
         e.preventDefault()
@@ -74,27 +89,35 @@ function HomePage() {
                     <div className={"w-100 d-flex align-items-center"} style={{backgroundColor: "#f5f6fa"}}>
                         <div className={"m-auto position-relative"} style={{backgroundColor: "white", width: '95%', height: '95%', overflowY: 'auto'}}>
                         <Routes>
-                            <Route exact path="/" element={<LiveView />} />
+                            <Route path="/" element={<LiveView />} />
                             <Route exact path="/menu" element={<Menu />} />
                             <Route exact path="/appointments" element={<Appointments />} />
-                            <Route exact path="/settings" element={<Editor />} />
+                            <Route exact path="/edit" element={<Editor />} />
                             <Route exact path="/team" element={<Team />} />
+                            <Route exact path="/settings" element={<Settings />} />
+                            <Route path='/table/:id' element={<TableDialog />} />
                         </Routes>
                         </div>
                     </div>
                 </div>
                 :
-                <div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
-                    <Card className="w-50 p-5 text-center">
-                        <form onSubmit={login}>
-                            <FormControl>
-                                <TextField name="email" type="email" placeholder="E-mail" />
-                                <TextField name="password" type="password" placeholder="Jelszó" />
-                                <Button variant="outlined" color="primary" type="submit">Bejelentkezés</Button>
-                            </FormControl>
-                        </form>
-                    </Card>
-                </div>
+                <>
+                    <Routes>
+                        <Route path='/invite/:restaurantId' element={<RegisterEmployee />} />
+                        <Route path='/register' element={<RegisterAdmin />} />
+                        <Route path='/' element={<div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
+                        <Card className="w-50 p-5 text-center">
+                            <form onSubmit={login}>
+                                <FormControl>
+                                    <TextField name="email" type="email" placeholder="E-mail" />
+                                    <TextField name="password" type="password" placeholder="Jelszó" />
+                                    <Button variant="outlined" color="primary" type="submit">Bejelentkezés</Button>
+                                </FormControl>
+                            </form>
+                        </Card>
+                    </div>} />
+                    </Routes>
+                </>
             }
         </>
   );

@@ -1,13 +1,20 @@
 import React from 'react'
-import {LiveTv, Event, Group, MenuBook, Settings} from "@material-ui/icons";
+import {LiveTv, Event, Group, MenuBook, Settings, ExitToApp, Edit} from "@material-ui/icons";
 import { Link } from 'react-router-dom'
 import './Sidebar.css'
+import 'animate.css'
 import API from '../../communication/API'
+import { useNavigate } from 'react-router-dom'
 
 function Sidebar() {
 
-    const logOut = async () => {
-        await API.get('api/users/logout')
+    const navigate = useNavigate()
+
+    const logOut = () => {
+        API.get('api/users/logout').then(() => {
+            navigate('/')
+            window.location.reload();
+        })
     }
 
     return (
@@ -36,6 +43,12 @@ function Sidebar() {
                     <p className={"pl-2"}>Menü</p>
                 </div>
             </Link>
+            <Link to="/edit">
+                <div className={"d-flex sidebar-row"}>
+                    <Edit />
+                    <p className={"pl-2"}>Szerkesztő</p>
+                </div>
+            </Link>
             <Link to="/settings">
                 <div className={"d-flex sidebar-row"}>
                     <Settings />
@@ -43,7 +56,8 @@ function Sidebar() {
                 </div>
             </Link>
             <div className="d-flex sidebar-row" role="button" onClick={logOut}>
-                Kijelentkezés
+                <ExitToApp />
+                <p className={"pl-2"}>Kijelentkezés</p>
             </div>
         </div>
     )

@@ -1,7 +1,9 @@
-import { io } from 'socket.io-client'
+﻿import { io } from 'socket.io-client'
 import { setInUse } from '../store/features/liveSlice'
-import { addItem, removeAll, setItems, clear } from '../store/features/invoiceSlice'
-import { setModifiedLayout, updateLayout } from '../store/features/layoutSlice'
+import { addItem, removeAll, clear, addOne, removeOne } from '../store/features/invoiceSlice'
+import { setModifiedLayout } from '../store/features/layoutSlice'
+import { toast } from 'react-toastify'
+import { receivedAppointment } from '../store/features/appointmentsSlice'
 
 let socket = null
 let store  = null
@@ -9,26 +11,107 @@ let store  = null
 export const createSocket = (_store) => {
     
     if(!socket) {
-        socket = io.connect('https://192.168.31.216:4000')
+        socket = io.connect('https://192.168.31.161:4000', {
+            transports: ['websocket']
+        })
+        registerListeners()
     }
-    store = _store
-    registerListeners()
+    if(!store) {
+        store = _store
+    }
+
+    return socket
 
 }
 
 const registerListeners = () => {
+
+
     socket.on('notify-new-guest', (tableId) => {
         store.dispatch(setInUse({id: tableId, value: true}))
+        toast.info('Új vendég érkezett!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
     })
     socket.on('guest-leaved', (tableId) => {
         store.dispatch(setInUse({id: tableId, value: false}))
         store.dispatch(clear())
+        toast.info('Egy asztal felszabadult!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
     })
-    socket.on('new-order', (order) => {
+    socket.on('order-added', (order, socketId) => {
+        if(socketId === socket.id) return;
+        
         store.dispatch(addItem(order))
+        toast.info('Új számlaelem!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
     })
-    socket.on('order-removed', (order) => {
+    socket.on('order-removed', (order, socketId) => {
+        if(socketId === socket.id) return;
+
         store.dispatch(removeAll({name: order}))
+        toast.info('Elem törölve a listából!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
+    })
+    socket.on('increase-order', (order, socketId) => {
+        if(socketId === socket.id) return
+
+        store.dispatch(addOne({name: order}))
+        toast.info('Egy rendelés mennyisége nőtt!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
+    })
+    socket.on('decrease-order', (order, socketId) => {
+        if(socketId === socket.id) return
+
+        store.dispatch(removeOne({name: order}))
+        toast.info('Egy rendelés mennyisége csökkent!', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 1000,
+            hideProgressBar: false,
+            pauseOnHover: false,
+            draggable: false,
+        });
+    })
+    socket.on('new-appointment', () => {
+        console.log('new appointment')
+        store.dispatch(receivedAppointment())
+        socket.emit('leave-appointment')
     })
     socket.on('layout-modified', (layout) => {
         console.log('Layout modified', layout)
@@ -37,5 +120,9 @@ const registerListeners = () => {
 }
 
 export const getSocket = () => {
-    return socket
+    if(socket) {
+        return socket
+    }else{
+        return createSocket()
+    }
 }

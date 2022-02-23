@@ -1,155 +1,125 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import {
     Avatar, Box,
-    Checkbox,
+    IconButton,
     Modal,
-    ListItem, Snackbar,
+    ListItem, Popover, Menu, MenuItem,
     ListItemAvatar, TextField,
-    ListItemText, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, FormControl
+    ListItemText, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button
 } from "@material-ui/core";
-import {SearchOutlined, GroupAdd} from "@material-ui/icons";
+import {SearchOutlined, GroupAdd, MoreVert, Delete, ArrowUpward, ArrowDownward} from "@material-ui/icons";
 import './Team.css'
-import MuiAlert from '@material-ui/lab/Alert'
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+import { toast } from 'react-toastify'
+import API from '../../communication/API'
 
 const columns = [
-    { id: 'checkbox', label: ''},
     { id: 'user', label: 'Felhasználó' },
     { id: 'role', label: 'Jogok'},
     {
-      id: 'invited',
-      label: 'Státusz',
+        id: 'invited',
+        label: 'Státusz',
     },
     {
-      id: 'date',
-      label: 'Csatlakozott',
-      format: (value) => value.toLocaleISOString(),
+        id: 'date',
+        label: 'Csatlakozott',
+        format: (value) => value.toLocaleISOString(),
     },
+    { id: 'dots', label: ''}
 ];
+
 
 function Team() {
 
+    const changeRank = (promote) => {
+        const rankToast = toast.loading('Felhasználói jogok módosítása...')
+        API.post('/api/users/update-rank', {
+            email: rowData.email,
+            promote: !promote
+        }).then(result => {
+            toast.update(rankToast, {render: 'Jogok frissítve!', autoClose: 1200, type: 'success', isLoading: false})
+        }).catch(err => {
+            toast.update(rankToast, {render: 'Hiba a frissítés során!', autoClose: 1200, type: 'error', isLoading: false})
+        })
+    }
+    const [rowData, setRowData] = useState({})
+    const [anchorEl, setAnchorEl] = useState(null)
     const [checked, setChecked] = useState([0]);
     const stringToColor = function(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
           hash = str.charCodeAt(i) + ((hash << 5) - hash);
         }
-        var colour = '#';
-        for (var i = 0; i < 3; i++) {
-          var value = (hash >> (i * 8)) & 0xFF;
+        let colour = '#';
+        for (let i = 0; i < 3; i++) {
+          let value = (hash >> (i * 8)) & 0xFF;
           colour += ('00' + value.toString(16)).substr(-2);
         }
         return colour;
     }
 
-    const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        setChecked(newChecked);
-    };
+    useEffect(() => {
+        API.get('/api/users/team').then(result => {
+            console.log(result.data.message)
+            if(result.data.success) {
+                setMembers(result.data.message)
+                setFilteredMembers(result.data.message)
+            }else{
+                toast.error('Hiba a csapat betöltése során!', {autoClose: 1500})
+                setMembers([])
+            }
+        })
+    }, [])
 
     const sendInvite = (e) => {
         e.preventDefault()
         const email = e.target.elements.email.value
-        if(members.includes(email) || email.length < 4) {
-            setSeverity('error')
-            setAlertMessage('Error while trying to invite!')
-            setOpenSnackbar(true)
+        if(members.map(member => member.email).includes(email)) {
+            toast.error('Ez a felhasználó már a csapat tagja!', {
+                autoClose: 1500
+            })
             return
         }
-        setSeverity('success')
-        setAlertMessage(email + ' invited!')
-        setOpenSnackbar(true)
+        const inviteToast = toast.loading(email + ' meghívása...')
+        API.post('/api/users/send-invite', {emailTo: email}).then(result => {
+            if(result.data.success) {
+                members.push({
+                    email,
+                    isAdmin: false,
+                    fullName: '',
+                })
+                filter()
+                toast.update(inviteToast, { render: email + " meghívva!", type: "success", isLoading: false, autoClose: 2000 })
+            }else{
+                toast.update(inviteToast, { render: "Hiba a meghívás során!", type: "error", isLoading: false, autoClose: 2000 })
+            }
+        })
         setOpen(false)
     }
 
+    const dateFromObjectId = function (objectId) {
+        return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+    }
+
+    const emailRef = useRef('')
     const [open, setOpen] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const closeAlert = () => setOpenSnackbar(false);
-    const [severity, setSeverity] = useState('success')
-    const [alertMessage, setAlertMessage] = useState('')
 
-    const members = [
-        {
-            name: 'Felix',
-            email: 'felix@miro.com',
-            role: 'Tag'
-        },{
-            name: 'Jane',
-            email: 'jane@miro.com',
-            role: 'Admin'
-        },
-        {
-            name: 'Miro',
-            email: 'mirouser@miro.com',
-            role: 'Tag'
-        },
-        {
-            name: 'Felix',
-            email: 'felix@miro.com',
-            role: 'Tag'
-        },{
-            name: 'Jane',
-            email: 'jane@miro.com',
-            role: 'Admin'
-        },
-        {
-            name: 'Miro',
-            email: 'mirouser@miro.com',
-            role: 'Tag'
-        },
-        {
-            name: 'Felix',
-            email: 'felix@miro.com',
-            role: 'Tag'
-        },{
-            name: 'Jane',
-            email: 'jane@miro.com',
-            role: 'Admin'
-        },
-        {
-            name: 'Miro',
-            email: 'mirouser@miro.com',
-            role: 'Tag'
-        },
-        {
-            name: 'Miro',
-            email: 'mirouser@miro.com',
-            role: 'Tag'
-        },
-        {
-            name: 'Felix',
-            email: 'felix@miro.com',
-            role: 'Tag'
-        },{
-            name: 'Jane',
-            email: 'jane@miro.com',
-            role: 'Admin'
-        },
-        {
-            name: 'Miro',
-            email: 'mirouser@miro.com',
-            role: 'Tag'
-        },
-    ]
+    const [members, setMembers] = useState([])
     const [filteredMembers, setFilteredMembers] = useState(members)
 
+    const filter = () => {
+        setFilteredMembers(members.filter(member => member.email.toLowerCase().includes(emailRef.current.toLowerCase()) || 
+        (member.fullName && member.fullName.toLowerCase().includes(emailRef.current.toLowerCase()))))
+
+    }
+
     const filterUsers = (e) => {
-        setFilteredMembers(members.filter(member => member.email.toLowerCase().includes(e.target.value.toLowerCase()) || member.name.toLowerCase().includes(e.target.value.toLowerCase())))
+        emailRef.current = e.target.value
+        filter()
     }
 
     return (
@@ -182,11 +152,11 @@ function Team() {
                 </TableHead>
                 <TableBody>
                     {filteredMembers
-                    .map((member) => {
+                    .map((member, idx) => {
                         const labelId = `checkbox-list-secondary-label-${member.email}`;
                         return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={Math.random() * 100000}>
-                            <TableCell>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={member.email}>
+                            {/*<TableCell>
                                 <Checkbox
                                     onClick={handleToggle(member.email)}
                                     edge="start"
@@ -195,32 +165,62 @@ function Team() {
                                     disableRipple
                                     inputProps={{ 'aria-labelledby': labelId }}
                                     />
-                            </TableCell>
+                            </TableCell>*/}
                             <TableCell>
                                 <ListItem>
                                     <ListItemAvatar>
                                         <Avatar style={{backgroundColor: stringToColor(member.email)}}>
-                                            { member.name.charAt(0) }
+                                            { member.fullName ? member.fullName.charAt(0) : member.email.charAt(0) }
                                         </Avatar>
                                     </ListItemAvatar>
-                                    <ListItemText primary={member.name} secondary={member.email} />
+                                    <ListItemText primary={member.fullName} secondary={member.email} />
                                 </ListItem>
                             </TableCell>
                             <TableCell>
-                                {member.role}
+                                {member.isAdmin ? 'Admin' : 'Felhasználó'}
                             </TableCell>
                             <TableCell>
-                                Meghívva
+                                {member.fullName ? 'Aktív' : 'Meghívott'}
                             </TableCell>
                             <TableCell>
-                                {new Date().toISOString().slice(0, 10)}
+                                {member._id ? dateFromObjectId(member._id).toLocaleString() : '' }
                             </TableCell>
-
+                            <TableCell>
+                                <IconButton onClick={(e) => {setRowData(member); setAnchorEl(e.currentTarget)} }>
+                                    <MoreVert />
+                                </IconButton>
+                            </TableCell>
                         </TableRow>
                         );
                     })}
                 </TableBody>
                 </Table>
+                <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={anchorEl !== null}
+                    onClose={() => setAnchorEl(null)}
+                    onClick={() => setAnchorEl(null)}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                    <MenuItem onClick={() => changeRank('isAdmin' in rowData && rowData.isAdmin)}>
+                        {'isAdmin' in rowData && rowData.isAdmin ? 
+                            <>
+                                <ArrowDownward /> 
+                                Lefokozás
+                            </>
+                            :
+                            <>
+                                <ArrowUpward />
+                                Előléptetés
+                            </> 
+                        }
+                    </MenuItem>
+                    <MenuItem>
+                        <Delete /> Eltávolítás
+                    </MenuItem>
+                </Menu>
             </TableContainer>
             <Modal
             open={open}
@@ -241,11 +241,6 @@ function Team() {
                     </form>
                 </Box>
             </Modal>
-            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={closeAlert}>
-                <Alert onClose={closeAlert} severity={severity} sx={{ width: '100%' }}>
-                    { alertMessage }
-                </Alert>
-            </Snackbar>
         </div>
     )
 }

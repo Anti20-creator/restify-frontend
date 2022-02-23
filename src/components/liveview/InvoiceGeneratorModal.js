@@ -1,13 +1,11 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import API from '../../communication/API';
-import { setItems } from '../../store/features/invoiceSlice';
-import { useDispatch } from 'react-redux'
 import { getSocket } from '../../communication/socket'
+import { useParams } from 'react-router-dom'
 
 function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose}) {
     
-    const dispatch = useDispatch()
     const [invoiceName, setInvoiceName] = useState('')
     const getInvoice = () => {
         API.get(`/api/tables/${tableId}`).then(result => {
@@ -19,8 +17,8 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose}) {
       if(!invoiceName) return
 
       const link = document.createElement("a");
-      link.download = 'https://192.168.31.216:4000/public/invoices/' + invoiceName;
-      link.href = 'https://192.168.31.216:4000/public/invoices/' + invoiceName;
+      link.download = 'https://192.168.31.161:4000/public/invoices/' + invoiceName;
+      link.href = 'https://192.168.31.161:4000/public/invoices/' + invoiceName;
       link.click();
       getSocket().emit('guest-leaved', {tableId})
       handleClose()
@@ -36,7 +34,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose}) {
     return (
         <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Számla - {tableLocalId}
+          Számla - {useParams().id}
         </DialogTitle>
         <DialogContent dividers>
           {
@@ -51,7 +49,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose}) {
           }
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={download} color="primary">
+          <Button disabled={invoiceName === ''} autoFocus onClick={download} color="primary">
             Számla mentése
           </Button>
         </DialogActions>

@@ -1,27 +1,63 @@
 import { Button, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Add, Delete, Remove } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
-import { invoiceItems, setItems } from '../../store/features/invoiceSlice';
+import { addOne, invoiceItems, removeAll, removeOne, setItems } from '../../store/features/invoiceSlice';
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
+import { useParams } from 'react-router-dom'
 
-function Invoice({tableId, localId}) {
+function Invoice({localId}) {
+
+    const tableId = useParams().id
 
     const dispatch = useDispatch()
     const currentInvoiceItems = useSelector(invoiceItems)
     const [startPayment, setStartPayment] = useState(false)
 
     const deleteOrder = (rowName) => {
-        API.delete('api/tables/remove-order', { data: {tableId, name: rowName} })
+        API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
+            if (response.data.success) {
+                dispatch(removeAll({name: rowName}))
+            }else{
+                toast.error('Hiba a rendelés törlésekor!', {
+                    autoClose: 1500
+                })
+            }
+        })
+    }
+
+    const increaseQuantity = (rowName) => {
+        API.post('api/tables/increase-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
+            if(response.data.success) {
+                dispatch(addOne({name: rowName}))
+            }else{
+                toast.error('Hiba a kérés közben!', {
+                    autoClose: 1500
+                })
+            }
+        })
+    }
+
+    const decreaseQuantity = (rowName) => {
+        API.post('api/tables/decrease-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
+            if(response.data.success) {
+                dispatch(removeOne({name: rowName}))
+            }else{
+                toast.error('Hiba a kérés közben!', {
+                    autoClose: 1500
+                })
+            }
+        })
     }
 
     useEffect(() => {
         API.get('/api/tables/orders/' + tableId).then(result => {
             dispatch(setItems(result.data.message))
         })
-    }, [])
+    }, [tableId]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         getSocket().emit('join-table', {tableId})
@@ -35,7 +71,7 @@ function Invoice({tableId, localId}) {
                     <TableHead>
                         <TableRow>
                             <TableCell>Név</TableCell>
-                            <TableCell align="right">Mennyiség</TableCell>
+                            <TableCell align="center">Mennyiség</TableCell>
                             <TableCell align="right">Ár</TableCell>
                         </TableRow>
                     </TableHead>
@@ -49,7 +85,15 @@ function Invoice({tableId, localId}) {
                                 </IconButton>
                                 {row.name}
                             </TableCell>
-                            <TableCell align="right">{row.quantity}</TableCell>
+                            <TableCell align="center" style={{whiteSpace: 'nowrap'}}>
+                                <IconButton onClick={() => decreaseQuantity(row.name)}>
+                                    <Remove />
+                                </IconButton>
+                                {row.quantity}
+                                <IconButton onClick={() => increaseQuantity(row.name)}>
+                                    <Add />
+                                </IconButton>
+                            </TableCell>
                             <TableCell align="right">{row.price}</TableCell>
                         </TableRow>
                     ))}

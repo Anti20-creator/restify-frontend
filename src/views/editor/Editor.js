@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import interact from 'interactjs'
 import Table from '../../components/editor/Table';
 import ContextMenu from '../../components/editor/ContextMenu';
@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { layout, modifiedLayout, updateLayout } from '../../store/features/layoutSlice'
 import OutOfSyncBar from '../../components/editor/OutOfSyncBar';
 import { getSocket } from '../../communication/socket';
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 function Editor() {
 
@@ -35,7 +37,7 @@ function Editor() {
             // call this function on every dragmove event
             move: dragMoveListener,
         },
-        })
+    })
         
 
 
@@ -53,7 +55,7 @@ function Editor() {
         target.setAttribute('data-y', y)
         setTables(
             tables.map(table => 
-                table.localId == target.getAttribute('local-id')
+                parseInt(table.localId) === parseInt(target.getAttribute('local-id'))
                 ? {...table, coordinates: {x: target.getAttribute('data-x'), y: target.getAttribute('data-y')}, updated: true } 
                 : table 
         ))
@@ -89,7 +91,7 @@ function Editor() {
         }
     }, [modifiedLayoutValue])
 
-    useEffect(async () => {
+    useEffect(() => {
         setOffset({
             x: editorNode.current.getBoundingClientRect().left,
             y: editorNode.current.getBoundingClientRect().top
@@ -103,7 +105,7 @@ function Editor() {
                 localId: table.localId,
                 rounded: table.tableType === "rounded",
                 size: table.size,
-                rotated: table.direction == 1,
+                rotated: table.direction === 1,
                 tableCount: table.tableCount
             }
         }))
@@ -121,7 +123,7 @@ function Editor() {
 
     const addTable = (type) => {
         setTables([...tables, {
-            rounded: type == 'rounded',
+            rounded: type === 'rounded',
             tableCount: 1,
             type,
             rotated: false,
@@ -175,6 +177,17 @@ function Editor() {
     const saveTables = async () => {
         if(modifiedLayoutValue !== null) return
 
+        const savingToast = toast.loading('Elrendezés frissítése...', {
+            position: "bottom-center",
+            closeOnClick: true,
+            progress: undefined,
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: false,
+            progress: undefined,
+        });
         const result = await API.post('api/layouts/save', {newTables: tables.filter(table => table.new).map(table => {
             return {
                 coordinates: table.coordinates,
@@ -204,11 +217,20 @@ function Editor() {
                 localId: table.localId,
                 databaseID: table.databaseID
             }
-        })) })
+        }))})
+        .catch(() => {
+            toast.update(savingToast, { render: "Hiba a frissítés során", type: "error", isLoading: false, autoClose: 2000 })
+            return
+        })
+
+
         setRemovedTables([])
         setUpdatedTables([])
         getSocket().emit('layout-modified', {tables: result.data.message})
         dispatch(updateLayout(result.data.message))
+        if(result && result.data.success) {
+            toast.update(savingToast, { render: "Elrendezés frissítve", type: "success", isLoading: false, autoClose: 2000 })
+        }
 
         console.log(result)
     }

@@ -53,6 +53,7 @@ export const menuItems = state => state.menu.value.items ? [].concat(...Object.k
             name: item,
             price: state.menu.value.items[category][item].price,
             amount: state.menu.value.items[category][item].amount,
+            unit: state.menu.value.items[category][item].unit,
             category: category
         }
     })

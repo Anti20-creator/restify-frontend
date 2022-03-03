@@ -21,7 +21,9 @@ import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { appointmentsState, seenAppointments, removeAppointment } from '../../store/features/appointmentsSlice';
 import { tableIds } from '../../store/features/liveSlice';
+import { layout } from '../../store/features/layoutSlice'
 import BookingModal from '../../components/appointments/BookingModal';
+const moment = require('moment-timezone')
 
 const columns = [
     { id: 'email', label: 'E-mail' },
@@ -41,15 +43,17 @@ const columns = [
 function Appointments() {
 
     // state variables
+    const [filteredAppointments, setFilteredAppointments] = useState([])
+    const [addModalOpen, setModalOpen] = useState(false)
+    
+    const layoutValue = useSelector(layout)
+    const tables = useSelector(tableIds)
+    const appointments = useSelector(appointmentsState)
     const dispatch = useDispatch()
     const table = useRef('')
     const email = useRef('')
     const selectedDate = useRef(new Date())
-    const tables = useSelector(tableIds)
     //const [selectedDate, setSelectedDate] = useState(new Date());
-    const appointments = useSelector(appointmentsState)
-    const [filteredAppointments, setFilteredAppointments] = useState([])
-    const [addModalOpen, setModalOpen] = useState(false)
 
     const setAppointments = () => {
         const date = new Date(selectedDate.current)
@@ -185,16 +189,17 @@ function Appointments() {
                 <TableBody>
                     {filteredAppointments
                     .map((appointment) => {
+                        const table = layoutValue.find(table => table.TableId === appointment.TableId)
                         return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={appointment._id}>
                             <TableCell>
                                 {appointment.email}
                             </TableCell>
                             <TableCell>
-                                {appointment.day + ' ' + appointment.time} {/*.toISOString().slice(0, 10)*/}
+                                {moment.tz(new Date(appointment.time), "America/Los_Angeles")} {/*.toISOString().slice(0, 10)*/}
                             </TableCell>
                             <TableCell>
-                                {appointment.TableId}
+                                {'localId' in table ? table.localId + 1 : 'N.A.' }
                             </TableCell>
                             <TableCell>
                                 {appointment.peopleCount}

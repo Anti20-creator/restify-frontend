@@ -1,7 +1,7 @@
 import { AppBar, Button, IconButton, Toolbar, Typography } from '@material-ui/core';
 import Dialog from '@mui/material/Dialog';
 import { Close, SearchOutlined } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSocket } from '../../communication/socket';
 import API from '../../communication/API';
@@ -10,12 +10,14 @@ import MenuItems from './MenuItems';
 import { invoiceItems } from '../../store/features/invoiceSlice';
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import { isTableInUse } from '../../store/features/liveSlice';
 
 function TableDialog() {
 
     const navigate = useNavigate()
     const tableId = useParams().id
     const currentInvoiceItems = useSelector(invoiceItems)
+    const isInUse = useSelector(isTableInUse(tableId))
     const [foodText, setFoodText] = useState('')
 
     const cancelTable = () => {

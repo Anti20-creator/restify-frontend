@@ -41,7 +41,7 @@ function MenuItems({searchText}) {
                         <Card onClick={() => {postItem(item)}} className="m-1 text-center h-100 menu-card">
                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                                 <p className="fw-bold"> {item.name} </p>
-                                <p className="fw-light">{item.price} {priceUnit}</p>
+                                <p className="fw-light">{item.price} {priceUnit} {item.amount > 1 && `/ ${item.amount} ${item.unit}`} </p>
                             </CardContent>
                         </Card>
                     </div>

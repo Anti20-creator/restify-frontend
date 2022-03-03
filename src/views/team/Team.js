@@ -4,7 +4,7 @@ import {
     Avatar, Box,
     IconButton,
     Modal,
-    ListItem, Popover, Menu, MenuItem,
+    ListItem, Menu, MenuItem,
     ListItemAvatar, TextField,
     ListItemText, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button
 } from "@material-ui/core";
@@ -95,6 +95,19 @@ function Team() {
             }
         })
         setOpen(false)
+    }
+
+    const removeMember = (email) => {
+        const userToast = toast.loading(email + ' eltávolítása...')
+        API.delete('api/users/delete', {data: {email}}).then(result => {
+            if(result.data.success) {
+                setMembers(members.filter(member => member.email !== email))
+                filter()
+                toast.update(userToast, {render: email + ' eltávolítva!', type: "success", isLoading: false, autoClose: 1200})
+            }
+        }).catch(err => {
+            toast.update(userToast, {render: "Hiba az eltávolítás során!", type: "error", isLoading: false, autoClose: 1200})  
+        })
     }
 
     const dateFromObjectId = function (objectId) {
@@ -202,7 +215,6 @@ function Team() {
                     onClose={() => setAnchorEl(null)}
                     onClick={() => setAnchorEl(null)}
                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 >
                     <MenuItem onClick={() => changeRank('isAdmin' in rowData && rowData.isAdmin)}>
                         {'isAdmin' in rowData && rowData.isAdmin ? 
@@ -217,7 +229,7 @@ function Team() {
                             </> 
                         }
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem onClick={() => removeMember(rowData.email)}>
                         <Delete /> Eltávolítás
                     </MenuItem>
                 </Menu>

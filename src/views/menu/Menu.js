@@ -83,7 +83,7 @@ function Menu() {
                             </Card>
                         </div>
                         {
-                            Object.keys(menu.icons).map((key) => (
+                            Object.keys(menu.icons).sort().map((key) => (
                                 <div key={key} className="col-sm-5 col-md-3 col-6 position-relative">
                                     <div className="position-absolute" style={{right: '10%', top: '10%', zIndex: '100'}}>
                                         <IconButton onClick={() => setEditCategory(key)}>
@@ -116,7 +116,7 @@ function Menu() {
                                 </Card>
                             </div>
                             {
-                                Object.keys(menu.items[category]).map((key) => (
+                                Object.keys(menu.items[category]).sort().map((key) => (
                                     <div key={key} className="col-sm-4 col-md-3 col-6">
                                         <Card onClick={() => {setItem(key) }} className="m-1 text-center h-100 menu-card">
                                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">

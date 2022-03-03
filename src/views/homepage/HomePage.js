@@ -21,10 +21,12 @@ import { updateTables } from '../../store/features/liveSlice';
 import TableDialog from '../../components/liveview/TableDialog';
 import { updateAppointments } from '../../store/features/appointmentsSlice';
 import { store } from '../../store/store'
+import { toast } from 'react-toastify'
 import { createSocket } from '../../communication/socket'
 import RegisterEmployee from '../register-employee/RegisterEmployee';
 import RegisterAdmin from '../register-admin/RegisterAdmin';
 import Settings from '../settings/Settings'
+import Invoices from '../invoices/Invoices'
 
 function HomePage() {
 
@@ -73,7 +75,11 @@ function HomePage() {
         const email = e.target.email.value
         const password = e.target.password.value
     
-        const result = await API.post('api/users/login', {email, password})
+        const result = await API
+            .post('api/users/login', {email, password})
+            .catch(err => {
+                toast.error('Hibás email vagy jelszó!', {autoClose: 1200, position: 'bottom-center'})
+            })
         setAuthenticated(result.status === 200)
     }
   
@@ -94,6 +100,7 @@ function HomePage() {
                             <Route exact path="/appointments" element={<Appointments />} />
                             <Route exact path="/edit" element={<Editor />} />
                             <Route exact path="/team" element={<Team />} />
+                            <Route exact path="/invoices" element={<Invoices />} />
                             <Route exact path="/settings" element={<Settings />} />
                             <Route path='/table/:id' element={<TableDialog />} />
                         </Routes>

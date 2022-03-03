@@ -9,6 +9,7 @@ function RegisterEmployee() {
     const {restaurantId} = useParams()
     const register = (e) => {
         e.preventDefault()
+        const registerToast = toast.loading('Regisztráció folyamatban...')
         const name = e.target.name.value
         const email = e.target.email.value
         const password = e.target.password.value
@@ -16,10 +17,11 @@ function RegisterEmployee() {
     
         API.post('api/users/register-employee/' + restaurantId, {email, password, secretPin, name}).then(result => {
             if(result.body.success) {
-                toast.success('Sikeres regisztráció', {autoClose: 1200})
-            }else{
-                toast.warning('Sikertelen regisztráció', {autoClose: 1200})
+                toast.update(registerToast, {render: 'Sikeres regisztráció!', autoClose: 1200, isLoading: false, type: "success"})
             }
+        }).catch(err => {
+            toast.update(registerToast, {render: 'Sikertelen regisztráció!', autoClose: 1200, isLoading: false, type: "error"})
+
         })
     }
     

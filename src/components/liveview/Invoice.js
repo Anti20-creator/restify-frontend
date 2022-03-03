@@ -105,7 +105,7 @@ function Invoice({localId}) {
                     Fizetés
                 </Button>
             </div>
-            <InvoiceGeneratorModal tableId={tableId} tableLocalId={localId} open={startPayment} handleClose={() => {
+            <InvoiceGeneratorModal tableId={tableId} items={currentInvoiceItems} tableLocalId={localId} open={startPayment} handleClose={() => {
                 setStartPayment(false)
                 //dispatch(setItems([]))
                 }} />

@@ -1,6 +1,6 @@
 ﻿import { io } from 'socket.io-client'
 import { setInUse } from '../store/features/liveSlice'
-import { addItem, removeAll, clear, addOne, removeOne } from '../store/features/invoiceSlice'
+import { addItem, removeAll, clear, addOne, removeOne, setItems } from '../store/features/invoiceSlice'
 import { setModifiedLayout } from '../store/features/layoutSlice'
 import { toast } from 'react-toastify'
 import { receivedAppointment } from '../store/features/appointmentsSlice'
@@ -116,6 +116,9 @@ const registerListeners = () => {
     socket.on('layout-modified', (layout) => {
         console.log('Layout modified', layout)
         store.dispatch(setModifiedLayout(layout))
+    })
+    socket.on('orders-modified', (orders) => {
+        store.dispatch(setItems(orders))
     })
 }
 

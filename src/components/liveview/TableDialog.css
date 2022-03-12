@@ -1,0 +1,11 @@
+@media(max-width: 768px) {
+	.table-view {
+		flex-direction: column;
+	}
+	.table-view .items {
+		width: 100% !important;
+	}
+	.table-view .checkout {
+		display: none;
+	}
+}

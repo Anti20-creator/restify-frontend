@@ -11,7 +11,7 @@ let store  = null
 export const createSocket = (_store) => {
     
     if(!socket) {
-        socket = io.connect('https://192.168.31.161:4000', {
+        socket = io.connect('https://192.168.31.214:4000', {
             transports: ['websocket']
         })
         registerListeners()
@@ -25,7 +25,6 @@ export const createSocket = (_store) => {
 }
 
 const registerListeners = () => {
-
 
     socket.on('notify-new-guest', (tableId) => {
         store.dispatch(setInUse({id: tableId, value: true}))

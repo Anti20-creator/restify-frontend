@@ -6,9 +6,10 @@ import {
     MenuItem, 
     Select, 
     Table, IconButton,
-    TableHead,TableRow, TableCell, TableBody, TableContainer, Typography, Modal, Box, TextField 
+    TableHead,TableRow, TableCell, TableBody, TableContainer, List, ListItem, ListItemSecondaryAction, ListItemAvatar,
+    ListItemText, Avatar, Fab
 } from '@material-ui/core';
-import { SearchOutlined, Delete } from '@material-ui/icons';
+import { SearchOutlined, Delete, Add } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
@@ -23,6 +24,7 @@ import { appointmentsState, seenAppointments, removeAppointment } from '../../st
 import { tableIds } from '../../store/features/liveSlice';
 import { layout } from '../../store/features/layoutSlice'
 import BookingModal from '../../components/appointments/BookingModal';
+import useWindowSize from '../../store/useWindowSize'
 const moment = require('moment-timezone')
 
 const columns = [
@@ -43,6 +45,7 @@ const columns = [
 function Appointments() {
 
     // state variables
+    const [timezoneOffset, setTimezoneOffset] = useState(0)
     const [filteredAppointments, setFilteredAppointments] = useState([])
     const [addModalOpen, setModalOpen] = useState(false)
     
@@ -53,24 +56,19 @@ function Appointments() {
     const table = useRef('')
     const email = useRef('')
     const selectedDate = useRef(new Date())
-    //const [selectedDate, setSelectedDate] = useState(new Date());
+    const { height, width } = useWindowSize();
 
     const setAppointments = () => {
         const date = new Date(selectedDate.current)
         setFilteredAppointments(
             appointments.filter(appointment => 
-                date.getYear() === (new Date(appointment.day)).getYear() &&
-                date.getMonth() === (new Date(appointment.day)).getMonth() &&
-                date.getDate() === (new Date(appointment.day)).getDate() &&
+                date.getFullYear() == (appointment.day.slice(0,4)) &&
+                date.getMonth() == (Number(appointment.day.slice(5,7)) - 1).toString() &&
+                date.getDate() == Number(appointment.day.slice(8,10)).toString() &&
                 (appointment.TableId === table.current || table.current === '') &&
                 appointment.email.toLowerCase().includes(email.current.toLowerCase())
         ))
-        console.log(appointments.filter(appointment => 
-            date.getYear() === (new Date(appointment.day)).getYear() &&
-            date.getMonth() === (new Date(appointment.day)).getMonth() &&
-            date.getDate() === (new Date(appointment.day)).getDate() &&
-            (appointment.TableId === table.current || table.current === '') &&
-            appointment.email.toLowerCase().includes(email.current.toLowerCase())))
+
     }
     
     // event handlers
@@ -87,6 +85,7 @@ function Appointments() {
 
     const filterAppoinments = (e) => {
         email.current = e.target.value
+        console.log(email.current)
 
         setAppointments()
     }
@@ -105,7 +104,7 @@ function Appointments() {
     useEffect(() => {
         console.log('effect')
         getSocket().emit('join-appointment')
-        API.get('api/appointments').then(response => {
+        API.get('/api/appointments').then(response => {
             if(response.data.success) {
                 dispatch(seenAppointments())
             }else{
@@ -122,6 +121,23 @@ function Appointments() {
         console.log(selectedDate.current)
         setAppointments()
     }, [appointments])
+
+    const stringToColor = function(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let colour = '#';
+        for (let i = 0; i < 3; i++) {
+          let value = (hash >> (i * 8)) & 0xFF;
+          colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    }
+
+    useEffect(() => {
+        console.log(width)
+    }, [width])
     
 
     return (
@@ -132,46 +148,49 @@ function Appointments() {
                         <SearchOutlined />
                         <input onKeyUp={filterAppoinments} type="text" className="search-input w-100" placeholder="Szűrés email alapján" />
                     </div>
-                    <div className="d-flex align-items-center flex-grow-1">
-                        <FormControl variant="filled" className={"m-2"} style={{minWidth: 120}}>
-                            <InputLabel id="demo-simple-select-label">Asztal</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={table.current}
-                                onChange={handleChange}
-                                >
-                                {tables.map((table) => 
-                                    (<MenuItem key={table} value={table}>{table}</MenuItem>)
-                                )}
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div className="flex-grow-1">
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                disableToolbar
-                                variant="inline"
-                                format="MM/dd/yyyy"
-                                margin="normal"
-                                id="date-picker-inline"
-                                label="Date picker inline"
-                                value={selectedDate.current}
-                                onChange={handleDateChange}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </div>
+                    {width > 768 && 
+                        <>
+                            <div className="d-flex align-items-center flex-grow-1">
+                                <FormControl variant="filled" className={"m-2"} style={{minWidth: 120}}>
+                                    <InputLabel id="demo-simple-select-label">Asztal</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={table.current}
+                                        onChange={handleChange}
+                                        >
+                                        {tables.map((table) => 
+                                            (<MenuItem key={table} value={table}>{table}</MenuItem>)
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                            <div className="flex-grow-1">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        disableToolbar
+                                        variant="inline"
+                                        format="MM/dd/yyyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        label="Date picker inline"
+                                        value={selectedDate.current}
+                                        onChange={handleDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </div>
+                        </>}
                 </div>
-                <div className="d-flex invite-box flex-grow-1 book-box">
+                {width > 768 && <div className="d-flex invite-box flex-grow-1 book-box">
                     <Button color="primary" variant="outlined" onClick={() => setModalOpen(true)}>
                         Hozzáadás
                     </Button>
-                </div>
+                </div>}
             </div>
-            <TableContainer sx={{height: '100%'}}>
+            {width > 768 && <TableContainer sx={{height: '100%'}}>
                 <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
@@ -196,7 +215,7 @@ function Appointments() {
                                 {appointment.email}
                             </TableCell>
                             <TableCell>
-                                {moment.tz(new Date(appointment.time), "America/Los_Angeles")} {/*.toISOString().slice(0, 10)*/}
+                                {moment(appointment.time).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
                             </TableCell>
                             <TableCell>
                                 {'localId' in table ? table.localId + 1 : 'N.A.' }
@@ -214,7 +233,24 @@ function Appointments() {
                     })}
                 </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer>}
+            {width <= 768 &&
+                <List>
+                    {filteredAppointments.map((appointment) => (
+                        <ListItem key={appointment._id}>
+                            <ListItemAvatar>
+                                <Avatar style={{backgroundColor: stringToColor(appointment.email)}}>
+                                    { appointment.email.charAt(0) }
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={appointment.email} secondary={moment(appointment.time).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")} />
+                        </ListItem>
+                    ))}
+                </List>}
+            {width <= 768 &&
+            <Fab onClick={() => setModalOpen(true)} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
+                <Add />
+            </Fab>}
             <BookingModal addModalOpen={addModalOpen} setModalOpen={setModalOpen} />
       </div>
   )

@@ -5,3 +5,27 @@
 .MuiFormControl-root.MuiTextField-root {
     padding: 0.5rem 0rem;
 }
+
+.page-holder {
+    overflow: auto;
+}
+.page-inside {
+    overflow-y: auto;
+    height: 95%;
+    width: 95%;
+}
+
+@media(max-width: 768px) {
+    .page-holder {
+        overflow: unset;
+    }
+
+    .page-inside {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .login-card {
+        width: 90% !important;
+    }
+}

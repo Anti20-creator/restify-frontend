@@ -1,0 +1,23 @@
+@media(min-width: 769px) {
+	.mobile-navbar, .spacer {
+		display: none;
+	}
+}
+
+@media(max-width: 768px) {
+	.mobile-navbar {
+		display: flex;
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+	.spacer {
+		display: block;
+	}
+}
+
+.mobile-navbar ul.navbar-nav a {
+	text-decoration: none !important;
+}
+.spacer {
+	height: 56px;
+}

@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
     Avatar, Box,
     IconButton,
-    Modal,
-    ListItem, Menu, MenuItem,
+    Modal, List,
+    ListItem, Menu, MenuItem, Fab,
     ListItemAvatar, TextField,
     ListItemText, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button
 } from "@material-ui/core";
@@ -12,6 +12,7 @@ import {SearchOutlined, GroupAdd, MoreVert, Delete, ArrowUpward, ArrowDownward} 
 import './Team.css'
 import { toast } from 'react-toastify'
 import API from '../../communication/API'
+import useWindowSize from '../../store/useWindowSize'
 
 const columns = [
     { id: 'user', label: 'Felhasználó' },
@@ -44,7 +45,7 @@ function Team() {
     }
     const [rowData, setRowData] = useState({})
     const [anchorEl, setAnchorEl] = useState(null)
-    const [checked, setChecked] = useState([0]);
+    const { height, width } = useWindowSize();
     const stringToColor = function(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -116,10 +117,8 @@ function Team() {
 
     const emailRef = useRef('')
     const [open, setOpen] = useState(false);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const closeAlert = () => setOpenSnackbar(false);
 
     const [members, setMembers] = useState([])
     const [filteredMembers, setFilteredMembers] = useState(members)
@@ -142,13 +141,13 @@ function Team() {
                     <SearchOutlined />
                     <input onKeyUp={filterUsers} type="text" className="search-input w-100" placeholder="Szűrés név vagy e-mail alapján..." />
                 </div>
-                <div className="d-flex invite-box flex-grow-1">
+                {width > 768 && <div className="d-flex invite-box flex-grow-1">
                     <Button color="primary" variant="outlined" startIcon={<GroupAdd />} onClick={handleOpen}>
                         Meghívás
                     </Button>
-                </div>
+                </div>}
             </div>
-            <TableContainer sx={{height: '100%'}}>
+            {width > 768 && <TableContainer sx={{height: '100%'}}>
                 <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
@@ -166,19 +165,8 @@ function Team() {
                 <TableBody>
                     {filteredMembers
                     .map((member, idx) => {
-                        const labelId = `checkbox-list-secondary-label-${member.email}`;
                         return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={member.email}>
-                            {/*<TableCell>
-                                <Checkbox
-                                    onClick={handleToggle(member.email)}
-                                    edge="start"
-                                    checked={checked.indexOf(member.email) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                    />
-                            </TableCell>*/}
                             <TableCell>
                                 <ListItem>
                                     <ListItemAvatar>
@@ -233,12 +221,29 @@ function Team() {
                         <Delete /> Eltávolítás
                     </MenuItem>
                 </Menu>
-            </TableContainer>
+            </TableContainer>}
+            {width <= 768 &&
+                <List>
+                    {
+                        filteredMembers.map((member) => (
+                            <ListItem style={{borderBottom: '1px solid #ececec'}} key={member.email}>
+                                <ListItemAvatar>
+                                    <Avatar style={{backgroundColor: stringToColor(member.email)}}>
+                                        { member.fullName ? member.fullName.charAt(0) : member.email.charAt(0) }
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={member.fullName} secondary={member.email} />
+                            </ListItem>
+                        ))
+                    }
+                </List>
+            }
             <Modal
             open={open}
             onClose={handleClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
+            className="team-dialog"
             >
                 <Box>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
@@ -253,6 +258,11 @@ function Team() {
                     </form>
                 </Box>
             </Modal>
+
+            {width <= 768 &&
+            <Fab onClick={handleOpen} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"blue"}>
+                <GroupAdd />
+            </Fab>}
         </div>
     )
 }

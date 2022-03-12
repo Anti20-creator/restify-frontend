@@ -59,3 +59,9 @@
         color: #7a35df !important;
     }
 }
+
+@media(max-width: 768px) {
+    .sidebar {
+        display: none !important;
+    }
+}

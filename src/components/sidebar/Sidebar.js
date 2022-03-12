@@ -6,19 +6,10 @@ import 'animate.css'
 import API from '../../communication/API'
 import { useNavigate } from 'react-router-dom'
 
-function Sidebar() {
+function Sidebar({isAdmin}) {
 
     const navigate = useNavigate()
-    const [isAdmin, setIsAdmin] = useState(false)
-
-    useEffect(() => {
-        API.get('/api/users/is-admin').then((result) => {
-            setIsAdmin(result.data.message)
-        }).catch(err => {
-            setIsAdmin(false)
-        })
-    }, [])
-
+    
     const logOut = () => {
         API.get('api/users/logout').then(() => {
             navigate('/')

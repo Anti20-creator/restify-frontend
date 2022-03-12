@@ -31,3 +31,29 @@
 .menu-card p {
     margin: 0;
 }
+
+@media(max-width: 768px) {
+    .categories-holder {
+        justify-content: center;
+    }
+    div[role="presentation"] .MuiBox-root {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: '2px solid #000';
+        box-shadow: 24px;
+        background-color: white;
+        padding: 2rem 2.5rem;
+        width: 95% !important;
+    }
+    .items-holder {
+        justify-content: center;
+    }
+    .menu .col-12 .MuiButtonBase-root {
+        display: flex;
+    }
+    .menu-card p {
+        font-size: 13px;
+    }
+}

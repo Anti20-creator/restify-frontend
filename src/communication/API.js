@@ -1,10 +1,9 @@
 import axios from 'axios'
-import axiosRetry from 'axios-retry';
 
 axios.defaults.withCredentials = true
 
 const API = axios.create({
-    baseURL: 'https://192.168.31.161:4000',
+    baseURL: 'https://192.168.31.214:4000',
     header: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'

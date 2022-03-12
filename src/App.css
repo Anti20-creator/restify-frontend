@@ -40,3 +40,20 @@ body {
     transform: rotate(360deg);
   }
 }
+
+div li.MuiButtonBase-root.MuiListItem-root.MuiMenuItem-root.MuiMenuItem-gutters.MuiListItem-gutters.MuiListItem-button {
+  justify-content: space-between;
+}
+
+@media(max-width: 768px) {
+  body{
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .Toastify__toast-container.Toastify__toast-container--bottom-center {
+    margin:  0 auto;
+    width: 90%;
+    bottom: 1rem;
+    left: 5%;
+  }
+}

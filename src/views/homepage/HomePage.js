@@ -15,7 +15,7 @@ import { TextField, Card, Button, FormControl } from '@material-ui/core'
 import './HomePage.css'
 import { setLoading, loadingState } from '../../store/features/loadingSlice';
 import API from '../../communication/API';
-import { updateLayout } from '../../store/features/layoutSlice'
+import { updateLayout, updateSize } from '../../store/features/layoutSlice'
 import { updateMenu } from '../../store/features/menuSlice'
 import { updateTables } from '../../store/features/liveSlice';
 import TableDialog from '../../components/liveview/TableDialog';
@@ -27,6 +27,7 @@ import RegisterEmployee from '../register-employee/RegisterEmployee';
 import RegisterAdmin from '../register-admin/RegisterAdmin';
 import Settings from '../settings/Settings'
 import Invoices from '../invoices/Invoices'
+import MobileNavbar from '../../components/mobile-navbar/MobileNavbar'
 
 function HomePage() {
 
@@ -54,6 +55,9 @@ function HomePage() {
 
                 const layout = await API.get('/api/layouts')
                 dispatch(updateLayout(layout.data.message))
+
+                const size = await API.get('/api/layouts/data')
+                dispatch(updateSize(size.data.message))
     
                 const menu = await API.get('/api/menu')
                 dispatch(updateMenu(menu.data.message))
@@ -82,38 +86,53 @@ function HomePage() {
             })
         setAuthenticated(result.status === 200)
     }
+
+    const [isAdmin, setIsAdmin] = useState(false)
+
+    useEffect(() => {
+        API.get('/api/users/is-admin').then((result) => {
+            setIsAdmin(result.data.message)
+        }).catch(err => {
+            setIsAdmin(false)
+        })
+    }, [authenticated])
   
     return (
         <>
             {
                 (userLoading || dataLoading) ?
-                <CircularProgress />
+                <div className="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                    <CircularProgress />
+                </div>
                 :
                 authenticated ? 
-                <div className={"d-flex h-100"}>
-                    <Sidebar />
-                    <div className={"w-100 d-flex align-items-center"} style={{backgroundColor: "#f5f6fa"}}>
-                        <div className={"m-auto position-relative"} style={{backgroundColor: "white", width: '95%', height: '95%', overflowY: 'auto'}}>
-                        <Routes>
-                            <Route path="/" element={<LiveView />} />
-                            <Route exact path="/menu" element={<Menu />} />
-                            <Route exact path="/appointments" element={<Appointments />} />
-                            <Route exact path="/edit" element={<Editor />} />
-                            <Route exact path="/team" element={<Team />} />
-                            <Route exact path="/invoices" element={<Invoices />} />
-                            <Route exact path="/settings" element={<Settings />} />
-                            <Route path='/table/:id' element={<TableDialog />} />
-                        </Routes>
+                <>
+                    <MobileNavbar isAdmin={isAdmin} />
+                    <div className={"d-flex h-100"}>
+                        <Sidebar isAdmin={isAdmin} />
+                        <div className={"w-100 d-flex align-items-center page-holder"} style={{backgroundColor: "#f5f6fa"}}>
+                            <div className={"m-auto position-relative page-inside"} style={{backgroundColor: "white"}}>
+                            <Routes>
+                                <Route path="/" element={<LiveView />} />
+                                <Route exact path="/menu" element={<Menu />} />
+                                <Route exact path="/appointments" element={<Appointments />} />
+                                <Route exact path="/edit" element={<Editor />} />
+                                <Route exact path="/team" element={<Team />} />
+                                <Route exact path="/invoices" element={<Invoices />} />
+                                <Route exact path="/settings" element={<Settings />} />
+                                <Route path='/table/:id' element={<TableDialog />} />
+                            </Routes>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </>
                 :
                 <>
                     <Routes>
                         <Route path='/invite/:restaurantId' element={<RegisterEmployee />} />
                         <Route path='/register' element={<RegisterAdmin />} />
                         <Route path='/' element={<div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
-                        <Card className="w-50 p-5 text-center">
+                        <Card className="w-50 p-5 text-center login-card">
                             <form onSubmit={login}>
                                 <FormControl>
                                     <TextField name="email" type="email" placeholder="E-mail" />

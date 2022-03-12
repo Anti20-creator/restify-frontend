@@ -25,15 +25,16 @@ function BookingModal({addModalOpen, setModalOpen}) {
             progress: undefined,
             autoClose: 2000,
             hideProgressBar: false,
-            closeOnClick: false,
             pauseOnHover: true,
             draggable: false,
-            progress: undefined,
         });
+        console.log(e.target.elements.date.value)
+        console.log(new Date().getTimezoneOffset())
         API.post('/api/appointments/find-tables', {
             email: e.target.elements.email.value,
             date: e.target.elements.date.value,
-            peopleCount: e.target.elements.peopleCount.value
+            peopleCount: e.target.elements.peopleCount.value,
+            timezoneOffset: new Date().getTimezoneOffset()
         }).then(result => {
             if(!result.data.success) {
                 toast.update(searchingToast, { render: "Nincs üres asztal a megadott időpontban!", type: "error", isLoading: false, autoClose: 2000 })
@@ -66,6 +67,7 @@ function BookingModal({addModalOpen, setModalOpen}) {
                 <DateTimePicker
                     renderInput={(props) => <TextField name="date" {...props} />}
                     label="Válassz dátumot"
+                    ampm={false}
                     value={value}
                     onChange={(newValue) => {
                         setValue(newValue)
@@ -73,7 +75,7 @@ function BookingModal({addModalOpen, setModalOpen}) {
                 />
                 </LocalizationProvider>
                 <br />
-                <TextField name="peopleCount" label="peopleCount" variant="standard" type="number" className="my-4" />
+                <TextField name="peopleCount" label="Vendégek száma" variant="standard" type="number" className="my-4" />
                 <br />
                 <Button variant="contained" color="primary" className="m-auto mx-2" type="submit">
                     Foglalás indítása

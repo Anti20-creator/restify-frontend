@@ -1,12 +1,14 @@
 import React from 'react'
 import { Button, Card, FormControl, TextField } from '@material-ui/core'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import API from '../../communication/API'
 
 function RegisterEmployee() {
     
     const {restaurantId} = useParams()
+    const navigate = useNavigate()
+
     const register = (e) => {
         e.preventDefault()
         const registerToast = toast.loading('Regisztráció folyamatban...')
@@ -16,12 +18,10 @@ function RegisterEmployee() {
         const secretPin = e.target.pin.value
     
         API.post('api/users/register-employee/' + restaurantId, {email, password, secretPin, name}).then(result => {
-            if(result.body.success) {
-                toast.update(registerToast, {render: 'Sikeres regisztráció!', autoClose: 1200, isLoading: false, type: "success"})
-            }
+            toast.update(registerToast, {render: 'Sikeres regisztráció!', autoClose: 1200, isLoading: false, type: "success"})
+            navigate('../')
         }).catch(err => {
             toast.update(registerToast, {render: 'Sikertelen regisztráció!', autoClose: 1200, isLoading: false, type: "error"})
-
         })
     }
     

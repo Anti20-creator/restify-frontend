@@ -31,7 +31,7 @@
     margin: 0 0.3rem;
 }
 
-.MuiBox-root {
+div[role="presentation"] .MuiBox-root {
     position: absolute;
     top: 50%;
     left: 50%;

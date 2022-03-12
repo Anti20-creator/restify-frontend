@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core'
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core'
+import Dialog from '@mui/material/Dialog';
 
 function BookTableModal({open, onClose, bookTable}) {
   return (

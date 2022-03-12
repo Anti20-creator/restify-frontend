@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { List, ListItem, ListItemSecondaryAction, Card } from '@material-ui/core'
 
 function InvoiceItemSelector({items, setItemsLeft, setItemsToPay, itemsLeft, itemsToPay}) {
-
-    
 
     const addToPayable = (clickedItem) => {
         if(clickedItem.quantity > 1) {

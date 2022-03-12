@@ -74,7 +74,7 @@ function Menu() {
                 {
                     category === '' ?
                     <div className="categories-holder row align-items-center mx-auto">
-                        <div className="col-sm-5 col-md-3 col-6">
+                        <div className="col-sm-5 col-md-3 col-10">
                             <Card onClick={() => setModalOpen(true)} className="m-3 text-center menu-card category-card">
                                 <CardContent className="p-3 d-flex flex-column align-items-center justify-content-center h-100">
                                     <img alt="Category icon" src={'/assets/menu-icons/Pie.svg'} />
@@ -84,7 +84,7 @@ function Menu() {
                         </div>
                         {
                             Object.keys(menu.icons).sort().map((key) => (
-                                <div key={key} className="col-sm-5 col-md-3 col-6 position-relative">
+                                <div key={key} className="col-sm-5 col-md-3 col-10 position-relative">
                                     <div className="position-absolute" style={{right: '10%', top: '10%', zIndex: '100'}}>
                                         <IconButton onClick={() => setEditCategory(key)}>
                                             <Edit />
@@ -106,7 +106,7 @@ function Menu() {
                             <ArrowBack />
                         </IconButton>
                         <div className="items-holder row align-items-center mx-auto">
-                            <div className="col-sm-4 col-md-3 col-6">
+                            <div className="col-sm-4 col-md-3 col-10">
                                 <Card onClick={() => setModalOpen(true)} className="m-1 text-center menu-card">
                                     <CardContent className="p-3">
                                         <p className="mt-3">&nbsp;</p>
@@ -117,7 +117,7 @@ function Menu() {
                             </div>
                             {
                                 Object.keys(menu.items[category]).sort().map((key) => (
-                                    <div key={key} className="col-sm-4 col-md-3 col-6">
+                                    <div key={key} className="col-sm-4 col-md-3 col-10">
                                         <Card onClick={() => {setItem(key) }} className="m-1 text-center h-100 menu-card">
                                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                                                 <p className="fw-bold">{key}</p>
@@ -136,7 +136,9 @@ function Menu() {
             open={addModalOpen}
             onClose={() => setModalOpen(false)}
             aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description">
+            aria-describedby="modal-modal-description"
+            className="menu-dialog"
+            >
                 <Box>
                     {
                         category === '' ?

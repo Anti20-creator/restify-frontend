@@ -2,7 +2,7 @@ import React, { createRef, useEffect, useState } from 'react';
 import interact from 'interactjs'
 import Table from '../../components/editor/Table';
 import ContextMenu from '../../components/editor/ContextMenu';
-import { MenuItem } from '@material-ui/core';
+import { MenuItem, Menu } from '@material-ui/core';
 import API from '../../communication/API';
 import { useDispatch, useSelector } from 'react-redux'
 import { layout, modifiedLayout, updateLayout } from '../../store/features/layoutSlice'
@@ -10,7 +10,9 @@ import OutOfSyncBar from '../../components/editor/OutOfSyncBar';
 import { getSocket } from '../../communication/socket';
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-
+import EditorSettings from '../../components/editor/EditorSettings';
+import { layoutWidthSelector, layoutHeightSelector } from '../../store/features/layoutSlice'
+import NestedMenuItem from 'material-ui-nested-menu-item'
 function Editor() {
 
     interact('.draggable')
@@ -21,22 +23,29 @@ function Editor() {
         // keep the element within the area of it's parent
         modifiers: [
             interact.modifiers.restrictRect({
-            restriction: 'parent',
-            endOnly: false
+                restriction: 'parent',
+                endOnly: false
             }),
             interact.modifiers.restrictEdges({
                 outer: {
                     left: 0,    // the left edge must be >= 0
                 }
-            })
+            }),
+            interact.modifiers.snap({
+                targets: [
+                  interact.snappers.grid({ x: 5, y: 5 })
+                ],
+                range: Infinity,
+                relativePoints: [ { x: 0, y: 0 } ]
+            }),
         ],
         // enable autoScroll
         autoScroll: false,
 
         listeners: {
             // call this function on every dragmove event
-            move: dragMoveListener,
-        },
+            move: dragMoveListener
+        }
     })
         
 
@@ -74,16 +83,30 @@ function Editor() {
     const editorNode = createRef()
     
     const dispatch = useDispatch()
-    const [outOfSync, setOutOfSync] = useState(false)
-    const [tables, setTables] = useState([])
-    const [removedTables, setRemovedTables] = useState([])
-    const [updatedTables, setUpdatedTables] = useState([])
-
+    const [outOfSync, setOutOfSync]                 = useState(false)
+    const [tables, setTables]                       = useState([])
+    const [removedTables, setRemovedTables]         = useState([])
+    const [updatedTables, setUpdatedTables]         = useState([])
+    const [settingsOpen, setSettingsOpen]           = useState(false)
     const [contextMenuOpened, setContextMenuOpened] = useState(false)
-    const [contextMenuPlace, setContextMenuPlace] = useState({x: 0, y: 0})
-    const [offset, setOffset] = useState(false)
-    const layoutValue = useSelector(layout)
-    const modifiedLayoutValue = useSelector(modifiedLayout)
+    const [contextMenuPlace, setContextMenuPlace]   = useState({x: 0, y: 0})
+    const [offset, setOffset]                       = useState(false)
+    const [backgroundImage, setBackgroundImage]     = useState('')
+    const layoutValue                               = useSelector(layout)
+    const modifiedLayoutValue                       = useSelector(modifiedLayout)
+    const layoutHeight                              = useSelector(layoutHeightSelector)
+    const layoutWidth                               = useSelector(layoutWidthSelector)
+
+    const updateImage = async() => {
+        API.get('/api/layouts/image').then(({data}) => {
+            console.log(data.message)
+            setBackgroundImage(data.message + `?ver=${new Date().getTime()}`)
+        })
+    }
+
+    useEffect(() => {
+        updateImage()
+    }, [])
 
     useEffect(() => {
         if(modifiedLayoutValue !== null) {
@@ -105,7 +128,7 @@ function Editor() {
                 localId: table.localId,
                 rounded: table.tableType === "rounded",
                 size: table.size,
-                rotated: table.direction === 1,
+                direction: table.direction,
                 tableCount: table.tableCount
             }
         }))
@@ -121,24 +144,36 @@ function Editor() {
         })
     }
 
-    const addTable = (type) => {
+    const addTable = (type, size) => {
         setTables([...tables, {
             rounded: type === 'rounded',
             tableCount: 1,
             type,
-            rotated: false,
+            direction: 0,
             coordinates: {
                 x: contextMenuPlace.x - offset.x,
                 y: contextMenuPlace.y - offset.y,
             },
-            size: "average",
+            size: size,
             localId: nextId(),
             new: true
         }])
+        console.log(tables)
         setContextMenuOpened(false)
     }
 
     const addPeople = (id, quantity) => {
+        const table = tables.find(table => table.localId === id)
+        if((table.tableCount === 8 && quantity > 0) && table.type !== 'wide' ) {
+            return
+        }
+        if((table.tableCount === 10 && quantity > 0) && table.type === 'wide') {
+            return
+        }
+        if(table.tableCount === 1 && quantity < 0) {
+            return
+        }
+
         setTables(
             tables.map(table => 
                 table.localId === id 
@@ -157,7 +192,7 @@ function Editor() {
         setTables(
             tables.map(table => 
                 table.localId === id 
-                ? {...table, rotated : !table.rotated} 
+                ? {...table, direction : (table.direction + 90) % 360} 
                 : table 
         ))
         if(!tables.find(table => table.localId === id).new) {
@@ -167,11 +202,13 @@ function Editor() {
         }
     }
 
-    const removeTable = (id) => {
-        setRemovedTables(
-            [...removedTables, id]
-        )
-        setTables(tables.filter(table => table.databaseID !== id))
+    const removeTable = (databaseId, id) => {
+        if(databaseId) {
+            setRemovedTables(
+                [...removedTables, databaseId]
+            )
+        }
+        setTables(tables.filter(table => table.localId !== id))
     }
 
     const saveTables = async () => {
@@ -179,19 +216,17 @@ function Editor() {
 
         const savingToast = toast.loading('Elrendezés frissítése...', {
             position: "bottom-center",
-            closeOnClick: true,
             progress: undefined,
             autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: false,
             pauseOnHover: true,
-            draggable: false,
-            progress: undefined,
+            draggable: false
         });
         const result = await API.post('api/layouts/save', {newTables: tables.filter(table => table.new).map(table => {
             return {
                 coordinates: table.coordinates,
-                direction: table.rotated ? 1 : 0,
+                direction: table.direction,
                 size: table.size,
                 tableCount: table.tableCount,
                 tableType: table.type,
@@ -200,7 +235,7 @@ function Editor() {
         }), removedTables: removedTables, updatedTables: updatedTables.map(table => {
             return {
                 coordinates: table.coordinates,
-                direction: table.rotated ? 1 : 0,
+                direction: table.direction,
                 size: table.size,
                 tableCount: table.tableCount,
                 tableType: table.type,
@@ -210,7 +245,7 @@ function Editor() {
         }).concat(tables.filter(table => !table.new && table.updated).map(table => {
             return {
                 coordinates: table.coordinates,
-                direction: table.rotated ? 1 : 0,
+                direction: table.direction,
                 size: table.size,
                 tableCount: table.tableCount,
                 tableType: table.type,
@@ -237,36 +272,75 @@ function Editor() {
 
   return (
       <>
-        <div ref={editorNode} className="overflow-hidden w-100 h-100" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
-            {
-                tables.map((table) => {
-                    const key = table.localId
-                    return(
-                    <Table
-                        key={key}
-                        id={table.localId}
-                        rounded={table.rounded} 
-                        tableCount={table.tableCount} 
-                        type={table.type} 
-                        rotated={table.rotated}
-                        coordinates={table.coordinates}
-                        addPeople={() => addPeople(table.localId, 1)}
-                        removePeople={() => addPeople(table.localId, -1)}
-                        rotateTable={() => rotateTable(table.localId)}
-                        removeTable={() => removeTable(table.databaseID)}
-                        size={table.size}
-                        editable={true}
-                        />
-                )})
-            }
+        <div ref={editorNode} className="w-100 h-100" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
+            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}>
+                {
+                    tables.map((table) => {
+                        const key = table.localId
+                        return(
+                            <Table
+                                key={key}
+                                id={table.localId}
+                                rounded={table.rounded} 
+                                tableCount={table.tableCount} 
+                                type={table.type} 
+                                direction={table.direction}
+                                coordinates={table.coordinates}
+                                addPeople={() => addPeople(table.localId, 1)}
+                                removePeople={() => addPeople(table.localId, -1)}
+                                rotateTable={() => rotateTable(table.localId)}
+                                removeTable={() => removeTable(table.databaseID, table.localId)}
+                                size={table.size}
+                                editable={true}
+                                />
+                    )})
+                }
+            </div>
 
             {contextMenuOpened && 
                 <ContextMenu locationX={contextMenuPlace.x} locationY={contextMenuPlace.y}>
-                    <MenuItem onClick={() => addTable('rounded')}>Körasztal</MenuItem>
+                    <NestedMenuItem label={'Körasztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('rounded', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('rounded', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('rounded', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    <NestedMenuItem label={'Normál asztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('normal', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('normal', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('normal', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    <NestedMenuItem label={'Széles asztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('wide', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('wide', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('wide', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    {/*<MenuItem onClick={() => addTable('rounded')}>Körasztal</MenuItem>
                     <MenuItem onClick={() => addTable('normal')}>Normál asztal</MenuItem>
-                    <MenuItem onClick={() => addTable('wide')}>Széles asztal</MenuItem>
+                    <MenuItem onClick={() => addTable('wide')}>Széles asztal</MenuItem>*/}
+                    <MenuItem onClick={() => setSettingsOpen(true)}>Beállítások</MenuItem>
                     <MenuItem onClick={() => saveTables()}>Mentés</MenuItem>
                 </ContextMenu>}
+
+            {settingsOpen &&
+                <EditorSettings close={() => {setSettingsOpen(false); updateImage();}} initialX={layoutWidth} initialY={layoutHeight} />}
 
             <OutOfSyncBar open={outOfSync} setOpen={setOutOfSync} />
         </div>

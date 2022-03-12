@@ -1,5 +1,4 @@
 import './App.css';
-
 import HomePage from './views/homepage/HomePage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,13 +16,14 @@ function App() {
         <div className={"wrapper d-flex flex-column h-100"}>
           <HomePage />
           <ToastContainer 
-            autoClose={5000}
+            autoClose={1000}
             hideProgressBar={false}
             newestOnTop={true}
             closeOnClick
             rtl={false}
             pauseOnFocusLoss
             draggable
+            position={"bottom-center"}
             pauseOnHover />
         </div>
       </BrowserRouter>

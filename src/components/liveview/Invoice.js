@@ -7,15 +7,17 @@ import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
 import { addOne, invoiceItems, removeAll, removeOne, setItems } from '../../store/features/invoiceSlice';
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
+import useWindowSize from '../../store/useWindowSize'
 import { useParams } from 'react-router-dom'
 
-function Invoice({localId}) {
+function Invoice({localId, showLabel=true}) {
 
     const tableId = useParams().id
 
     const dispatch = useDispatch()
     const currentInvoiceItems = useSelector(invoiceItems)
     const [startPayment, setStartPayment] = useState(false)
+    const { height, width } = useWindowSize();
 
     const deleteOrder = (rowName) => {
         API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
@@ -65,7 +67,7 @@ function Invoice({localId}) {
 
     return (
         <>
-            <h2 className="text-center pt-2">Számla</h2>
+            {showLabel && <h2 className="text-center pt-2">Számla</h2>}
             <TableContainer>
                 <Table stickyHeader aria-label="simple table">
                     <TableHead>
@@ -100,7 +102,7 @@ function Invoice({localId}) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <div className="pay-button-holder text-center">
+            <div style={{padding: (width > 768) ? '0' : '1rem 0rem'}} className="pay-button-holder text-center">
                 <Button color="primary" variant="outlined" onClick={() => setStartPayment(true)}>
                     Fizetés
                 </Button>

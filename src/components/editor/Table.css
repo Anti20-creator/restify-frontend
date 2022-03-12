@@ -3,6 +3,12 @@
     position: absolute;
 }
 
+.draggable,
+.draggable * {
+  -ms-touch-action: none;
+  touch-action: none;
+}
+
 .table-display:hover .table-border{
     background-color: #bfbfc9;
     transition: 0.4s;

@@ -9,6 +9,13 @@ function MobileNavbar({isAdmin}) {
 	const navigate = useNavigate()
 	const toggler  = useRef()
 
+	const logOut = () => {
+        API.get('api/users/logout').then(() => {
+            navigate('/')
+            window.location.reload();
+        })
+    }
+
 	return(
 		<>
 		<nav className="navbar navbar-expand-md bg-dark navbar-dark mobile-navbar">
@@ -55,6 +62,11 @@ function MobileNavbar({isAdmin}) {
 		        		<p className="nav-link">Beállítások</p>
 		      		</li>
 	            </Link>
+	            <div onClick={() => { toggler.current.click(); logOut() }}>
+	            	<li className="nav-item">
+		        		<p className="nav-link">Kijelentkezés</p>
+		      		</li>
+	            </div>
 		    </ul>
 		  </div>
 		</nav>

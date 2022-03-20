@@ -17,3 +17,7 @@
 .appointments .book-box {
     justify-content: flex-end;
 }
+
+.MuiTabs-flexContainer button {
+    flex: 1;
+}

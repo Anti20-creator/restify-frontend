@@ -19,7 +19,7 @@ export const layoutSlice = createSlice({
             state.sizeY = action.payload.sizeY
         },
         setModifiedLayout: (state, action) => {
-            if (!window.location.href.includes("settings")) {
+            if (!window.location.href.includes("edit")) {
                 state.value = action.payload
             }else{
                 state.modified = action.payload

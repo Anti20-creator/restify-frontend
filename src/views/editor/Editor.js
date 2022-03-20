@@ -1,8 +1,9 @@
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef, useEffect, useState, useRef } from 'react';
 import interact from 'interactjs'
 import Table from '../../components/editor/Table';
 import ContextMenu from '../../components/editor/ContextMenu';
-import { MenuItem, Menu } from '@material-ui/core';
+import { MenuItem, Menu, Fab } from '@material-ui/core';
+import { Settings } from '@material-ui/icons'
 import API from '../../communication/API';
 import { useDispatch, useSelector } from 'react-redux'
 import { layout, modifiedLayout, updateLayout } from '../../store/features/layoutSlice'
@@ -13,6 +14,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import EditorSettings from '../../components/editor/EditorSettings';
 import { layoutWidthSelector, layoutHeightSelector } from '../../store/features/layoutSlice'
 import NestedMenuItem from 'material-ui-nested-menu-item'
+import useWindowSize from '../../store/useWindowSize'
+import { Dialog } from '@mui/material'
+
 function Editor() {
 
     interact('.draggable')
@@ -92,10 +96,13 @@ function Editor() {
     const [contextMenuPlace, setContextMenuPlace]   = useState({x: 0, y: 0})
     const [offset, setOffset]                       = useState(false)
     const [backgroundImage, setBackgroundImage]     = useState('')
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false)
+    const toastRef                                  = useRef(null)
     const layoutValue                               = useSelector(layout)
     const modifiedLayoutValue                       = useSelector(modifiedLayout)
     const layoutHeight                              = useSelector(layoutHeightSelector)
     const layoutWidth                               = useSelector(layoutWidthSelector)
+    const { width }                                 = useWindowSize()
 
     const updateImage = async() => {
         API.get('/api/layouts/image').then(({data}) => {
@@ -252,7 +259,11 @@ function Editor() {
                 localId: table.localId,
                 databaseID: table.databaseID
             }
-        }))})
+        }))}).then((response) => {
+            toast.update(savingToast, { render: "Elrendezés frissítve", type: "success", isLoading: false, autoClose: 2000 })
+            getSocket().emit('layout-modified', {tables: response.data.message})
+            dispatch(updateLayout(response.data.message))
+        })
         .catch(() => {
             toast.update(savingToast, { render: "Hiba a frissítés során", type: "error", isLoading: false, autoClose: 2000 })
             return
@@ -261,10 +272,8 @@ function Editor() {
 
         setRemovedTables([])
         setUpdatedTables([])
-        getSocket().emit('layout-modified', {tables: result.data.message})
-        dispatch(updateLayout(result.data.message))
         if(result && result.data.success) {
-            toast.update(savingToast, { render: "Elrendezés frissítve", type: "success", isLoading: false, autoClose: 2000 })
+            
         }
 
         console.log(result)
@@ -272,7 +281,7 @@ function Editor() {
 
   return (
       <>
-        <div ref={editorNode} className="w-100 h-100" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
+        <div ref={editorNode} className="w-100 h-100 editor" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
             <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}>
                 {
                     tables.map((table) => {
@@ -299,7 +308,49 @@ function Editor() {
 
             {contextMenuOpened && 
                 <ContextMenu locationX={contextMenuPlace.x} locationY={contextMenuPlace.y}>
-                    <NestedMenuItem label={'Körasztal'} parentMenuOpen={true}>
+                    <NestedMenuItem onClick={() => addTable('rounded', 'average')} label={'Körasztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('rounded', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('rounded', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('rounded', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    <NestedMenuItem onClick={() => addTable('normal', 'average')} label={'Normál asztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('normal', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('normal', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('normal', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    <NestedMenuItem onClick={() => addTable('wide', 'small')} label={'Széles asztal'} parentMenuOpen={true}>
+                        <MenuItem onClick={() => addTable('wide', 'small')}>
+                            Kicsi
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('wide', 'average')}>
+                            Közepes
+                        </MenuItem>
+                        <MenuItem onClick={() => addTable('wide', 'large')}>
+                            Nagy
+                        </MenuItem>
+                    </NestedMenuItem>
+                    <MenuItem onClick={() => setSettingsOpen(true)}>Beállítások</MenuItem>
+                    <MenuItem onClick={() => saveTables()}>Mentés</MenuItem>
+                </ContextMenu>}
+
+            {settingsOpen &&
+                <EditorSettings close={() => {setSettingsOpen(false); updateImage();}} initialX={layoutWidth} initialY={layoutHeight} />}
+ 
+            {width <= 768 && settingsModalOpen &&
+            <Dialog open={true} onClose={() => setSettingsModalOpen(false)}>
+                <NestedMenuItem label={'Körasztal'} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('rounded', 'small')}>
                             Kicsi
                         </MenuItem>
@@ -332,15 +383,14 @@ function Editor() {
                             Nagy
                         </MenuItem>
                     </NestedMenuItem>
-                    {/*<MenuItem onClick={() => addTable('rounded')}>Körasztal</MenuItem>
-                    <MenuItem onClick={() => addTable('normal')}>Normál asztal</MenuItem>
-                    <MenuItem onClick={() => addTable('wide')}>Széles asztal</MenuItem>*/}
                     <MenuItem onClick={() => setSettingsOpen(true)}>Beállítások</MenuItem>
                     <MenuItem onClick={() => saveTables()}>Mentés</MenuItem>
-                </ContextMenu>}
+            </Dialog>}
 
-            {settingsOpen &&
-                <EditorSettings close={() => {setSettingsOpen(false); updateImage();}} initialX={layoutWidth} initialY={layoutHeight} />}
+            {width <= 768 &&
+            <Fab onClick={() => setSettingsModalOpen(true)} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
+                <Settings />
+            </Fab>}
 
             <OutOfSyncBar open={outOfSync} setOpen={setOutOfSync} />
         </div>

@@ -13,7 +13,8 @@ const appoinmentsSlice = createSlice({
             state.value = action.payload
         },
         removeAppointment: (state, action) => {
-            state.value = state.value.filter(appointment => appointment._id !== action.payload)
+            const index = state.value.findIndex(appointment => appointment._id === action.payload)
+            state.value.splice(index, 1)
         },
         addAppointment: (state, action) => {
             state.value.push(action.payload)
@@ -24,10 +25,13 @@ const appoinmentsSlice = createSlice({
         seenAppointments: (state) => {
             state.unseen = false
         },
+        acceptAppointment: (state, action) => {
+            state.value.find(appointment => appointment._id === action.payload).confirmed = true
+        }
     }
 })
 
-export const { updateAppointments, removeAppointment, addAppointment, receivedAppointment, seenAppointments } = appoinmentsSlice.actions
+export const { updateAppointments, removeAppointment, addAppointment, receivedAppointment, seenAppointments, acceptAppointment } = appoinmentsSlice.actions
 
 export const appointmentsState = state => state.appointments.value
 export const seenAllAppointments = state => state.appointments.unseen

@@ -1,12 +1,34 @@
 import './App.css';
+import React from 'react'
 import HomePage from './views/homepage/HomePage';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   BrowserRouter
 } from "react-router-dom";
 import { Provider } from 'react-redux'
 import { store } from './store/store'
+
+function Example(){
+  const toastId = React.useRef(null);
+
+  const notify = () => {
+    toastId.current = toast.info("Registering...", { autoClose: false });
+  }
+
+  const update = () => {
+    setTimeout(() => {
+      toast.update(toastId.current, { render: "Team registered!", type: "success", isLoading: false, autoClose: 2000 });
+    }, 100)
+  }
+
+  return (
+    <div>
+      <button onClick={notify}>Notify</button>
+      <button onClick={update}>Update</button>
+    </div>
+  );
+}
 
 function App() {
 
@@ -21,7 +43,6 @@ function App() {
             newestOnTop={true}
             closeOnClick
             rtl={false}
-            pauseOnFocusLoss
             draggable
             position={"bottom-center"}
             pauseOnHover />

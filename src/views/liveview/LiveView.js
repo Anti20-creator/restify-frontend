@@ -3,7 +3,7 @@ import Table from '../../components/editor/Table';
 import './LiveView.css'
 import API from '../../communication/API';
 import { layout } from '../../store/features/layoutSlice';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { menuItems } from '../../store/features/menuSlice';
 import { tablesInUseSelector } from '../../store/features/liveSlice';
 import BookTableModal from '../../components/liveview/BookTableModal';
@@ -12,16 +12,18 @@ import { layoutWidthSelector, layoutHeightSelector } from '../../store/features/
 import useWindowSize from '../../store/useWindowSize'
 import { Visibility } from '@material-ui/icons'
 import { Fab, List, ListItem, ListItemText, Divider } from '@material-ui/core'
+import { setLiveViewMobileMode, isInMobileModeSelector } from '../../store/features/temporarySlice'
 
 function LiveView() {
 
     const [tables, setTables] = useState([])
-    const [mobileView, setMobileView] = useState(false)
+    const mobileMode = useSelector(isInMobileModeSelector)
     const { width } = useWindowSize()
     const layoutValue = useSelector(layout)
     const menu = useSelector(menuItems)
     const tablesInUse = useSelector(tablesInUseSelector)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         setTables(layoutValue.map((table) => {
@@ -72,17 +74,21 @@ function LiveView() {
         API.post('api/tables/book', {tableId: selectedTable})
     }
 
+    useEffect(() => {
+        console.log(mobileMode)
+    }, [mobileMode])
+
 
   return (
       <>
-        <div style={{width: !mobileView ?  layoutWidth : '', 
-                        height: !mobileView ?  layoutHeight : '', 
-                        backgroundImage: !mobileView ?  `url(${backgroundImage})` : '', 
+        <div style={{width: !mobileMode ?  layoutWidth : '', 
+                        height: !mobileMode ?  layoutHeight : '', 
+                        backgroundImage: !mobileMode ?  `url(${backgroundImage})` : '', 
                         backgroundSize: 'cover', 
                         backgroundRepeat: 'no-repeat', 
                         backgroundPosition: 'center'}}>
         {
-            !mobileView ?
+            !mobileMode ?
             tables.map((table) => (
                 <div key={table.localId} onClick={() => handleTableClick(table.TableId)}>
                     <Table
@@ -116,7 +122,7 @@ function LiveView() {
             </List>
         }
         </div>
-        {width <= 768 && <Fab onClick={() => setMobileView(!mobileView)} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
+        {width <= 768 && <Fab onClick={() => dispatch(setLiveViewMobileMode(!mobileMode))} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
             <Visibility />
         </Fab>}
         <BookTableModal open={bookTableModalOpen} onClose={() => setBookTableModalOpen(false)}

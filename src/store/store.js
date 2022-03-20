@@ -5,6 +5,7 @@ import loadingReducer from './features/loadingSlice'
 import liveReducer from './features/liveSlice'
 import invoiceReducer from './features/invoiceSlice'
 import appointmentsReducer from './features/appointmentsSlice'
+import temporaryReducer from './features/temporarySlice'
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
         loading: loadingReducer,
         live: liveReducer,
         invoiceItems: invoiceReducer,
-        appointments: appointmentsReducer
+        appointments: appointmentsReducer,
+        temporary: temporaryReducer
     }
 })

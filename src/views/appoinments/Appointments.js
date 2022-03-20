@@ -7,9 +7,11 @@ import {
     Select, 
     Table, IconButton,
     TableHead,TableRow, TableCell, TableBody, TableContainer, List, ListItem, ListItemSecondaryAction, ListItemAvatar,
-    ListItemText, Avatar, Fab
+    ListItemText, Avatar, Fab, Modal, Box,
+    Tab, AppBar, TablePagination
 } from '@material-ui/core';
-import { SearchOutlined, Delete, Add } from '@material-ui/icons';
+import { TabList, TabPanel, TabContext } from '@material-ui/lab'
+import { SearchOutlined, Delete, Add, Check, Close } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
@@ -20,34 +22,25 @@ import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
-import { appointmentsState, seenAppointments, removeAppointment } from '../../store/features/appointmentsSlice';
+import { appointmentsState, seenAppointments, removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
 import { tableIds } from '../../store/features/liveSlice';
 import { layout } from '../../store/features/layoutSlice'
 import BookingModal from '../../components/appointments/BookingModal';
 import useWindowSize from '../../store/useWindowSize'
+import ConfirmedAppointments from '../../components/appointments/ConfirmedAppointments'
+import UnConfirmedAppointments from '../../components/appointments/UnConfirmedAppointments'
+import AppointmentConfirmalModal from '../../components/appointments/AppointmentConfirmalModal'
 const moment = require('moment-timezone')
-
-const columns = [
-    { id: 'email', label: 'E-mail' },
-    {
-        id: 'date',
-        label: 'Időpont',
-        format: (value) => value.toLocaleISOString(),
-    },
-    {
-        id: 'tableId',
-        label: 'Asztal ID',
-    },
-    { id: 'peopleCount', label: 'Személyek száma'},
-    { id: 'delete', label: ''}
-];
 
 function Appointments() {
 
     // state variables
     const [timezoneOffset, setTimezoneOffset] = useState(0)
     const [filteredAppointments, setFilteredAppointments] = useState([])
+    const [appointmentData, setAppointmentData] = useState(null)
     const [addModalOpen, setModalOpen] = useState(false)
+    const [selectedAppointment, setSelectedAppointment] = useState(null)
+    const [colors, setColors] = useState([])
     
     const layoutValue = useSelector(layout)
     const tables = useSelector(tableIds)
@@ -58,14 +51,28 @@ function Appointments() {
     const selectedDate = useRef(new Date())
     const { height, width } = useWindowSize();
 
+    const stringToColor = function(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let colour = '#';
+        for (let i = 0; i < 3; i++) {
+          let value = (hash >> (i * 8)) & 0xFF;
+          colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    }
+
     const setAppointments = () => {
         const date = new Date(selectedDate.current)
         setFilteredAppointments(
             appointments.filter(appointment => 
-                date.getFullYear() == (appointment.day.slice(0,4)) &&
-                date.getMonth() == (Number(appointment.day.slice(5,7)) - 1).toString() &&
-                date.getDate() == Number(appointment.day.slice(8,10)).toString() &&
-                (appointment.TableId === table.current || table.current === '') &&
+                appointment.confirmed &&
+                date.getFullYear() == (appointment.date.slice(0,4)) &&
+                date.getMonth() == (Number(appointment.date.slice(5,7)) - 1).toString() &&
+                date.getDate() == Number(appointment.date.slice(8,10)).toString() &&
+                (appointment.TableId === layoutValue.find(layoutTable => layoutTable.localId == table.current - 1)?.TableId || table.current === '') &&
                 appointment.email.toLowerCase().includes(email.current.toLowerCase())
         ))
 
@@ -74,7 +81,6 @@ function Appointments() {
     // event handlers
     const handleDateChange = (newDate) => {
         selectedDate.current = newDate
-
         setAppointments()
     }
     const handleChange = (event) => {
@@ -86,17 +92,17 @@ function Appointments() {
     const filterAppoinments = (e) => {
         email.current = e.target.value
         console.log(email.current)
-
         setAppointments()
     }
 
     const deleteAppointment = (id) => {
+        const loadingToast = toast.loading('Foglalás törlése...')
         API.delete('/api/appointments/delete-appointment/' + id).then(response => {
-            if(response.data.success) {
-                dispatch(removeAppointment(id))
-            }else{
-                toast.error('Hiba a rendelés törlése során!')
-            }
+            dispatch(removeAppointment(id))
+            setSelectedAppointment(null)
+            toast.update(loadingToast, {render: 'Foglalás törölve!', autoClose: 1500, isLoading: false, type: "success"})
+        }).catch(err => {
+            toast.update(loadingToast, {render: 'Hiba a törlés során!', autoClose: 1500, isLoading: false, type: "error"})
         })
     }
     
@@ -118,140 +124,96 @@ function Appointments() {
     }, [])
 
     useEffect(() => {
-        console.log(selectedDate.current)
-        setAppointments()
+        if(value === '1') {
+            setAppointments()
+        }else{
+            setFilteredAppointments(appointments.filter(appointment => !appointment.confirmed))
+        }
     }, [appointments])
 
-    const stringToColor = function(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    const [value, setValue] = React.useState('1');
+
+    const handleChange2 = (event, newValue) => {
+        if(newValue === '2') {
+            setFilteredAppointments(appointments.filter(appointment => !appointment.confirmed))
+        }else{
+            setAppointments()
         }
-        let colour = '#';
-        for (let i = 0; i < 3; i++) {
-          let value = (hash >> (i * 8)) & 0xFF;
-          colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
+        setValue(newValue);
+    };
+
+    const showConfirmalModal = (id, accept, tableId, date) => {
+        console.log('show')
+        setAppointmentData({id, accept, tableId, date})
+    }
+    
+    const confirmAppointment = (id, accept, tableId) => {
+        API.put('/api/appointments/accept-appointment', {accept: accept, appointmentId: id, tableId: tableId}).then(() => {
+            if(!accept) {
+                dispatch(removeAppointment(id))
+            }else{
+                dispatch(acceptAppointment(id))
+            }
+        }).catch(err => {
+            console.warn('Error while updating...')
+        })
     }
 
     useEffect(() => {
-        console.log(width)
-    }, [width])
-    
+        const newColors = [] 
+        for (const appointment of filteredAppointments) {
+            let newColor = ""
+            for (const otherAppointment of filteredAppointments.filter(a => a.TableId === appointment.TableId)) {
+                if(appointment._id === otherAppointment._id) {
+                    continue
+                }
+
+                if(Math.abs(new Date(appointment.date) - new Date(otherAppointment.date)) <= 3_600_000 * 1.5) {
+                    newColor = "#ef5350"
+                }else if(Math.abs(new Date(appointment.date) - new Date(otherAppointment.date)) <= 3_600_000 * 3 && newColor === '') {
+                    newColor = "#ff9800"
+                }
+            }
+            newColors.push(newColor)
+        }
+        setColors(newColors)
+    }, [filteredAppointments])
 
     return (
-      <div className="w-100 h-100 appointments m-auto p-3">
-          <div className="d-flex align-items-center searchbox justify-content-between px-4" style={{height: '10%'}}>
-                <div className="d-flex align-items-center">
-                    <div className="d-flex align-items-center flex-grow-1">
-                        <SearchOutlined />
-                        <input onKeyUp={filterAppoinments} type="text" className="search-input w-100" placeholder="Szűrés email alapján" />
-                    </div>
-                    {width > 768 && 
-                        <>
-                            <div className="d-flex align-items-center flex-grow-1">
-                                <FormControl variant="filled" className={"m-2"} style={{minWidth: 120}}>
-                                    <InputLabel id="demo-simple-select-label">Asztal</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={table.current}
-                                        onChange={handleChange}
-                                        >
-                                        {tables.map((table) => 
-                                            (<MenuItem key={table} value={table}>{table}</MenuItem>)
-                                        )}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                            <div className="flex-grow-1">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="MM/dd/yyyy"
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        label="Date picker inline"
-                                        value={selectedDate.current}
-                                        onChange={handleDateChange}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </div>
-                        </>}
-                </div>
-                {width > 768 && <div className="d-flex invite-box flex-grow-1 book-box">
-                    <Button color="primary" variant="outlined" onClick={() => setModalOpen(true)}>
-                        Hozzáadás
-                    </Button>
-                </div>}
-            </div>
-            {width > 768 && <TableContainer sx={{height: '100%'}}>
-                <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow>
-                    {columns.map((column) => (
-                        <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}
-                        >
-                        {column.label}
-                        </TableCell>
-                    ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {filteredAppointments
-                    .map((appointment) => {
-                        const table = layoutValue.find(table => table.TableId === appointment.TableId)
-                        return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={appointment._id}>
-                            <TableCell>
-                                {appointment.email}
-                            </TableCell>
-                            <TableCell>
-                                {moment(appointment.time).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
-                            </TableCell>
-                            <TableCell>
-                                {'localId' in table ? table.localId + 1 : 'N.A.' }
-                            </TableCell>
-                            <TableCell>
-                                {appointment.peopleCount}
-                            </TableCell>
-                            <TableCell>
-                                <IconButton onClick={() => deleteAppointment(appointment._id)}>
-                                    <Delete />
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
-                        );
-                    })}
-                </TableBody>
-                </Table>
-            </TableContainer>}
-            {width <= 768 &&
-                <List>
-                    {filteredAppointments.map((appointment) => (
-                        <ListItem key={appointment._id}>
-                            <ListItemAvatar>
-                                <Avatar style={{backgroundColor: stringToColor(appointment.email)}}>
-                                    { appointment.email.charAt(0) }
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={appointment.email} secondary={moment(appointment.time).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")} />
-                        </ListItem>
-                    ))}
-                </List>}
-            {width <= 768 &&
-            <Fab onClick={() => setModalOpen(true)} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
-                <Add />
-            </Fab>}
-            <BookingModal addModalOpen={addModalOpen} setModalOpen={setModalOpen} />
+      <div className="w-100 h-100 appointments m-auto">
+        <TabContext value={value}>
+            <AppBar position="static">
+                <TabList onChange={handleChange2} aria-label="simple tabs example">
+                    <Tab label="Könyvelt" value="1" />
+                    <Tab label="Beérkező" value="2" />
+                </TabList>
+            </AppBar>
+            <TabPanel value="1">
+                <ConfirmedAppointments 
+                    layoutValue={layoutValue}
+                    filteredAppointments={filteredAppointments}
+                    filterAppoinments={filterAppoinments}
+                    handleChange={handleChange}
+                    selectedAppointment={selectedAppointment}
+                    table={table} selectedDate={selectedDate} handleDateChange={handleDateChange}
+                    setModalOpen={setModalOpen}
+                    deleteAppointment={deleteAppointment} setSelectedAppointment={setSelectedAppointment}
+                    stringToColor={stringToColor} setModalOpen={setModalOpen}
+                    setSelectedAppointment={setSelectedAppointment}
+                    colors={colors}
+                />     
+            </TabPanel>
+            <TabPanel value="2">
+                <UnConfirmedAppointments 
+                    filteredAppointments={filteredAppointments} 
+                    selectedAppointment={selectedAppointment} 
+                    showConfirmalModal={showConfirmalModal} 
+                    setSelectedAppointment={setSelectedAppointment} />
+            </TabPanel>
+        </TabContext>
+          
+            {appointmentData && <AppointmentConfirmalModal data={appointmentData} closeConfirmalModal={() => { setAppointmentData(null); setSelectedAppointment(null) }} />}
+            <BookingModal addModalOpen={addModalOpen} setModalOpen={setModalOpen} tableIds={layoutValue.map(table => ({localId: table.localId, id: table.TableId}))} />
       </div>
   )
 }

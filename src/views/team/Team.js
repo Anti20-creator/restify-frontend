@@ -45,6 +45,7 @@ function Team() {
     }
     const [rowData, setRowData] = useState({})
     const [anchorEl, setAnchorEl] = useState(null)
+    const [openMobileDialog, setOpenMobileDialog] = useState(false)
     const { height, width } = useWindowSize();
     const stringToColor = function(str) {
         let hash = 0;
@@ -226,7 +227,7 @@ function Team() {
                 <List>
                     {
                         filteredMembers.map((member) => (
-                            <ListItem style={{borderBottom: '1px solid #ececec'}} key={member.email}>
+                            <ListItem onClick={() => {setRowData(member); setOpenMobileDialog(true) }} style={{borderBottom: '1px solid #ececec'}} key={member.email}>
                                 <ListItemAvatar>
                                     <Avatar style={{backgroundColor: stringToColor(member.email)}}>
                                         { member.fullName ? member.fullName.charAt(0) : member.email.charAt(0) }
@@ -238,6 +239,34 @@ function Team() {
                     }
                 </List>
             }
+            <Modal
+            open={openMobileDialog}
+            onClose={() => setOpenMobileDialog(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+            className="team-dialog"
+            >
+                <Box>
+                    <h5><span className="fw-bold">Email:</span> <span>{rowData.email}</span></h5>
+                    {rowData.fullName && <h5><span className="fw-bold">Név:</span> <span>{rowData.fullName}</span></h5>}
+                    {rowData._id && <h5><span className="fw-bold">Rang:</span> <span>{rowData.isAdmin ? 'Admin' : 'Felhasználó'}</span></h5>}
+
+                    <div className="d-flex text-center w-100 justify-content-between pt-3">
+                        <Button variant="outlined" color="primary" onClick={() => changeRank('isAdmin' in rowData && rowData.isAdmin)}>
+                            {'isAdmin' in rowData && rowData.isAdmin ? 
+                                'Lefokozás'
+                                :
+                                'Előléptetés'
+                            }
+                        </Button>
+                        <Button variant="outlined" color="secondary" onClick={() => removeMember(rowData.email)}>
+                            Eltávolítás
+                        </Button>
+                    </div>
+                </Box>
+            </Modal>
+
+
             <Modal
             open={open}
             onClose={handleClose}
@@ -260,7 +289,7 @@ function Team() {
             </Modal>
 
             {width <= 768 &&
-            <Fab onClick={handleOpen} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"blue"}>
+            <Fab onClick={handleOpen} style={{position: 'fixed', right: '0.5rem', bottom: '0.5rem'}} aria-label={"Add member"} color={"primary"}>
                 <GroupAdd />
             </Fab>}
         </div>

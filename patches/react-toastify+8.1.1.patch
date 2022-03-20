@@ -1,0 +1,45 @@
+diff --git a/node_modules/react-toastify/dist/index.js b/node_modules/react-toastify/dist/index.js
+index 11b3281..413a6d2 100644
+--- a/node_modules/react-toastify/dist/index.js
++++ b/node_modules/react-toastify/dist/index.js
+@@ -1,8 +1,8 @@
+ 
+ 'use strict'
+ 
+-if (process.env.NODE_ENV === 'production') {
++/*if (process.env.NODE_ENV === 'production') {
+   module.exports = require('./react-toastify.cjs.production.min.js')
+ } else {
+-  module.exports = require('./react-toastify.cjs.development.js')
+-}
++}*/
++module.exports = require('./react-toastify.cjs.development.js')
+diff --git a/node_modules/react-toastify/dist/react-toastify.cjs.development.js b/node_modules/react-toastify/dist/react-toastify.cjs.development.js
+index 215ccc0..dedaac8 100644
+--- a/node_modules/react-toastify/dist/react-toastify.cjs.development.js
++++ b/node_modules/react-toastify/dist/react-toastify.cjs.development.js
+@@ -1305,13 +1305,14 @@ toast.isActive = function (id) {
+ };
+ 
+ toast.update = function (toastId, options) {
++  console.log('updating toast')
+   if (options === void 0) {
+     options = {};
+   }
+ 
+   // if you call toast and toast.update directly nothing will be displayed
+   // this is why I defered the update
+-  setTimeout(function () {
++  //setTimeout(function () {
+     var toast = getToast(toastId, options);
+ 
+     if (toast) {
+@@ -1328,7 +1329,7 @@ toast.update = function (toastId, options) {
+       delete nextOptions.render;
+       dispatchToast(content, nextOptions);
+     }
+-  }, 0);
++  //}, 0);
+ };
+ /**
+  * Used for controlled progress bar.

@@ -22,7 +22,7 @@ API.interceptors.response.use(
       const {config: originalReq, response} = error
       console.log(originalReq.url)
       // originalReq.url !== 'auth/jwt/refresh/' && 
-      if (originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) {
+      if ((originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) || originalReq.url.include('order')) {
         try {
             await refreshAccessToken()
             originalReq.isRetryAttempt = true

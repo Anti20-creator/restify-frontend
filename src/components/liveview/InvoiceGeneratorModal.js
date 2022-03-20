@@ -5,6 +5,8 @@ import { Button, DialogActions, DialogContent, DialogTitle, Typography, TextFiel
 import Dialog from '@mui/material/Dialog';
 import { getSocket } from '../../communication/socket'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
 
 function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}) {
 
@@ -13,6 +15,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     const [invoiceName, setInvoiceName] = useState(null)
     const [itemsLeft, setItemsLeft] = useState(items)
     const [itemsToPay, setItemsToPay] = useState([])
+    const dispatch = useDispatch()
 
     const getInvoice = async() => {
       console.log('invoice')
@@ -70,6 +73,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     const closeDialog = () => {
       setInvoiceName(null)
       setInvoiceProcess(null)
+      dispatch(setInvoiceViewOpen(false))
       handleClose()
     }
 

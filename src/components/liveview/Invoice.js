@@ -5,19 +5,29 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
+import { isTableInUse } from '../../store/features/liveSlice'
 import { addOne, invoiceItems, removeAll, removeOne, setItems } from '../../store/features/invoiceSlice';
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
 import useWindowSize from '../../store/useWindowSize'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 function Invoice({localId, showLabel=true}) {
 
     const tableId = useParams().id
+    const tableInUse = useSelector(isTableInUse(tableId))
 
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const currentInvoiceItems = useSelector(invoiceItems)
     const [startPayment, setStartPayment] = useState(false)
     const { height, width } = useWindowSize();
+
+    useEffect(() => {
+        if(!tableInUse && !startPayment) {
+            getSocket().emit('leave-table', {tableId: tableId}); 
+            navigate('../..')
+        }
+    }, [tableInUse])
 
     const deleteOrder = (rowName) => {
         API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
@@ -82,17 +92,17 @@ function Invoice({localId, showLabel=true}) {
                     {currentInvoiceItems.map((row) => (
                         <TableRow key={row.name}>
                             <TableCell component="th" scope="row">
-                                <IconButton onClick={() => deleteOrder(row.name)}>
+                                <IconButton className="invoice-remove-button" onClick={() => deleteOrder(row.name)}>
                                     <Delete />
                                 </IconButton>
                                 {row.name}
                             </TableCell>
-                            <TableCell align="center" style={{whiteSpace: 'nowrap'}}>
-                                <IconButton onClick={() => decreaseQuantity(row.name)}>
+                            <TableCell className="invoice-quantity" align="center" style={{whiteSpace: 'nowrap'}}>
+                                <IconButton className="invoice-minus-button" onClick={() => decreaseQuantity(row.name)}>
                                     <Remove />
                                 </IconButton>
                                 {row.quantity}
-                                <IconButton onClick={() => increaseQuantity(row.name)}>
+                                <IconButton className="invoice-plus-button" onClick={() => increaseQuantity(row.name)}>
                                     <Add />
                                 </IconButton>
                             </TableCell>

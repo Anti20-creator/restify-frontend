@@ -26,21 +26,22 @@
     cursor: pointer;
 }
 
-.sidebar-row:hover p {
-    color: #7a35df;
+
+.sidebar-row.active p, .sidebar-row:hover p {
+    color: #3F51B5;
     text-shadow:
-    -0.2px -0.2px 0 #7a35df,
-    0.2px -0.2px 0 #7a35df,
-    -0.2px 0.2px 0 #7a35df,
-    0.2px 0.2px 0 #7a35df;
+    -0.2px -0.2px 0 #3F51B5,
+    0.2px -0.2px 0 #3F51B5,
+    -0.2px 0.2px 0 #3F51B5,
+    0.2px 0.2px 0 #3F51B5;
     -webkit-transition: all .5s;
     -moz-transition: all .5s;
     -o-transition: all .5s;
     transition: all .5s;
 }
 
-.sidebar-row:hover .MuiSvgIcon-root {
-    fill: #7a35df;
+.sidebar-row.active .MuiSvgIcon-root, .sidebar-row:hover .MuiSvgIcon-root {
+    fill: #3F51B5;
     transition: 0.5s;
 }
 

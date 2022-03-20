@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { Box, Button, Card, CardContent, FormControl, MenuItem, Modal, Select, TextField, Typography, IconButton } from '@material-ui/core'
 import './Menu.css'
 import { ArrowBack, Edit } from '@material-ui/icons'
 import { menuState, addCategory, addItem } from '../../store/features/menuSlice'
+import { getCurrency } from '../../store/features/temporarySlice'
 import { useSelector } from 'react-redux'
 import API from '../../communication/API'
 import { useDispatch } from 'react-redux'
@@ -16,9 +17,16 @@ function Menu() {
     const [editCategory, setEditCategory] = useState('')
     const [addModalOpen, setModalOpen] = useState(false)
     const [category, setCategory] = useState('')
+    const menuWrapperRef = useRef(null)
     const [categoryIcon, setCategoryIcon] = useState('')
-    const priceUnit = 'Ft'
+    const priceUnit = useSelector(getCurrency)
 
+    useEffect(() => {
+        menuWrapperRef.current.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }, [category])
     const icons = [
         'Noodles',
         'Bread',
@@ -69,7 +77,7 @@ function Menu() {
     }
 
     return (
-        <div className="menu container-fluid overflow-auto">
+        <div ref={menuWrapperRef} className="menu container-fluid overflow-auto">
             <div className="col-12">
                 {
                     category === '' ?

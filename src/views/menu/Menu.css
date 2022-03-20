@@ -10,7 +10,7 @@
 
 .menu-card:hover {
     cursor: pointer;
-    background-color: #fcd661;
+    background-color: #b7bb81 !important;
     transition: 0.4s all;
 }
 
@@ -30,6 +30,11 @@
 
 .menu-card p {
     margin: 0;
+}
+
+.MuiPaper-root .MuiIconButton-root {
+    padding: 4px !important;
+    margin: 0 10px !important;
 }
 
 @media(max-width: 768px) {

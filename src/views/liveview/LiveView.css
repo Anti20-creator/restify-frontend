@@ -41,3 +41,41 @@
 .table-view .searchbox input:focus {
     outline: none;
 }
+
+.invoice-quantity {
+    margin: 8px !important;
+}
+
+.invoice-minus-button {
+    border: 1px solid #F50057 !important;
+    color: #F50057 !important;
+    transition: 0.4s;
+}
+.invoice-minus-button:hover {
+    border: 1px solid #F50057 !important;
+    background: #F50057 !important;
+    color: white !important;
+    transition: 0.5s;
+}
+
+.invoice-plus-button {
+    border: 1px solid #2196F3 !important;
+    color: #2196F3 !important;
+    transition: 0.4s;
+}
+.invoice-plus-button:hover {
+    border: 1px solid #2196F3 !important;
+    background: #2196F3 !important;
+    color: white !important;
+    transition: 0.5s;
+}
+
+.invoice-remove-button {
+    color: #5E0B15 !important;
+    transition: 0.4s;
+}
+.invoice-remove-button:hover {
+    background: #5E0B15 !important;
+    color: white !important;
+    transition: 0.5s;
+}

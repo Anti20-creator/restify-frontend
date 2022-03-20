@@ -18,6 +18,7 @@
 @media(max-width: 768px) {
     .page-holder {
         overflow: unset;
+        height: inherit;
     }
 
     .page-inside {
@@ -27,5 +28,15 @@
 
     .login-card {
         width: 90% !important;
+    }
+
+    .wrapper > div{
+        display: block !important;
+    }
+    .wrapper .align-items-center {
+        display: flex !important;
+    }
+    .content-wrapper {
+        height: calc(100% - 56px) !important;
     }
 }

@@ -18,6 +18,7 @@ import API from '../../communication/API';
 import { updateLayout, updateSize } from '../../store/features/layoutSlice'
 import { updateMenu } from '../../store/features/menuSlice'
 import { updateTables } from '../../store/features/liveSlice';
+import { setCurrency } from '../../store/features/temporarySlice'
 import TableDialog from '../../components/liveview/TableDialog';
 import { updateAppointments } from '../../store/features/appointmentsSlice';
 import { store } from '../../store/store'
@@ -67,7 +68,10 @@ function HomePage() {
     
                 const appointments = await API.get('/api/appointments')
                 dispatch(updateAppointments(appointments.data.message))
-    
+
+                const currency = await API.get('/api/informations/currency')
+                dispatch(setCurrency(currency.data.message))
+
                 dispatch(setLoading(false))
             }
         }
@@ -108,9 +112,9 @@ function HomePage() {
                 authenticated ? 
                 <>
                     <MobileNavbar isAdmin={isAdmin} />
-                    <div className={"d-flex h-100"}>
+                    <div className={"d-flex h-100 content-wrapper"}>
                         <Sidebar isAdmin={isAdmin} />
-                        <div className={"w-100 d-flex align-items-center page-holder"} style={{backgroundColor: "#f5f6fa"}}>
+                        <div className={"w-100 h-100 d-flex align-items-center page-holder"} style={{backgroundColor: "#f5f6fa"}}>
                             <div className={"m-auto position-relative page-inside"} style={{backgroundColor: "white"}}>
                             <Routes>
                                 <Route path="/" element={<LiveView />} />
@@ -131,7 +135,7 @@ function HomePage() {
                     <Routes>
                         <Route path='/invite/:restaurantId' element={<RegisterEmployee />} />
                         <Route path='/register' element={<RegisterAdmin />} />
-                        <Route path='/' element={<div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
+                        <Route path='*' element={<div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
                         <Card className="w-50 p-5 text-center login-card">
                             <form onSubmit={login}>
                                 <FormControl>

@@ -14,7 +14,7 @@ function Menu() {
 
     const dispatch = useDispatch()
     const [item, setItem] = useState('')
-    const [editCategory, setEditCategory] = useState('')
+    const [editCategory, setEditCategory] = useState({category: '', icon: ''})
     const [addModalOpen, setModalOpen] = useState(false)
     const [category, setCategory] = useState('')
     const menuWrapperRef = useRef(null)
@@ -94,7 +94,7 @@ function Menu() {
                             Object.keys(menu.icons).sort().map((key) => (
                                 <div key={key} className="col-sm-5 col-md-3 col-10 position-relative">
                                     <div className="position-absolute" style={{right: '10%', top: '10%', zIndex: '100'}}>
-                                        <IconButton onClick={() => setEditCategory(key)}>
+                                        <IconButton onClick={() => setEditCategory({category: key, icon: menu.icons[key]})}>
                                             <Edit />
                                         </IconButton>
                                     </div>
@@ -199,7 +199,7 @@ function Menu() {
                     }
                 </Box>
             </Modal>
-            <EditCategory open={editCategory !== ''} setOpen={setEditCategory} category={editCategory} />
+            <EditCategory open={editCategory.category !== ''} setOpen={setEditCategory} category={editCategory} />
             <EditItem open={item !== ''} setOpen={setItem} itemName={item} category={category} />
         </div>
     )

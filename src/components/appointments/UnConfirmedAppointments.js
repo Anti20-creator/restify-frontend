@@ -94,7 +94,7 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                                {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
 	                            </TableCell>
 	                            <TableCell>
-	                                {'localId' in table ? table.localId + 1 : 'N.A.' }
+	                                {table ? table.localId + 1 : 'tetsz.' }
 	                            </TableCell>
 	                            <TableCell>
 	                                {appointment.peopleCount}

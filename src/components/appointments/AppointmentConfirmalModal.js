@@ -1,17 +1,21 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import Dialog from '@mui/material/Dialog'
-import {List, ListItem, ListItemText, Button, CircularProgress} from '@material-ui/core'
+import { List, ListItem, ListItemText, Button, CircularProgress, Select, MenuItem } from '@material-ui/core'
 import API from '../../communication/API'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
 import { toast } from 'react-toastify'
+import { layout } from '../../store/features/layoutSlice'
 const moment = require('moment-timezone')
 
-function AppointmentConfirmalModal({data, closeConfirmalModal}) {
+function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
 
 	const [optionalConflicts, setOptionalConflicts] = useState([])
 	const [isLoading, setLoading] = useState(true)
 	const [error, setError] = useState(false)
+	const [newTable, setNewTable] = useState(null)
+	const [tableData, setTableData] = useState(data)
+	const layoutValue = useSelector(layout)
 	const dispatch = useDispatch()
 
 	const confirmAppointment = (id, accept, tableId) => {
@@ -35,9 +39,24 @@ function AppointmentConfirmalModal({data, closeConfirmalModal}) {
         })
     }
 
+    const continueForm = () => {
+    	setTableData({
+    		...tableData,
+    		tableId: layoutValue.find(table => table.localId === (newTable - 1))?.TableId
+    	})
+    	setData({
+    		...data,
+    		tableId: layoutValue.find(table => table.localId === (newTable - 1))?.TableId	
+    	})
+    }
+
+    useEffect(() => {
+    	setTableData(data)
+    }, [data])
+
 	useEffect(() => {
-		if(data) {
-			API.post('/api/appointments/booking-conflicts', {date: data.date, tableId: data.tableId, peopleCount: data.peopleCount}).then((result) => {
+		if(tableData && tableData.tableId !== 'any') {
+			API.post('/api/appointments/booking-conflicts', {date: tableData.date, tableId: tableData.tableId, peopleCount: tableData.peopleCount}).then((result) => {
 				setOptionalConflicts(result.data.message)
 				setLoading(false)
 				setError(false)
@@ -47,52 +66,75 @@ function AppointmentConfirmalModal({data, closeConfirmalModal}) {
 				setError(true)
 			})
 		}
-	}, [data])
+	}, [tableData])
 
 	return (
 		<Dialog disableEnforceFocus open={true} onClose={closeConfirmalModal} className="text-center">
-			<div className="p-3">
-				<h5>Dátum: {moment(data.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}</h5>
-				<h5>Asztal: {data.tableId} </h5>
+				<div className="p-3">
+					<h5>Dátum: {moment(data.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}</h5>
+					<h5>Asztal: {data.tableId === 'any' ? 'tetsz' : data.tableId} </h5>
 
-				{
-				data.accept ?
-				<>
-					<h6 className="mt-4 text-decoration-underline">Esedékes ütközések</h6>
-					<List className="mb-3 px-3">
-						{
-							isLoading ?
-							<CircularProgress />
-							:
-							!error ?
-							optionalConflicts.map((appointment, idx) => (
-								<ListItem key={idx}>
-									<ListItemText>
-										{moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
-									</ListItemText>
-								</ListItem>
-							))
-							:
-							<ListItem>
-								<ListItemText>
-									Valamely paraméter nem volt megfelelő a keresés során!
-								</ListItemText>
-							</ListItem>
-						}
+					{
+						tableData.tableId !== 'any' ?
+						tableData.accept ?
+						<>
+							<h6 className="mt-4 text-decoration-underline">Esedékes ütközések</h6>
+							<List className="mb-3 px-3">
+								{
+									isLoading ?
+									<CircularProgress />
+									:
+									!error ?
+									optionalConflicts.map((appointment, idx) => (
+										<ListItem key={idx}>
+											<ListItemText>
+												{moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
+											</ListItemText>
+										</ListItem>
+									))
+									:
+									<ListItem>
+										<ListItemText>
+											Valamely paraméter nem volt megfelelő a keresés során!
+										</ListItemText>
+									</ListItem>
+								}
 
-						{optionalConflicts.length === 0 && !isLoading && 
-							<p> Nincs a közelben időpont a megadott asztalhoz. </p>}
-					</List>
-				</>
-				:
-				<h6>Biztosan törölni kívánja a kiválasztott foglalást?</h6>
-				}
+								{optionalConflicts.length === 0 && !isLoading && !error &&
+									<p> Nincs a közelben időpont a megadott asztalhoz. </p>}
+							</List>
+						</>
+						:
+						<h6>Biztosan törölni kívánja a kiválasztott foglalást?</h6>
+						:
+						<div className="text-center p-3">
+							<Select
+			                    labelId="demo-simple-select-label"
+			                    id="demo-simple-select"
+			                    value={newTable}
+			                    className="w-50"
+			                    onChange={(e) => setNewTable(e.target.value)}
+			                    >
+			                    {layoutValue.map((table) => 
+			                        (<MenuItem key={table.localId+1} value={table.localId+1}>Asztal #{table.localId+1}</MenuItem>)
+			                    )}
+			                </Select>
+						</div>
+					}
 
-				<div className="d-flex justify-content-between">
-					<Button variant="contained" color="primary" onClick={() => confirmAppointment(data.id, data.accept, data.tableId)}>Jóváhagyás</Button>
-					<Button variant="outlined" color="secondary" onClick={closeConfirmalModal}>Mégsem</Button>
+					{
+						tableData.tableId !== 'any' ?
+						<div className="d-flex justify-content-between">
+							<Button variant="contained" color="primary" onClick={() => confirmAppointment(data.id, data.accept, data.tableId)}>Jóváhagyás</Button>
+							<Button variant="outlined" color="secondary" onClick={closeConfirmalModal}>Mégsem</Button>
+						</div>
+						:
+						<div className="d-flex justify-content-between">
+							<Button variant="contained" color="primary" onClick={continueForm}>Tovább</Button>
+							<Button variant="outlined" color="secondary" onClick={closeConfirmalModal}>Mégsem</Button>
+						</div>
+					}
 				</div>
-			</div>
       	</Dialog>
 	)
 }

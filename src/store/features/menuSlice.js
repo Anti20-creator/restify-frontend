@@ -15,12 +15,19 @@ export const menuSlice = createSlice({
             state.value.items[action.payload.category] = {}
             state.value.icons[action.payload.category] = action.payload.categoryIcon
         },
+        deleteCategory: (state, action) => {
+            delete(state.value.items[action.payload])
+            delete(state.value.icons[action.payload])
+        },
         addItem: (state, action) => {
             state.value.items[action.payload.category][action.payload.name] = {
                 price: action.payload.price,
                 unit: action.payload.unit,
                 amount: action.payload.amount
             }
+        },
+        deleteItem: (state, action) => {
+            delete(state.value.items[action.payload.category][action.payload.name])
         },
         editCategory: (state, action) => {
             if(action.payload.oldCategory !== action.payload.newCategory) {
@@ -45,7 +52,7 @@ export const menuSlice = createSlice({
     }
 })
 
-export const { updateMenu, addCategory, addItem, editCategory, editItem } = menuSlice.actions
+export const { updateMenu, addCategory, addItem, editCategory, editItem, deleteCategory, deleteItem } = menuSlice.actions
 export const menuState = state => state.menu.value
 export const menuItems = state => state.menu.value.items ? [].concat(...Object.keys(state.menu.value.items).map(category => {
     return Object.keys(state.menu.value.items[category]).map(item => {

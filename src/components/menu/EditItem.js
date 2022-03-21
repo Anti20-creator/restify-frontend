@@ -3,7 +3,7 @@ import { Modal, Box, Typography, Button, TextField } from '@material-ui/core'
 import { toast } from 'react-toastify'
 import API from '../../communication/API'
 import { useDispatch, useSelector } from 'react-redux'
-import { editItem, getMenuItem } from '../../store/features/menuSlice'
+import { editItem, getMenuItem, deleteItem } from '../../store/features/menuSlice'
 
 function EditCategory({open, setOpen, itemName, category}) {
     
@@ -33,6 +33,22 @@ function EditCategory({open, setOpen, itemName, category}) {
             toast.update(editToast, {render: 'Hiba a frissítés közben...', isLoading: false, autoClose: 1200, type: 'error'})
         })
     }
+
+    const removeItem = (e) => {
+        e.preventDefault()
+
+        const editToast = toast.loading('Elem törlése...')
+        API.delete('/api/menu/delete-item', {data: {
+            name: itemName,
+            category: category
+        }}).then(result => {
+            setOpen('')
+            dispatch(deleteItem({name: itemName, category: category}))
+            toast.update(editToast, {render: 'Sikeres törlés!', isLoading: false, autoClose: 1200, type: 'success'})
+        }).catch(err => {
+            toast.update(editToast, {render: 'Hiba a törlés közben...', isLoading: false, autoClose: 1200, type: 'error'})
+        })
+    }
     
     return (
         <Modal
@@ -50,9 +66,14 @@ function EditCategory({open, setOpen, itemName, category}) {
                         <TextField defaultValue={item.amount} name="amount" label="Mennyiség" variant="standard" type="number" className="my-2" />
                         <TextField defaultValue={item.unit} name="unit" label="Egység" variant="standard" type="text" className="my-2" />
                         <br />
-                        <Button variant="contained" color="primary" className="m-auto mt-2" type="submit">
-                            Mentés
-                        </Button>
+                        <div className="d-flex justify-content-between">
+                            <Button variant="contained" color="primary" className="m-auto mt-2" type="submit">
+                                Mentés
+                            </Button>
+                            <Button onClick={removeItem} variant="contained" color="secondary" className="m-auto mt-2">
+                                Törlés
+                            </Button>
+                        </div>
                     </form>
                 </Box>
             </Modal>

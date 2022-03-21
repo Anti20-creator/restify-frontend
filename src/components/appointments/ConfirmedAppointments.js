@@ -145,7 +145,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                 {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
                             </TableCell>
                             <TableCell>
-                                {'localId' in table ? table.localId + 1 : 'N.A.' }
+                                {table ? table.localId + 1 : 'N.A.' }
                             </TableCell>
                             <TableCell>
                                 {appointment.peopleCount}

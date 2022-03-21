@@ -212,7 +212,7 @@ function Appointments() {
             </TabPanel>
         </TabContext>
           
-            {appointmentData && <AppointmentConfirmalModal data={appointmentData} closeConfirmalModal={() => { setAppointmentData(null); setSelectedAppointment(null) }} />}
+            {appointmentData && <AppointmentConfirmalModal data={appointmentData} closeConfirmalModal={() => { setAppointmentData(null); setSelectedAppointment(null) }} setData={setAppointmentData} />}
             <BookingModal addModalOpen={addModalOpen} setModalOpen={setModalOpen} tableIds={layoutValue.map(table => ({localId: table.localId, id: table.TableId}))} />
       </div>
   )

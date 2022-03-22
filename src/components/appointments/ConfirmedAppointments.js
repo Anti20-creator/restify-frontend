@@ -67,9 +67,10 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                         value={table.current}
                                         onChange={handleChange}
                                         >
-                                        {layoutValue.map((table) => 
-                                            (<MenuItem key={table.localId+1} value={table.localId+1}>{table.localId+1}</MenuItem>)
-                                        )}
+                                            <MenuItem value="">-</MenuItem>
+                                            {layoutValue.map((table) => 
+                                                (<MenuItem key={table.localId+1} value={table.localId+1}>{table.localId+1}</MenuItem>)
+                                            )}
                                     </Select>
                                 </FormControl>
                             </div>

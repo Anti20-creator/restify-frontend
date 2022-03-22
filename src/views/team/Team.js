@@ -38,6 +38,7 @@ function Team() {
             email: rowData.email,
             promote: !promote
         }).then(result => {
+            setMembers(members.map(member => member.email === rowData.email ? {...member, isAdmin: !promote} : member))
             toast.update(rankToast, {render: 'Jogok frissítve!', autoClose: 1200, type: 'success', isLoading: false})
         }).catch(err => {
             toast.update(rankToast, {render: 'Hiba a frissítés során!', autoClose: 1200, type: 'error', isLoading: false})
@@ -134,6 +135,10 @@ function Team() {
         emailRef.current = e.target.value
         filter()
     }
+
+    useEffect(() => {
+        filter()
+    }, [members])
 
     return (
         <div className={"w-100 m-auto team h-100 p-3"}>

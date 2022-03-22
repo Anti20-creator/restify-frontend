@@ -282,7 +282,8 @@ function Editor() {
   return (
       <>
         <div ref={editorNode} className="w-100 h-100 editor" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
-            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}>
+            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
+            borderWidth: '1px', borderColor: 'black', border: 'solid'}}>
                 {
                     tables.map((table) => {
                         const key = table.localId

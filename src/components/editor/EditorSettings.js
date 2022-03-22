@@ -28,7 +28,7 @@ function EditorSettings({close, initialX, initialY}) {
         formData.append("sizeX", Number(sizeX))
         formData.append("sizeY", Number(sizeY))
         formData.append("sentImage", file !== null)
-        formData.append("deleteImage", e.target.elements.delete)
+        formData.append("deleteImage", e.target.elements.delete.value === 'on')
         formData.append("extName", file ? file.name.split('.').pop() : null)
 
         console.log(formData)
@@ -53,7 +53,7 @@ function EditorSettings({close, initialX, initialY}) {
                 <br />
                 <TextField disabled={fileUploadDisabled} variant="standard" name="image" type="file" min="0" className="mx-5" onChange={handleFileChange} accept="image/jpg" />
                 <br />
-                <Checkbox name="delete" onChange={(e) => {setFileUploadDisabled(e.target.checked); }} />
+                Fénykép törlése: <Checkbox name="delete" onChange={(e) => {setFileUploadDisabled(e.target.checked); }} />
                 <br />
                 <Button variant="outlined" type="submit">
                     Mentés

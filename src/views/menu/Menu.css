@@ -62,3 +62,6 @@
         font-size: 13px;
     }
 }
+.MuiPickersCalendar-week > div > .MuiIconButton-root {
+    margin: 0 2px !important;
+}

@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import Dialog from '@mui/material/Dialog'
 import { List, ListItem, ListItemText, Button, CircularProgress, Select, MenuItem } from '@material-ui/core'
 import API from '../../communication/API'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
+import { removeAppointment, acceptAppointment, updateAppointmentTable } from '../../store/features/appointmentsSlice';
 import { toast } from 'react-toastify'
 import { layout } from '../../store/features/layoutSlice'
+import { getSocket } from '../../communication/socket'
 const moment = require('moment-timezone')
 
 function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
@@ -29,10 +30,12 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
             if(!accept) {
                 dispatch(removeAppointment(id))
             }else{
+				dispatch(updateAppointmentTable({id: id, tableId: tableId}))
                 dispatch(acceptAppointment(id))
             }
             closeConfirmalModal()
             toast.update(loadingToast, {render: accept ? 'Foglalás jóváhagyva' : 'Foglalás törölve', autoClose: 1200, isLoading: false, type: "success"})
+			getSocket().emit('new-appointment')
         }).catch(err => {
             console.warn('Error while updating...')
             toast.update(loadingToast, {render: 'Sikertelen jóváhagyás', autoClose: 1200, isLoading: false, type: "error"})
@@ -55,8 +58,9 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
     }, [data])
 
 	useEffect(() => {
+		console.log(tableData)
 		if(tableData && tableData.tableId !== 'any') {
-			API.post('/api/appointments/booking-conflicts', {date: tableData.date, tableId: tableData.tableId, peopleCount: tableData.peopleCount}).then((result) => {
+			API.post('/api/appointments/booking-conflicts', {date: tableData.date.toString(), tableId: tableData.tableId, peopleCount: Number(tableData.peopleCount)}).then((result) => {
 				setOptionalConflicts(result.data.message)
 				setLoading(false)
 				setError(false)

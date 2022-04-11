@@ -1,25 +1,73 @@
-import React from 'react'
-import {Avatar, Badge} from "@material-ui/core";
-import {Notifications} from "@material-ui/icons";
+import { Button, Dialog, DialogActions, FormControl } from '@mui/material'
+import React, { useState, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 
 function Navbar() {
-    return(
-        <div className={"navbar"}>
-            <div>
-                <img className={"logo"} src={"https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/7a3ec529632909.55fc107b84b8c.png"} />
-            </div>
 
-            <div className={"d-flex align-items-center notifications"}>
-                <div className={"notification-badge-holder"}>
-                    <Badge badgeContent={1} color="primary">
-                        <Notifications />
-                    </Badge>
-                </div>
-                <Avatar />
-                <p className={"m-0"}> Amtmann Kristóf </p>
+    const [modalOpen, setModalOpen] = useState(false)
+    const restaurantId = useRef(null)
+    const togglerRef = useRef(null)
+    const navigate = useNavigate()
+    
+    const showJoinModal = () => {
+        setModalOpen(true)
+        togglerRef.current.click()
+    }
+
+    const goToInvitePage = () => {
+        setModalOpen(false)
+        navigate('invite/' + restaurantId.current.value)
+        restaurantId.current.value = ''
+    }
+
+    return(
+        <>
+            <nav className="navbar navbar-expand-md bg-light navbar-light desktop-navbar">
+            <a className="navbar-brand">Restify</a>
+
+            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span ref={togglerRef} className="navbar-toggler-icon"></span>
+            </button>
+
+            <div className="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul className="navbar-nav me-auto">
+                    <Link to="/" onClick={() => togglerRef.current.click()}>
+                        <li className="nav-item">
+                            <a className="nav-link">Belépés</a>
+                        </li>
+                    </Link>
+                    <Link to="/register" onClick={() => togglerRef.current.click()}>
+                        <li className="nav-item">
+                            <a className="nav-link">Regisztráció</a>
+                        </li>
+                    </Link>
+                    <div onClick={showJoinModal}>
+                        <li className="nav-item">
+                            <a className="nav-link">Csatlakozás csapathoz</a>
+                        </li>
+                    </div>
+                    <Link to="/" onClick={() => togglerRef.current.click()}>
+                        <li className="nav-item">
+                            <a className="nav-link">Állományok letöltése</a>
+                        </li>
+                    </Link>
+                </ul>
             </div>
-        </div>
+            </nav>
+            {modalOpen && 
+                <Dialog open={true} onClose={() => setModalOpen(false)}>
+                    <div className="px-5 py-4">
+                        <FormControl>
+                            <input ref={restaurantId} type="text" placeholder='Étterem azonosítója' />
+                        </FormControl>
+                        <DialogActions className="text-center">
+                            <Button onClick={goToInvitePage} style={{flex: 'auto'}}>Tovább</Button>
+                        </DialogActions>
+                    </div>
+                </Dialog>
+            }
+        </>
     )
 }
 

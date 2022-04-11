@@ -27,11 +27,14 @@ const appoinmentsSlice = createSlice({
         },
         acceptAppointment: (state, action) => {
             state.value.find(appointment => appointment._id === action.payload).confirmed = true
+        },
+        updateAppointmentTable: (state, action) => {
+            state.value.find(appointment => appointment._id === action.payload.id).TableId = action.payload.tableId
         }
     }
 })
 
-export const { updateAppointments, removeAppointment, addAppointment, receivedAppointment, seenAppointments, acceptAppointment } = appoinmentsSlice.actions
+export const { updateAppointments, removeAppointment, addAppointment, receivedAppointment, seenAppointments, acceptAppointment, updateAppointmentTable } = appoinmentsSlice.actions
 
 export const appointmentsState = state => state.appointments.value
 export const seenAllAppointments = state => state.appointments.unseen

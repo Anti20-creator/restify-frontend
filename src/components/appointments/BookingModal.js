@@ -22,15 +22,14 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
     const peopleCountRef = useRef(null)
     const [formData, setFormData] = useState(null)
     const dispatch = useDispatch()
-    const selectedDate = useRef(new Date())
 
     useEffect(() => {
         if(openConfirmal) {
             setLoading(true)
             API.post('/api/appointments/booking-conflicts', {
-                peopleCount: peopleCountRef.current.value,
+                peopleCount: Number(formData.peopleCount),
                 tableId: tableIds.find(table => table.localId === localId - 1).id,
-                date: selectedDate
+                date: formData.date.toString()
             }).then(result => {
                 setConflictingData(result.data.message)
                 setError(false)
@@ -48,9 +47,9 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
         setFormData({
             email: e.target.elements.email.value,
             date: e.target.elements.date.value,
-            peopleCount: e.target.elements.peopleCount.value,
+            peopleCount: parseInt(e.target.elements.peopleCount.value),
             timezoneOffset: new Date().getTimezoneOffset(),
-            tableId: tableIds.find(ids => ids.localId == (localId - 1)).id
+            tableId: tableIds.find(ids => ids.localId === (localId - 1)).id
         })
     }
 
@@ -69,17 +68,12 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
             pauseOnHover: true,
             draggable: false,
         });
-        console.log(new Date().getTimezoneOffset())
         API.post('/api/appointments/book-for-guest', formData).then(result => {
-            if(!result.data.success) {
-                toast.update(searchingToast, { render: "Nincs üres asztal a megadott időpontban!", type: "error", isLoading: false, autoClose: 2000 })
-            }else{
-                toast.update(searchingToast, { render: "Sikeres foglalás!", type: "success", isLoading: false, autoClose: 2000 })
-                dispatch(addAppointment(result.data.message))
-                getSocket().emit('new-appointment')
-                setModalOpen(false)
-                setOpenConfirmal(false)
-            }
+            toast.update(searchingToast, { render: "Sikeres foglalás!", type: "success", isLoading: false, autoClose: 2000 })
+            dispatch(addAppointment(result.data.message))
+            setModalOpen(false)
+            setOpenConfirmal(false)
+            getSocket().emit('new-appointment')
         }).catch(err => {
             toast.update(searchingToast, { render: "Nincs üres asztal a megadott időpontban!", type: "error", isLoading: false, autoClose: 2000 })
         })

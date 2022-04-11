@@ -47,6 +47,31 @@
     width: 180px;
     height: 120px;
 }
+.res-table.wider.average {
+    width: 190px;
+    height: 100px;
+}
+.res-table.wider.small {
+    width: 160px;
+    height: 80px;
+}
+.res-table.wider.large {
+    width: 220px;
+    height: 120px;
+}
+.res-table.extra-wide.average {
+    width: 190px;
+    height: 130px;
+}
+.res-table.extra-wide.small {
+    width: 160px;
+    height: 110px;
+}
+.res-table.extra-wide.large {
+    width: 220px;
+    height: 150px;
+}
+
 .res-table.wide.average.rotated {
     height: 150px;
     width: 100px;
@@ -58,6 +83,30 @@
 .res-table.wide.large.rotated {
     height: 180px;
     width: 120px;
+}
+.res-table.wider.average.rotated {
+    height: 190px;
+    width: 100px;
+}
+.res-table.wider.small.rotated {
+    height: 160px;
+    width: 80px;
+}
+.res-table.wider.large.rotated {
+    height: 220px;
+    width: 120px;
+}
+.res-table.wider.average.rotated {
+    height: 190px;
+    width: 130px;
+}
+.res-table.wider.small.rotated {
+    height: 160px;
+    width: 110px;
+}
+.res-table.wider.large.rotated {
+    height: 220px;
+    width: 150px;
 }
 
 .res-table.rounded.small {
@@ -123,11 +172,22 @@
     margin: 0px 4px;
 }
 
-
 .vertical-seat {
     width: 32%;
     background-color: #aeb1c1;
     height: 27%;
+    margin: 4px 0px;
+}
+.res-table.wider .vertical-seat {
+    width: 32%;
+    background-color: #aeb1c1;
+    height: 23%;
+    margin: 4px 0px;
+}
+.res-table.extra-wide .vertical-seat {
+    width: 32%;
+    background-color: #aeb1c1;
+    height: 20%;
     margin: 4px 0px;
 }
 
@@ -136,6 +196,18 @@
     width: 35%;
     background-color: #aeb1c1;
     height: 25%;
+    margin: 4px 0px;
+}
+.res-table.wider.rotated .vertical-seat {
+    width: 35%;
+    background-color: #aeb1c1;
+    height: 15%;
+    margin: 4px 0px;
+}
+.res-table.extra-wide.rotated .vertical-seat {
+    width: 35%;
+    background-color: #aeb1c1;
+    height: 9%;
     margin: 4px 0px;
 }
 

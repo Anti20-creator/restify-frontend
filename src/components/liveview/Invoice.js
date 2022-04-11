@@ -1,4 +1,4 @@
-import { Button, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Button, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, List, ListItem } from '@material-ui/core';
 import { Add, Delete, Remove } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
 import { isTableInUse } from '../../store/features/liveSlice'
+import { getCurrency} from '../../store/features/temporarySlice'
 import { addOne, invoiceItems, removeAll, removeOne, setItems } from '../../store/features/invoiceSlice';
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
 import useWindowSize from '../../store/useWindowSize'
@@ -20,7 +21,8 @@ function Invoice({localId, showLabel=true}) {
     const dispatch = useDispatch()
     const currentInvoiceItems = useSelector(invoiceItems)
     const [startPayment, setStartPayment] = useState(false)
-    const { height, width } = useWindowSize();
+    const currency = useSelector(getCurrency)
+    const { width } = useWindowSize()
 
     useEffect(() => {
         if(!tableInUse && !startPayment) {
@@ -31,43 +33,41 @@ function Invoice({localId, showLabel=true}) {
 
     const deleteOrder = (rowName) => {
         API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
-            if (response.data.success) {
-                dispatch(removeAll({name: rowName}))
-            }else{
-                toast.error('Hiba a rendelés törlésekor!', {
-                    autoClose: 1500
-                })
-            }
+            dispatch(removeAll({name: rowName}))
+        }).catch(err => {
+            toast.error('Hiba a rendelés törlésekor!', {
+                autoClose: 1500
+            })
         })
     }
 
     const increaseQuantity = (rowName) => {
         API.post('api/tables/increase-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
-            if(response.data.success) {
-                dispatch(addOne({name: rowName}))
-            }else{
-                toast.error('Hiba a kérés közben!', {
-                    autoClose: 1500
-                })
-            }
+            dispatch(addOne({name: rowName}))
+        }).catch(err => {
+            toast.error('Hiba a kérés közben!', {
+                autoClose: 1500
+            })
         })
     }
 
     const decreaseQuantity = (rowName) => {
         API.post('api/tables/decrease-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
-            if(response.data.success) {
-                dispatch(removeOne({name: rowName}))
-            }else{
-                toast.error('Hiba a kérés közben!', {
-                    autoClose: 1500
-                })
-            }
+            dispatch(removeOne({name: rowName}))
+    }).catch(err => {
+        toast.error('Hiba a kérés közben!', {
+            autoClose: 1500
         })
-    }
+    })
+}
 
     useEffect(() => {
         API.get('/api/tables/orders/' + tableId).then(result => {
             dispatch(setItems(result.data.message))
+        }).catch(err => {
+            toast.error('Hiba a kérés közben!', {
+                autoClose: 1500
+            })
         })
     }, [tableId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -78,7 +78,7 @@ function Invoice({localId, showLabel=true}) {
     return (
         <>
             {showLabel && <h2 className="text-center pt-2">Számla</h2>}
-            <TableContainer>
+            {width > 8768 && <TableContainer>
                 <Table stickyHeader aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -88,7 +88,6 @@ function Invoice({localId, showLabel=true}) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {console.log(currentInvoiceItems)}
                     {currentInvoiceItems.map((row) => (
                         <TableRow key={row.name}>
                             <TableCell component="th" scope="row">
@@ -111,7 +110,34 @@ function Invoice({localId, showLabel=true}) {
                     ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer>}
+            {width <= 8768 && <List>
+                {
+                    currentInvoiceItems.map(row => (
+                        <div key={row.name}>
+                            <ListItem className='text-center' style={{display: 'block'}}>
+                                <div>
+                                    <p className="m-0">{row.name}</p>
+                                    <p style={{color: "#808080"}}>{row.price} {currency}</p>
+                                </div>
+                                <div className="d-flex align-items-center justify-content-center position-relative">
+                                    <IconButton style={{left: 0}} className="invoice-remove-button position-absolute" onClick={() => deleteOrder(row.name)}>
+                                        <Delete />
+                                    </IconButton>
+                                    <IconButton className="invoice-minus-button" onClick={() => decreaseQuantity(row.name)}>
+                                        <Remove />
+                                    </IconButton>
+                                    {row.quantity}
+                                    <IconButton className="invoice-plus-button" onClick={() => increaseQuantity(row.name)}>
+                                        <Add />
+                                    </IconButton>
+                                </div>
+                            </ListItem>
+                            <hr />
+                        </div>
+                    ))
+                }
+            </List>}
             <div style={{padding: (width > 768) ? '0' : '1rem 0rem'}} className="pay-button-holder text-center">
                 <Button color="primary" variant="outlined" onClick={() => setStartPayment(true)}>
                     Fizetés
@@ -120,7 +146,7 @@ function Invoice({localId, showLabel=true}) {
             <InvoiceGeneratorModal tableId={tableId} items={currentInvoiceItems} tableLocalId={localId} open={startPayment} handleClose={() => {
                 setStartPayment(false)
                 //dispatch(setItems([]))
-                }} />
+            }} />
         </>
     )
 }

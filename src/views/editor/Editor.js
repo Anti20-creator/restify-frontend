@@ -1,8 +1,8 @@
-import React, { createRef, useEffect, useState, useRef } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import interact from 'interactjs'
 import Table from '../../components/editor/Table';
 import ContextMenu from '../../components/editor/ContextMenu';
-import { MenuItem, Menu, Fab } from '@material-ui/core';
+import { MenuItem, Fab } from '@material-ui/core';
 import { Settings } from '@material-ui/icons'
 import API from '../../communication/API';
 import { useDispatch, useSelector } from 'react-redux'
@@ -97,7 +97,6 @@ function Editor() {
     const [offset, setOffset]                       = useState(false)
     const [backgroundImage, setBackgroundImage]     = useState('')
     const [settingsModalOpen, setSettingsModalOpen] = useState(false)
-    const toastRef                                  = useRef(null)
     const layoutValue                               = useSelector(layout)
     const modifiedLayoutValue                       = useSelector(modifiedLayout)
     const layoutHeight                              = useSelector(layoutHeightSelector)
@@ -174,7 +173,7 @@ function Editor() {
         if((table.tableCount === 8 && quantity > 0) && table.type !== 'wide' ) {
             return
         }
-        if((table.tableCount === 10 && quantity > 0) && table.type === 'wide') {
+        if((table.tableCount === 20 && quantity > 0) && table.type === 'wide') {
             return
         }
         if(table.tableCount === 1 && quantity < 0) {
@@ -263,27 +262,19 @@ function Editor() {
             toast.update(savingToast, { render: "Elrendezés frissítve", type: "success", isLoading: false, autoClose: 2000 })
             getSocket().emit('layout-modified', {tables: response.data.message})
             dispatch(updateLayout(response.data.message))
+            setRemovedTables([])
+            setUpdatedTables([])
         })
         .catch(() => {
             toast.update(savingToast, { render: "Hiba a frissítés során", type: "error", isLoading: false, autoClose: 2000 })
             return
         })
-
-
-        setRemovedTables([])
-        setUpdatedTables([])
-        if(result && result.data.success) {
-            
-        }
-
-        console.log(result)
     }
 
   return (
       <>
         <div ref={editorNode} className="w-100 h-100 editor" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
-            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
-            borderWidth: '1px', borderColor: 'black', border: 'solid'}}>
+            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}>
                 {
                     tables.map((table) => {
                         const key = table.localId

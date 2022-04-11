@@ -1,9 +1,10 @@
 import axios from 'axios'
+import data from './data.json'
 
 axios.defaults.withCredentials = true
 
 const API = axios.create({
-    baseURL: 'https://192.168.31.214:4000',
+    baseURL: data.base_uri,
     header: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
@@ -22,7 +23,7 @@ API.interceptors.response.use(
       const {config: originalReq, response} = error
       console.log(originalReq.url)
       // originalReq.url !== 'auth/jwt/refresh/' && 
-      if ((originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) || originalReq.url.include('order')) {
+      if ((originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) || originalReq.url.includes('order') ) {
         try {
             await refreshAccessToken()
             originalReq.isRetryAttempt = true
@@ -39,24 +40,10 @@ API.interceptors.response.use(
         throw error
       }
     }
-  )
-/*
-API.interceptors.response.use(null, (error) => {
-    console.log('intercept')
-    if (error.config && error.response && error.response.status === 401) {
-        return API.post('api/users/refresh-token').then(response => {
-            console.log('REFRESH TOKEN:', response.data)
-            return API.request(error.config);
-        })
-    }
-  
-    return Promise.reject(error);
-});*/
+)
 
 async function refreshAccessToken() {
-    await API.post('api/users/refresh-token').then(response => {
-        console.log('REFRESH TOKEN:', response)
-    })
+    await API.post('api/users/refresh-token')
 }
 
 export default API

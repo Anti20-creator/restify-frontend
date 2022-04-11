@@ -29,6 +29,7 @@ import RegisterAdmin from '../register-admin/RegisterAdmin';
 import Settings from '../settings/Settings'
 import Invoices from '../invoices/Invoices'
 import MobileNavbar from '../../components/mobile-navbar/MobileNavbar'
+import Navbar from '../../components/navbar/Navbar';
 
 function HomePage() {
 
@@ -38,16 +39,18 @@ function HomePage() {
     const dispatch = useDispatch()
     
     useEffect(() => {
-        API.get('api/users/getdata').then(result => {
-            setAuthenticated(result.data.email !== null)
+        API.get('api/users/is-admin').then(result => {
+            setIsAdmin(result.data.message)
+            setAuthenticated(true)
             dispatch(setLoading(true))
             setUserLoading(false)
         }).catch((err) => {
+            setIsAdmin(false)
             setAuthenticated(false)
             dispatch(setLoading(false))
             setUserLoading(false)
         })
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [authenticated]) // eslint-disable-line react-hooks/exhaustive-deps
     
     useEffect(() => {
         async function pullData() {
@@ -93,14 +96,6 @@ function HomePage() {
 
     const [isAdmin, setIsAdmin] = useState(false)
 
-    useEffect(() => {
-        API.get('/api/users/is-admin').then((result) => {
-            setIsAdmin(result.data.message)
-        }).catch(err => {
-            setIsAdmin(false)
-        })
-    }, [authenticated])
-  
     return (
         <>
             {
@@ -132,6 +127,7 @@ function HomePage() {
                 </>
                 :
                 <>
+                    <Navbar />
                     <Routes>
                         <Route path='/invite/:restaurantId' element={<RegisterEmployee />} />
                         <Route path='/register' element={<RegisterAdmin />} />

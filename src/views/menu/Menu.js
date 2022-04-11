@@ -9,6 +9,8 @@ import API from '../../communication/API'
 import { useDispatch } from 'react-redux'
 import EditCategory from '../../components/menu/EditCategory'
 import EditItem from '../../components/menu/EditItem'
+import { toast } from 'react-toastify'
+import icons from '../../components/menu/icons.json'
 
 function Menu() {
 
@@ -27,48 +29,37 @@ function Menu() {
             behavior: 'smooth'
         })
     }, [category])
-    const icons = [
-        'Noodles',
-        'Bread',
-        'Steak',
-        'Cupcake',
-        'Fish Food'
-    ]
 
     const addCategoryForm = (e) => {
         e.preventDefault()
         const category = e.target.elements.category.value
         const icon = e.target.elements.icon.value
         if(!icon || !category) {
-            // Nincs elég adat
             return
         }
         if(Object.keys(menu.icons).includes(category)) {
-            // Már van ilyen kategória
             return
         }
         
         API.post('/api/menu/add-category', {category, categoryIcon: icon}).then(result => {
-            if(result.status === 201) {
-                dispatch(addCategory({category, categoryIcon: icon}))
-            }
+            dispatch(addCategory({category, categoryIcon: icon}))
+            setModalOpen(false)
+        }).catch(err => {
+            toast.error('Hiba a hozzáadás során!')
         })
 
-        setModalOpen(false)
     }
 
     const addItemForm = (e) => {
         e.preventDefault()
         const name = e.target.elements.food.value
-        const price = e.target.elements.price.value
-        const amount = e.target.elements.amount.value
+        const price = Number(e.target.elements.price.value)
+        const amount = Number(e.target.elements.amount.value)
         const unit = e.target.elements.unit.value
         API.post('/api/menu/add-item', {name, category, price, amount, unit}).then(result => {
-            if(result.status === 201) {
-                dispatch(addItem({name, category, price, amount, unit}))
-            }
-        })
-        setModalOpen(false)
+            dispatch(addItem({name, category, price, amount, unit}))
+            setModalOpen(false)
+        }).catch(err => toast.error('Hiba a hozzáadás során...'))
     }
     const menu = useSelector(menuState)
 
@@ -168,8 +159,8 @@ function Menu() {
                                             <em>-</em>
                                         </MenuItem>
                                         {
-                                            icons.map((icon) => (
-                                                <MenuItem key={icon} value={icon}>{icon}</MenuItem>
+                                            Object.keys(icons).map((icon) => (
+                                                <MenuItem key={icon} value={icon}>{icons[icon].hu}</MenuItem>
                                             ))
                                         }
                                     </Select>

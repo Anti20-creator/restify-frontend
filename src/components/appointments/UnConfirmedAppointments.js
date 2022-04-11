@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { TableContainer, Table, TableHead, TableRow, TableCell, IconButton, Box,
 	List, ListItem, ListItemText, ListItemAvatar, Avatar, TableBody, TablePagination } from '@material-ui/core'
 import { Check, Close, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import Modal from '@mui/material/Modal'
 import { tableIds } from '../../store/features/liveSlice';
 import { layout } from '../../store/features/layoutSlice'
-import { useSelector, useDispatch } from 'react-redux';
-import { appointmentsState, seenAppointments, removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
+import { useSelector } from 'react-redux';
+import { appointmentsState } from '../../store/features/appointmentsSlice';
 import useWindowSize from '../../store/useWindowSize'
 const moment = require('moment-timezone')
 
@@ -100,10 +100,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                                {appointment.peopleCount}
 	                            </TableCell>
 	                            <TableCell>
-	                                <IconButton onClick={() => showConfirmalModal(appointment._id, true, appointment.TableId, appointment.date)}>
+	                                <IconButton onClick={() => showConfirmalModal(appointment._id, true, appointment.TableId, appointment.date, appointment.peopleCount)}>
 	                                    <Check style={{color: 'green'}} />
 	                                </IconButton>
-	                                <IconButton onClick={() => showConfirmalModal(appointment._id, false, appointment.TableId, appointment.date)}>
+	                                <IconButton onClick={() => showConfirmalModal(appointment._id, false, appointment.TableId, appointment.date, appointment.peopleCount)}>
 	                                    <Close style={{color: 'red'}} />
 	                                </IconButton>
 	                            </TableCell>
@@ -138,14 +138,14 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 		                        </ListItem>
 		                    ))}
 		                </List>
-		                <div className="d-flex w-100 justify-content-between">
+		                {getDisplayableAppointments().length > 25 && <div className="d-flex w-100 justify-content-between">
 		                	<IconButton disabled={page === 0} onClick={() => setPage(Math.max(page - 1, 0))}>
 		                		<KeyboardArrowLeft />
 		                	</IconButton>
 		                	<IconButton disabled={page === Math.ceil(filteredAppointments.length / rowsPerPage) - 1} onClick={() => setPage(Math.min(page + 1, Math.ceil(filteredAppointments.length/rowsPerPage))) }>
 		                		<KeyboardArrowRight />
 		                	</IconButton>
-		                </div>
+		                </div>}
 	                </>
 	            }
 	            {width <= 768 && selectedAppointment !== null && 
@@ -163,10 +163,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                        <h5><span className="fw-bold">Vendégek száma:</span> <span>{selectedAppointment.peopleCount}</span></h5>
 
 	                        <div className="text-center d-flex justify-content-between pt-3">
-	                            <IconButton onClick={() => showConfirmalModal(selectedAppointment._id, true, selectedAppointment.TableId, selectedAppointment.date)}>
+	                            <IconButton onClick={() => showConfirmalModal(selectedAppointment._id, true, selectedAppointment.TableId, selectedAppointment.date, selectedAppointment.peopleCount)}>
 	                                <Check style={{color: 'green'}} />
 	                            </IconButton>
-	                            <IconButton onClick={() => showConfirmalModal(selectedAppointment._id, false, selectedAppointment.TableId, selectedAppointment.date)}>
+	                            <IconButton onClick={() => showConfirmalModal(selectedAppointment._id, false, selectedAppointment.TableId, selectedAppointment.date, selectedAppointment.peopleCount)}>
 	                                <Close style={{color: 'red'}} />
 	                            </IconButton>
 	                        </div>

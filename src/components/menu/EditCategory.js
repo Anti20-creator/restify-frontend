@@ -4,24 +4,20 @@ import { toast } from 'react-toastify'
 import API from '../../communication/API'
 import { useDispatch } from 'react-redux'
 import { editCategory, deleteCategory } from '../../store/features/menuSlice'
+import icons from '../../components/menu/icons.json'
 
 function EditCategory({open, setOpen, category}) {
     
     const [categoryIcon, setCategoryIcon] = useState(category.icon)
-    const icons = [
-        'Noodles',
-        'Bread',
-        'Steak',
-        'Cupcake',
-        'Fish Food'
-    ]
 
     useEffect(() => {
         setCategoryIcon(category.icon)
     }, [category])
+
     const formIconChange = (e) => {
         setCategoryIcon(e.target.value)
     }
+
     const dispatch = useDispatch()
 
     const updateCategory = (e) => {
@@ -36,7 +32,7 @@ function EditCategory({open, setOpen, category}) {
         }).then(result => {
             dispatch(editCategory({oldCategory: category.category, newCategory: newCategory, categoryIcon}))
             toast.update(editToast, {render: 'Sikeres frissítés', isLoading: false, autoClose: 1200, type: 'success'})
-            setOpen('')
+            setOpen({category: '', icon: ''})
         }).catch(err => {
             toast.update(editToast, {render: 'Hiba a frissítés közben...', isLoading: false, autoClose: 1200, type: 'error'})
         })
@@ -51,13 +47,11 @@ function EditCategory({open, setOpen, category}) {
         }}).then(result => {
             dispatch(deleteCategory(category.category))
             toast.update(editToast, {render: 'Sikeres törlés!', isLoading: false, autoClose: 1200, type: 'success'})
-            setOpen('')
+            setOpen({category: '', icon: ''})
         }).catch(err => {
             toast.update(editToast, {render: 'Hiba a törlés közben...', isLoading: false, autoClose: 1200, type: 'error'})
         })
     }
-
-    
     
     return (
         <Modal
@@ -83,8 +77,8 @@ function EditCategory({open, setOpen, category}) {
                                     <em>-</em>
                                 </MenuItem>
                                 {
-                                    icons.map((icon) => (
-                                        <MenuItem key={icon} value={icon}>{icon}</MenuItem>
+                                    Object.keys(icons).map((icon) => (
+                                        <MenuItem key={icon} value={icon}>{icons[icon].hu}</MenuItem>
                                     ))
                                 }
                             </Select>

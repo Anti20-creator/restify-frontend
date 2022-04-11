@@ -15,8 +15,8 @@ function EditCategory({open, setOpen, itemName, category}) {
 
         const editToast = toast.loading('Elem frissítése...')
         const newName = e.target.elements.food.value
-        const price = e.target.elements.price.value
-        const amount = e.target.elements.amount.value
+        const price = Number(e.target.elements.price.value)
+        const amount = Number(e.target.elements.amount.value)
         const unit = e.target.elements.unit.value
         API.post('/api/menu/modify-item', {
             name: newName,

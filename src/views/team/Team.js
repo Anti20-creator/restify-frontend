@@ -38,6 +38,7 @@ function Team() {
             email: rowData.email,
             promote: !promote
         }).then(result => {
+            setOpenMobileDialog(false)
             setMembers(members.map(member => member.email === rowData.email ? {...member, isAdmin: !promote} : member))
             toast.update(rankToast, {render: 'Jogok frissítve!', autoClose: 1200, type: 'success', isLoading: false})
         }).catch(err => {

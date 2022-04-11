@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { Save } from '@material-ui/icons'
 import { TableContainer, TableRow, TableCell, TableBody, TableHead, IconButton, Table,
-        List, ListItem, Avatar, ListItemAvatar, ListItemText, ListItemSecondaryAction } from '@material-ui/core'
+        List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core'
 import API from '../../communication/API'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import useWindowSize from '../../store/useWindowSize'
 
 function Invoices() {
 
     const [invoices, setInvoices] = useState([])
     const [rowData, setRowData] = useState(null)
-    const { height, width } = useWindowSize();
+    const { width } = useWindowSize();
 
     useEffect(() => {
         API.get('/api/invoices').then(({data}) => {

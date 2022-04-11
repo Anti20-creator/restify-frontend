@@ -50,7 +50,7 @@ function MenuItems({searchText}) {
                     <div key={item.name} className="col-sm-4 col-md-3 col-6">
                         <Card style={{backgroundColor: '#D9DBBC'}} onClick={() => {postItem(item)}} className="m-1 text-center h-100 menu-card">
                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-                                <p className="fw-bold"> {item.name} </p>
+                                <p className="fw-bold"> {item.name.slice(0, 50)} {item.name.length > 50 ? '...' : ''} </p>
                                 <p className="fw-light">{item.price} {priceUnit} {item.amount > 1 && `/ ${item.amount} ${item.unit}`} </p>
                             </CardContent>
                         </Card>

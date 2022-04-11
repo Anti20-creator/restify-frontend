@@ -32,11 +32,11 @@ function OutOfSyncBar({open, setOpen}) {
                 open={open}
                 autoHideDuration={6000}
                 onClose={handleClose}
-                message="Note archived"
+                message="Az elrendezés változott"
                 action={
                 <React.Fragment>
                     <Button color="secondary" size="small" onClick={update}>
-                        Frissít
+                        Frissítés
                     </Button>
                     <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
                     <CloseIcon fontSize="small" />

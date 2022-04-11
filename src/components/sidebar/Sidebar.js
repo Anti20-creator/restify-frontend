@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {LiveTv, Event, Group, MenuBook, Settings, ExitToApp, Edit, Receipt} from "@material-ui/icons";
 import { Link } from 'react-router-dom'
 import './Sidebar.css'
@@ -10,7 +10,6 @@ function Sidebar({isAdmin}) {
 
     const navigate = useNavigate()
     const location = useLocation()
-    const [active, setActive] = useState('')
     
     const logOut = () => {
         API.get('api/users/logout').then(() => {

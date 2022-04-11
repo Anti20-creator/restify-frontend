@@ -23,12 +23,14 @@ function EditorSettings({close, initialX, initialY}) {
         const sizeX = e.target.elements.sizeX.value
         const sizeY = e.target.elements.sizeY.value
 
+
+        console.log(e.target.elements.delete.checked)
         const formData = new FormData()
         formData.append("image", file)
         formData.append("sizeX", Number(sizeX))
         formData.append("sizeY", Number(sizeY))
         formData.append("sentImage", file !== null)
-        formData.append("deleteImage", e.target.elements.delete.value === 'on')
+        formData.append("deleteImage", e.target.elements.delete.checked)
         formData.append("extName", file ? file.name.split('.').pop() : null)
 
         console.log(formData)
@@ -45,7 +47,7 @@ function EditorSettings({close, initialX, initialY}) {
     }
     
     return (
-        <Dialog open={true} onClose={close} className="text-center">
+        <Dialog disableEnforceFocus open={true} onClose={close} className="text-center">
             <form onSubmit={(e) => save(e)} className="p-3">
                 <TextField defaultValue={initialX} variant="standard" name="sizeX" type="number" min="0" placeholder='Szélesség' />
                 <br />

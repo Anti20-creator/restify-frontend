@@ -1,41 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { 
-    Button, 
-    FormControl, 
-    InputLabel, 
-    MenuItem, 
-    Select, 
-    Table, IconButton,
-    TableHead,TableRow, TableCell, TableBody, TableContainer, List, ListItem, ListItemSecondaryAction, ListItemAvatar,
-    ListItemText, Avatar, Fab, Modal, Box,
-    Tab, AppBar, TablePagination
-} from '@material-ui/core';
+import {  Tab, AppBar } from '@material-ui/core';
 import { TabList, TabPanel, TabContext } from '@material-ui/lab'
-import { SearchOutlined, Delete, Add, Check, Close } from '@material-ui/icons';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
 import './Appointments.css'
 import API from '../../communication/API';
 import { getSocket } from '../../communication/socket';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
-import { appointmentsState, seenAppointments, removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
-import { tableIds } from '../../store/features/liveSlice';
+import { appointmentsState, seenAppointments, removeAppointment, acceptAppointment, seenAllAppointments, updateAppointments } from '../../store/features/appointmentsSlice';
 import { layout } from '../../store/features/layoutSlice'
 import BookingModal from '../../components/appointments/BookingModal';
-import useWindowSize from '../../store/useWindowSize'
 import ConfirmedAppointments from '../../components/appointments/ConfirmedAppointments'
 import UnConfirmedAppointments from '../../components/appointments/UnConfirmedAppointments'
 import AppointmentConfirmalModal from '../../components/appointments/AppointmentConfirmalModal'
-const moment = require('moment-timezone')
 
 function Appointments() {
 
     // state variables
-    const [timezoneOffset, setTimezoneOffset] = useState(0)
     const [filteredAppointments, setFilteredAppointments] = useState([])
     const [appointmentData, setAppointmentData] = useState(null)
     const [addModalOpen, setModalOpen] = useState(false)
@@ -43,13 +23,11 @@ function Appointments() {
     const [colors, setColors] = useState([])
     
     const layoutValue = useSelector(layout)
-    const tables = useSelector(tableIds)
     const appointments = useSelector(appointmentsState)
     const dispatch = useDispatch()
     const table = useRef('')
     const email = useRef('')
     const selectedDate = useRef(new Date())
-    const { height, width } = useWindowSize();
 
     const stringToColor = function(str) {
         let hash = 0;
@@ -69,13 +47,12 @@ function Appointments() {
         setFilteredAppointments(
             appointments.filter(appointment => 
                 appointment.confirmed &&
-                date.getFullYear() == (appointment.date.slice(0,4)) &&
-                date.getMonth() == (Number(appointment.date.slice(5,7)) - 1).toString() &&
-                date.getDate() == Number(appointment.date.slice(8,10)).toString() &&
-                (appointment.TableId === layoutValue.find(layoutTable => layoutTable.localId == table.current - 1)?.TableId || table.current === '') &&
+                Number(date.getFullYear()) === Number(appointment.date.slice(0,4)) &&
+                (date.getMonth()).toString() === (Number(appointment.date.slice(5,7)) - 1).toString() &&
+                (date.getDate()).toString() === Number(appointment.date.slice(8,10)).toString() &&
+                (appointment.TableId === layoutValue.find(layoutTable => layoutTable.localId === table.current - 1)?.TableId || table.current === '') &&
                 appointment.email.toLowerCase().includes(email.current.toLowerCase())
         ))
-
     }
     
     // event handlers
@@ -87,38 +64,35 @@ function Appointments() {
         table.current = event.target.value
 
         setAppointments()
+        
     };
 
     const filterAppoinments = (e) => {
         email.current = e.target.value
-        console.log(email.current)
         setAppointments()
     }
 
-    const deleteAppointment = (id) => {
-        const loadingToast = toast.loading('Foglalás törlése...')
-        API.delete('/api/appointments/delete-appointment/' + id).then(response => {
-            dispatch(removeAppointment(id))
-            setSelectedAppointment(null)
-            toast.update(loadingToast, {render: 'Foglalás törölve!', autoClose: 1500, isLoading: false, type: "success"})
-        }).catch(err => {
-            toast.update(loadingToast, {render: 'Hiba a törlés során!', autoClose: 1500, isLoading: false, type: "error"})
-        })
-    }
+    const seenAllAppointmentsSelector = useSelector(seenAllAppointments)
+
+    useEffect(() => {
+        if(seenAllAppointmentsSelector) {
+            API.get('/api/appointments').then(response => {
+                console.log(response)
+                dispatch(seenAppointments())
+                dispatch(updateAppointments(response.data.message))
+            }).catch(err => {
+                console.log(err)
+                toast.error('Hiba a foglalások betöltése során!', {
+                    autoClose: 1500
+                })
+            })
+        }
+    }, [seenAllAppointmentsSelector])
     
     // useEffect hook
     useEffect(() => {
         console.log('effect')
         getSocket().emit('join-appointment')
-        API.get('/api/appointments').then(response => {
-            if(response.data.success) {
-                dispatch(seenAppointments())
-            }else{
-                toast.error('Hiba a foglalások betöltése során!', {
-                    autoClose: 1500
-                })
-            }
-        })
 
         return () => getSocket().emit('leave-appointment')
     }, [])
@@ -142,9 +116,9 @@ function Appointments() {
         setValue(newValue);
     };
 
-    const showConfirmalModal = (id, accept, tableId, date) => {
+    const showConfirmalModal = (id, accept, tableId, date, peopleCount) => {
         console.log('show')
-        setAppointmentData({id, accept, tableId, date})
+        setAppointmentData({id, accept, tableId, date, peopleCount})
     }
     
     const confirmAppointment = (id, accept, tableId) => {
@@ -163,7 +137,7 @@ function Appointments() {
         const newColors = [] 
         for (const appointment of filteredAppointments) {
             let newColor = ""
-            for (const otherAppointment of filteredAppointments.filter(a => a.TableId === appointment.TableId)) {
+            for (const otherAppointment of appointments.filter(a => a.TableId === appointment.TableId)) {
                 if(appointment._id === otherAppointment._id) {
                     continue
                 }
@@ -177,7 +151,7 @@ function Appointments() {
             newColors.push(newColor)
         }
         setColors(newColors)
-    }, [filteredAppointments])
+    }, [filteredAppointments, appointments])
 
     return (
       <div className="w-100 h-100 appointments m-auto">
@@ -197,9 +171,8 @@ function Appointments() {
                     selectedAppointment={selectedAppointment}
                     table={table} selectedDate={selectedDate} handleDateChange={handleDateChange}
                     setModalOpen={setModalOpen}
-                    deleteAppointment={deleteAppointment} setSelectedAppointment={setSelectedAppointment}
-                    stringToColor={stringToColor} setModalOpen={setModalOpen}
                     setSelectedAppointment={setSelectedAppointment}
+                    stringToColor={stringToColor}
                     colors={colors}
                 />     
             </TabPanel>

@@ -1,0 +1,11 @@
+@media(max-width: 768px) {
+    .invoice-dialog-content {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .invoice-dialog-content > button {
+        padding: 0.5rem 0;
+        margin: 1rem 0;
+    }
+}

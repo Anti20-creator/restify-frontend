@@ -69,3 +69,6 @@ div li.MuiButtonBase-root.MuiListItem-root.MuiMenuItem-root.MuiMenuItem-gutters.
 .Toastify__progress-bar--animated {
   animation: Toastify__trackProgress linear 1 forwards;
 }
+.MuiTypography-root {
+  overflow-wrap: break-word;
+}

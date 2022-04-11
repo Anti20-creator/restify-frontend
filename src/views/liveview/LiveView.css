@@ -15,6 +15,12 @@
     overflow-y: visible;
     height: 80%;
 }
+@media(min-width: 768px) {
+    .table-view .checkout .MuiList-root {
+        overflow-y: scroll;
+        height: 80%;
+    }
+}
 
 .table-view .checkout .pay-button-holder {
     height: 10%;

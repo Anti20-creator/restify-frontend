@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { 
     Button, 
     FormControl, 
@@ -6,26 +6,19 @@ import {
     MenuItem, 
     Select, 
     Table, IconButton,
-    TableHead,TableRow, TableCell, TableBody, TableContainer, List, ListItem, ListItemSecondaryAction, ListItemAvatar,
+    TableHead,TableRow, TableCell, TableBody, TableContainer, List, ListItem, ListItemAvatar,
     ListItemText, Avatar, Fab, Modal, Box,
-    Tab, AppBar
 } from '@material-ui/core';
-import { TabList, TabPanel, TabContext } from '@material-ui/lab'
-import { SearchOutlined, Delete, Add, Check, Close } from '@material-ui/icons';
+import { SearchOutlined, Delete, Add } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import API from '../../communication/API';
-import { getSocket } from '../../communication/socket';
-import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
-import { appointmentsState, seenAppointments, removeAppointment, acceptAppointment } from '../../store/features/appointmentsSlice';
 import { tableIds } from '../../store/features/liveSlice';
-import { layout } from '../../store/features/layoutSlice'
-import BookingModal from '../../components/appointments/BookingModal';
 import useWindowSize from '../../store/useWindowSize'
+import DeleteConfirmal from './DeleteConfirmal';
 const moment = require('moment-timezone')
 
 const columns = [
@@ -43,7 +36,15 @@ const columns = [
     { id: 'delete', label: ''}
 ];
 
-function ConfirmedAppointments({filterAppoinments, selectedAppointment, filteredAppointments, handleChange, layoutValue, selectedDate, handleDateChange, setModalOpen, deleteAppointment, setSelectedAppointment, stringToColor, table, colors}) {
+function ConfirmedAppointments({filterAppoinments, selectedAppointment, filteredAppointments, handleChange, layoutValue, selectedDate, handleDateChange, setModalOpen, setSelectedAppointment, stringToColor, table, colors}) {
+
+    const dispatch = useDispatch()
+    const [deleteId, setDeleteId] = useState(null)
+
+    const openDeleteConfirmal = (id) => {
+        console.log(id)
+        setDeleteId(id)
+    }
 
 	const {width} = useWindowSize()
 	const tables = useSelector(tableIds)
@@ -136,6 +137,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                 <TableBody>
                     {filteredAppointments.sort((a, b) => moment(a.date) < moment(b.date) ? -1 : 1)
                     .map((appointment, idx) => {
+
                         const table = layoutValue.find(table => table.TableId === appointment.TableId)
                         return (
                         <TableRow style={{backgroundColor: colors[idx]}} hover role="checkbox" tabIndex={-1} key={appointment._id}>
@@ -146,13 +148,13 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                 {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
                             </TableCell>
                             <TableCell>
-                                {table ? table.localId + 1 : 'N.A.' }
+                                {table ? table.localId + 1 : appointment.TableId }
                             </TableCell>
                             <TableCell>
                                 {appointment.peopleCount}
                             </TableCell>
                             <TableCell>
-                                <IconButton onClick={() => deleteAppointment(appointment._id)}>
+                                <IconButton onClick={() => openDeleteConfirmal(appointment._id)}>
                                     <Delete />
                                 </IconButton>
                             </TableCell>
@@ -195,13 +197,15 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                         <h5><span className="fw-bold">Vendégek száma:</span> <span>{selectedAppointment.peopleCount}</span></h5>
 
                         <div className="text-center pt-3">
-                            <Button onClick={() => deleteAppointment(selectedAppointment._id)} variant="outlined" color="secondary">
+                            <Button onClick={() => openDeleteConfirmal(selectedAppointment._id)} variant="outlined" color="secondary">
                                 Eltávolítás
                             </Button>
                         </div>
                     </Box>
                 </Modal>
             }
+
+            {deleteId && <DeleteConfirmal id={deleteId} setSelectedAppointment={setSelectedAppointment} close={() => setDeleteId(null)} />}
         </>
 	)
 

@@ -4,6 +4,7 @@ import { addItem, removeAll, clear, addOne, removeOne, setItems } from '../store
 import { setModifiedLayout } from '../store/features/layoutSlice'
 import { toast } from 'react-toastify'
 import { receivedAppointment } from '../store/features/appointmentsSlice'
+import data from './data.json'
 
 let socket = null
 let store  = null
@@ -11,7 +12,7 @@ let store  = null
 export const createSocket = (_store) => {
     
     if(!socket) {
-        socket = io.connect('https://192.168.31.214:4000', {
+        socket = io.connect(data.base_uri, {
             transports: ['websocket']
         })
         registerListeners()

@@ -7,7 +7,6 @@ function Table({rounded, tableCount, type='normal', size='average', direction, c
 
     const [anchorEl, setAnchorEl] = useState(null)
     const [borderCounts, setBorderCounts] = useState([0, 0, 0, 0])
-    const [changeCount, setChangeCount] = useState(0)
 
     const sizes = {
         'small': 80,
@@ -23,8 +22,16 @@ function Table({rounded, tableCount, type='normal', size='average', direction, c
             newBorderCounts[(i + (direction / 90)) % 4] += 1
         }
         for(let i = 8; i < tableCount; i++) {
-            newBorderCounts[((i * 2 + 1) + (direction / 90)) % 4] += 1
+            if(i === 14) {
+                newBorderCounts[(0 + (direction / 90)) % 4] += 1
+            }
+            else if(i === 15) {
+                newBorderCounts[(2 + (direction / 90)) % 4] += 1
+            }else {
+                newBorderCounts[((i * 2 + 1) + (direction / 90)) % 4] += 1
+            }
         }
+
         setBorderCounts(newBorderCounts)
     }, [tableCount, direction])
 
@@ -46,7 +53,7 @@ function Table({rounded, tableCount, type='normal', size='average', direction, c
             </Badge>
         </div>
        :
-          <div className={"res-table d-flex " + type + " " + size + " " + (direction === 90 || direction === 270 ? 'rotated' : '')}>
+          <div className={"res-table d-flex " + type + " " + size + " " + (direction === 90 || direction === 270 ? 'rotated' : '') + " " + (tableCount > 10 ? 'wider' : '') + " " + (tableCount > 12 ? 'extra-wide' : '')}>
               <div className="d-flex flex-column justify-content-center align-items-center side-seats">
                     {
                         Array.from(Array(borderCounts[0])).map((_, idx) => {
@@ -119,7 +126,7 @@ function Table({rounded, tableCount, type='normal', size='average', direction, c
                             <Remove />
                         </IconButton>
                         <p>{ tableCount }</p>
-                        <IconButton disabled={(type === 'wide' && tableCount === 10) || (type !== 'wide' && tableCount === 8)} onClick={addPeople}>
+                        <IconButton disabled={(type === 'wide' && tableCount === 20) || (type !== 'wide' && tableCount === 8)} onClick={addPeople}>
                             <Add />
                         </IconButton>
                         <IconButton onClick={rotateTable}>

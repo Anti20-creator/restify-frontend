@@ -7,6 +7,7 @@ import { getSocket } from '../../communication/socket'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
+import './InvoiceGeneratorModal.css'
 
 function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}) {
 
@@ -50,10 +51,6 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     const download = async() => {
       if(!invoiceName) return
 
-      /*const link = document.createElement("a");
-      link.download = 'https://192.168.31.214:4000/public/invoices/' + invoiceName;
-      link.href = 'https://192.168.31.214:4000/public/invoices/' + invoiceName;
-      link.click();*/
       window.open('https://192.168.31.214:4000/api/invoices/download/' + invoiceName)
       getSocket().emit('guest-leaved', {tableId})
       handleClose()
@@ -86,7 +83,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
         <DialogTitle id="customized-dialog-title" onClose={closeDialog}>
           Számla - {useParams().id}
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers className='invoice-dialog-content'>
           {
             !invoiceProcess &&
             <>
@@ -114,14 +111,6 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
           }
           {invoiceProcess === 'split-equal' && 
               (
-                /*!invoiceName ?
-                <Typography gutterBottom>
-                  Számla generálása folyamatban...
-                </Typography>
-                :
-                <Typography gutterBottom>
-                  Számla nyomtatásra kész
-                </Typography>*/
                 !invoiceName ? 
                   <form className="text-center" onSubmit={getSplittedEqualInvoice}>
                     <TextField name="peopleCount" type="number" />

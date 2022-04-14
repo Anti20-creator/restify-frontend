@@ -6,6 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import { getSocket } from '../../communication/socket'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
 import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
 import './InvoiceGeneratorModal.css'
 
@@ -23,21 +24,22 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
       console.log(invoiceProcess)
       if(invoiceProcess === 'together') {
         const {data} = await API.get(`/api/tables/${tableId}`)
+          .catch(err => {
+            toast.error('A számla generálása meghiúsult!')
+            handleClose()
+          })
         setInvoiceName(data.message)
-      }/*else if(invoiceProcess === 'split-equal') {
-        const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: 2})
-        console.log(data)
-        setInvoiceName(data.message)
-      }*/
+      }
     }
 
     const getSplittedInvoice = () => {
       API.post(`/api/tables/${tableId}/split`, {items: itemsToPay}).then(({data}) => {
-        if(data.success) {
-          setInvoiceName(data.message)
-          //dispatch(setItems(itemsLeft))
-          setItemsToPay([])
-        }
+        setInvoiceName(data.message)
+        //dispatch(setItems(itemsLeft))
+        setItemsToPay([])
+      }).catch(err => {
+        toast.error('A számla generálása meghiúsult!')
+        handleClose()
       })
     }
 
@@ -45,6 +47,10 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
       e.preventDefault()
 
       const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: Number(e.target.elements.peopleCount.value)})
+        .catch(err => {
+          toast.error('A számla generálása meghiúsult!')
+          handleClose()
+        })
       setInvoiceName(data.message)
     }
 

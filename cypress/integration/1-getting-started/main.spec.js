@@ -359,6 +359,13 @@ describe('Test appointments', () => {
     cy.wait(400)
 
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 1)
+    
+    cy.get('.MuiTableContainer-root tbody tr').find('button').click()
+    cy.get('div[role="presentation"] button').first().click()
+    cy.wait(2000)
+    
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 0)
+
   })
 
   it('Booking by modal', () => {
@@ -379,7 +386,7 @@ describe('Test appointments', () => {
 
     cy.wait(1200)
 
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 1)
   })
 
 })
@@ -550,7 +557,7 @@ describe('Mobile tests - appointments', () => {
 
     cy.wait(400)
 
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 2)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 1)
 
   })
 
@@ -573,7 +580,7 @@ describe('Mobile tests - appointments', () => {
 
     cy.wait(1200)
 
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 3)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 2)
     
   })
 
@@ -600,7 +607,7 @@ describe('Mobile tests - appointments', () => {
     
     cy.get('.MuiTabs-root button').first().click()
     cy.wait(200)
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 4)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 3)
   })
 
 })

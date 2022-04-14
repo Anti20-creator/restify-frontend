@@ -3,10 +3,8 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, IconButton, Box,
 	List, ListItem, ListItemText, ListItemAvatar, Avatar, TableBody, TablePagination } from '@material-ui/core'
 import { Check, Close, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import Modal from '@mui/material/Modal'
-import { tableIds } from '../../store/features/liveSlice';
 import { layout } from '../../store/features/layoutSlice'
 import { useSelector } from 'react-redux';
-import { appointmentsState } from '../../store/features/appointmentsSlice';
 import useWindowSize from '../../store/useWindowSize'
 const moment = require('moment-timezone')
 
@@ -41,13 +39,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
     }
 
 	const layoutValue = useSelector(layout)
-    const tables = useSelector(tableIds)
-    const appointments = useSelector(appointmentsState)
     const { width } = useWindowSize();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
 
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, appointments.length - page * rowsPerPage);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };

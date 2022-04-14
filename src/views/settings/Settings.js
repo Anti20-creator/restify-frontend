@@ -2,10 +2,13 @@ import { TextField, Button, Typography, FormControl, InputLabel, Select, MenuIte
 import React, { useState, useEffect, useRef } from 'react'
 import API from '../../communication/API'
 import { toast } from 'react-toastify'
+import openingTimesValidator from './validator'
+import { useTranslation } from 'react-i18next'
+import '../../localization/translations'
 
 function Settings() {
 
-    const [infos, setInfos] = useState({})
+    const { t } = useTranslation();
     const cityRef = useRef(null)
     const postalCodeRef = useRef(null)
     const addressRef = useRef(null)
@@ -27,7 +30,6 @@ function Settings() {
     useEffect(() => {
         API.get('/api/informations').then(({data}) => {
             console.log(data)
-            setInfos(data.message)
             cityRef.current.value = data.message.city ?? ''
             postalCodeRef.current.value = data.message.postalCode ?? ''
             addressRef.current.value = data.message.address ?? ''
@@ -46,52 +48,49 @@ function Settings() {
 
     const submitInfos = (e) => {
         e.preventDefault()
-        const loadingToast = toast.loading('Adatok frissítése...')
+
+        const openingTimes = [
+            {open: {hours: mondayRef.current.value.split('-')[0].split(':')[0], minutes: mondayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: mondayRef.current.value.split('-')[1].split(':')[0], minutes: mondayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: tuesdayRef.current.value.split('-')[0].split(':')[0], minutes: tuesdayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: tuesdayRef.current.value.split('-')[1].split(':')[0], minutes: tuesdayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: wednesdayRef.current.value.split('-')[0].split(':')[0], minutes: wednesdayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: wednesdayRef.current.value.split('-')[1].split(':')[0], minutes: wednesdayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: thursdayRef.current.value.split('-')[0].split(':')[0], minutes: thursdayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: thursdayRef.current.value.split('-')[1].split(':')[0], minutes: thursdayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: fridayRef.current.value.split('-')[0].split(':')[0], minutes: fridayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: fridayRef.current.value.split('-')[1].split(':')[0], minutes: fridayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: saturdayRef.current.value.split('-')[0].split(':')[0], minutes: saturdayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: saturdayRef.current.value.split('-')[1].split(':')[0], minutes: saturdayRef.current.value.split('-')[1].split(':')[1]} },
+
+            {open: {hours: sundayRef.current.value.split('-')[0].split(':')[0], minutes: sundayRef.current.value.split('-')[0].split(':')[1]},
+            close:  {hours: sundayRef.current.value.split('-')[1].split(':')[0], minutes: sundayRef.current.value.split('-')[1].split(':')[1]} },
+        ]
+        
+        if(!openingTimesValidator(openingTimes)) {
+            toast.error('A nyitvatartási idők formátuma nem megfelelő!')
+            return
+        }
+
+
+        const loadingToast = toast.loading(t('api.informations-loading'))
         API.post('/api/informations/update', {
             city: e.target.elements.city.value,
             postalCode: e.target.elements.postalCode.value,
             address: e.target.elements.address.value,
             taxNumber: e.target.elements.taxNumber.value,
             phoneNumber: e.target.elements.phoneNumber.value,
-            openingTimes: [
-                {open: {hours: mondayRef.current.value.split('-')[0].split(':')[0], minutes: mondayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: mondayRef.current.value.split('-')[1].split(':')[0], minutes: mondayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: tuesdayRef.current.value.split('-')[0].split(':')[0], minutes: tuesdayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: tuesdayRef.current.value.split('-')[1].split(':')[0], minutes: tuesdayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: wednesdayRef.current.value.split('-')[0].split(':')[0], minutes: wednesdayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: wednesdayRef.current.value.split('-')[1].split(':')[0], minutes: wednesdayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: thursdayRef.current.value.split('-')[0].split(':')[0], minutes: thursdayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: thursdayRef.current.value.split('-')[1].split(':')[0], minutes: thursdayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: fridayRef.current.value.split('-')[0].split(':')[0], minutes: fridayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: fridayRef.current.value.split('-')[1].split(':')[0], minutes: fridayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: saturdayRef.current.value.split('-')[0].split(':')[0], minutes: saturdayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: saturdayRef.current.value.split('-')[1].split(':')[0], minutes: saturdayRef.current.value.split('-')[1].split(':')[1]} },
-
-                {open: {hours: sundayRef.current.value.split('-')[0].split(':')[0], minutes: sundayRef.current.value.split('-')[0].split(':')[1]},
-                close:  {hours: sundayRef.current.value.split('-')[1].split(':')[0], minutes: sundayRef.current.value.split('-')[1].split(':')[1]} },
-            ],
+            openingTimes: openingTimes,
             currency: currency
         }).then(response => {
-            toast.update(loadingToast, {render: 'Adatok sikeresen frissítve!', autoClose: 1200, type: "success", isLoading: false})
+            toast.update(loadingToast, {render: t(`api.${response.data.message}`), autoClose: 1200, type: "success", isLoading: false})
         }).catch(err => {
-            cityRef.current.value = infos.city ?? ''
-            postalCodeRef.current.value = infos.postalCode ?? ''
-            addressRef.current.value = infos.address ?? ''
-            taxNumberRef.current.value = infos.taxNumber ?? ''
-            phoneNumberRef.current.value = infos.phoneNumber ?? ''
-            mondayRef.current.value = infos.openingTimes[0] ?? ''
-            tuesdayRef.current.value = infos.openingTimes[1] ?? ''
-            wednesdayRef.current.value = infos.openingTimes[2] ?? ''
-            thursdayRef.current.value = infos.openingTimes[3] ?? ''
-            fridayRef.current.value = infos.openingTimes[4] ?? ''
-            saturdayRef.current.value = infos.openingTimes[5] ?? ''
-            sundayRef.current.value = infos.openingTimes[6] ?? ''
-            toast.update(loadingToast, {render: 'Hiba a frissítés során!', autoClose: 1200, type: "error", isLoading: false})
+            toast.update(loadingToast, {render: t('api.update-error'), autoClose: 1200, type: "error", isLoading: false})
         })
     }
 

@@ -44,10 +44,13 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
     const saveFormData = (e) => {
         e.preventDefault()
 
+        const peopleCount = parseInt(e.target.elements.peopleCount.value)
+        const email = e.target.elements.email.value
+
         setFormData({
-            email: e.target.elements.email.value,
+            email: email,
             date: e.target.elements.date.value,
-            peopleCount: parseInt(e.target.elements.peopleCount.value),
+            peopleCount: peopleCount,
             timezoneOffset: new Date().getTimezoneOffset(),
             tableId: tableIds.find(ids => ids.localId === (localId - 1)).id
         })
@@ -82,11 +85,25 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
     const submitForm = (e) => {
         e.preventDefault()
 
-         if(e.target.elements.email.value.trim() === '' || isNaN(Date.parse(e.target.elements.date.value)) ||
-            parseInt(e.target.elements.peopleCount.value) < 1 || localId < 0) {
-            toast.error('A foglalás nem indítható', {autoClose: 1200})
+        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value)) || e.target.elements.email.value.trim() === ''){
+            toast.error('Az e-mail formátuma nem megfelelő!')
             return
-         }
+        }
+        
+        if(isNaN(Date.parse(e.target.elements.date.value))) {
+            toast.error('A dátum formátuma nem megfelelő!')
+            return    
+        }
+        
+        if(parseInt(e.target.elements.peopleCount.value) < 1) {
+            toast.error('Legalább 1 vendégnek érkeznie kell!')
+            return
+        }
+        
+        if(localId < 0) {
+            toast.error('Válasszon ki egy asztalt!')
+            return
+        }
 
         setOpenConfirmal(true);
         saveFormData(e)
@@ -109,6 +126,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                     <br />
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DateTimePicker
+                        minDate={new Date()}
                         renderInput={(props) => <TextField name="date" {...props} />}
                         label="Válassz dátumot"
                         ampm={false}

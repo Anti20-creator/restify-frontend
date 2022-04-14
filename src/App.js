@@ -8,8 +8,13 @@ import {
 } from "react-router-dom";
 import { Provider } from 'react-redux'
 import { store } from './store/store'
+import { useTranslation } from 'react-i18next';
+import './localization/translations'
 
 function App() {
+
+  const [t, i18n] = useTranslation();
+  i18n.changeLanguage('hu')
 
   return (
     <Provider store={store}>

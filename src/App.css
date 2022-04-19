@@ -45,10 +45,17 @@ div li.MuiButtonBase-root.MuiListItem-root.MuiMenuItem-root.MuiMenuItem-gutters.
   justify-content: space-between;
 }
 
+div[role="presentation"] > .MuiPaper-root {
+  overflow-y: hidden;
+}
+
 @media(max-width: 768px) {
   body{
     overflow-y: auto;
     overflow-x: hidden;
+  }
+  div[role="presentation"] > .MuiPaper-root {
+    overflow-y: auto;
   }
   .Toastify__toast-container.Toastify__toast-container--bottom-center {
     margin:  0 auto;

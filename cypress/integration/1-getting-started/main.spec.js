@@ -5,9 +5,14 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   return false
 })
 
+const getNextMonday = () => {
+  const dateCopy = new Date(new Date().getTime())
+  const nextMonday = new Date(dateCopy.setDate(dateCopy.getDate() + ((7 - dateCopy.getDay() + 1) % 7 || 7)))
+  return nextMonday
+}
 const adminEmail = faker.internet.email()
 const invitedEmail = faker.internet.email()
-const appointmentDate = new Date(new Date().getTime() + 3_600_000 * 48)
+const appointmentDate = getNextMonday()
 let globalRestaurantId = null
 
 describe('Delete cookies', () => {
@@ -30,6 +35,12 @@ describe('Register a new user', () => {
     cy.get('button').last().click()
     cy.wait(800)
     cy.url().should('eq', 'http://192.168.31.161:3000/')
+
+
+    const date = getNextMonday()
+    date.setHours(15, 0, 0, 0)
+
+    cy.log(date.toString())
   })
 })
 
@@ -302,12 +313,16 @@ describe('Get tables', () => {
 
         for(const tableId of tableIds) {
 
+          const date = getNextMonday()
+          date.setHours(15, 0, 0, 0)
+
           cy.request('POST', 'https://192.168.31.214:4000/api/appointments/book', {
             restaurantId: restaurantId,
             tableId: tableId,
-            date: appointmentDate.toISOString(),
+            date: date.toString(),
             peopleCount: 2,
-            email: faker.internet.email()
+            email: faker.internet.email(),
+            lang: 'en'
           })
 
           cy.wait(700)
@@ -374,7 +389,7 @@ describe('Test appointments', () => {
     const day = appointmentDate.getDate() < 10 ? '0' + appointmentDate.getDate() : appointmentDate.getDate()
     cy.get('.invite-box button').click()
     cy.get('div[role="presentation"] input').eq(0).type("amtmannkristof@gmail.com")
-    cy.get('div[role="presentation"] input').eq(1).type(month + day + appointmentDate.getFullYear() + faker.datatype.number({min: 10, max: 20}) + faker.random.arrayElement(['00', 15, 30, 45]))
+    cy.get('div[role="presentation"] input').eq(1).type(month + day + appointmentDate.getFullYear() + faker.datatype.number({min: 10, max: 15}) + faker.random.arrayElement(['00', 15, 30, 45]))
     cy.get('div[role="presentation"] input').eq(2).type(2)
     cy.get('div[role="presentation"] .MuiFormControl-root').last().click(30, 30)
     cy.get('div[role="presentation"] ul li').last().click()
@@ -529,12 +544,18 @@ describe('Mobile tests - appointments', () => {
 
         for(const tableId of tableIds) {
 
+          const date = getNextMonday()
+          date.setHours(15, 0, 0, 0)
+
+          cy.log(date.toString())
+
           cy.request('POST', 'https://192.168.31.214:4000/api/appointments/book', {
             restaurantId: restaurantId,
             tableId: tableId,
-            date: appointmentDate.toISOString(),
+            date: date.toString(),
             peopleCount: faker.datatype.number({min: 1, max: 5}),
-            email: faker.internet.email()
+            email: faker.internet.email(),
+            lang: 'en'
           })
 
           cy.wait(700)
@@ -606,7 +627,7 @@ describe('Mobile tests - appointments', () => {
     cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 0)
     
     cy.get('.MuiTabs-root button').first().click()
-    cy.wait(200)
+    cy.wait(1500)
     cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 3)
   })
 

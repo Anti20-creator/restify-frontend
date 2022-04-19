@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TableContainer, Table, TableHead, TableRow, TableCell, IconButton, Box,
 	List, ListItem, ListItemText, ListItemAvatar, Avatar, TableBody, TablePagination } from '@material-ui/core'
 import { Check, Close, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
@@ -6,46 +6,34 @@ import Modal from '@mui/material/Modal'
 import { layout } from '../../store/features/layoutSlice'
 import { useSelector } from 'react-redux';
 import useWindowSize from '../../store/useWindowSize'
-const moment = require('moment-timezone')
-
-const columns = [
-    { id: 'email', label: 'E-mail' },
-    {
-        id: 'date',
-        label: 'Időpont',
-        format: (value) => value.toLocaleISOString(),
-    },
-    {
-        id: 'tableId',
-        label: 'Asztal ID',
-    },
-    { id: 'peopleCount', label: 'Személyek száma'},
-    { id: 'delete', label: ''}
-];
+import { t } from 'i18next'
+import moment from 'moment-timezone'
+import { stringToColor } from '../../utils/stringToColor'
 
 function UnConfirmedAppointments({filteredAppointments, selectedAppointment, showConfirmalModal, setSelectedAppointment}) {
+	
+	const columns = [
+		{ id: 'email', label: t('commons.email') },
+		{
+			id: 'date',
+			label: t('commons.date'),
+		},
+		{
+			id: 'tableId',
+			label: t('commons.table-id'),
+		},
+		{ id: 'peopleCount', label: t('commons.peoplecount')},
+		{ id: 'delete', label: ''}
+	];
 
-	const stringToColor = function(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        let colour = '#';
-        for (let i = 0; i < 3; i++) {
-          let value = (hash >> (i * 8)) & 0xFF;
-          colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
-    }
-
-	const layoutValue = useSelector(layout)
     const { width } = useWindowSize();
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(25);
+	const layoutValue = useSelector(layout)
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-    };
+    }
 
     const getDisplayableAppointments = () => {
 		return (rowsPerPage > 0
@@ -53,11 +41,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	            : filteredAppointments.sort((a, b) => moment(a.date) < moment(b.date) ? -1 : 1))
     }
 
-
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
+    }
 
 	return(
 		<div>
@@ -86,10 +73,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                                {appointment.email}
 	                            </TableCell>
 	                            <TableCell>
-	                                {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
+	                                {moment(appointment.date).utcOffset(0).format('L HH:mm')}
 	                            </TableCell>
 	                            <TableCell>
-	                                {table ? table.localId + 1 : 'tetsz.' }
+	                                {table ? table.localId + 1 : t('commons.any-table') }
 	                            </TableCell>
 	                            <TableCell>
 	                                {appointment.peopleCount}
@@ -129,7 +116,7 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 		                                    { appointment.email.charAt(0) }
 		                                </Avatar>
 		                            </ListItemAvatar>
-		                            <ListItemText primary={appointment.email} secondary={moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")} />
+		                            <ListItemText primary={appointment.email} secondary={moment(appointment.date).utcOffset(0).format("L HH:mm")} />
 		                        </ListItem>
 		                    ))}
 		                </List>
@@ -152,10 +139,10 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                aria-describedby="modal-modal-description"
 	                className="team-dialog">
 	                    <Box>
-	                        <h5><span className="fw-bold">Email:</span> <span>{selectedAppointment.email}</span></h5>
-	                        <h5><span className="fw-bold">Dátum:</span> <span>{moment(selectedAppointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}</span></h5>
-	                        <h5><span className="fw-bold">Asztal ID:</span> <span>{layoutValue.find(table => table.TableId === selectedAppointment.TableId)?.localId + 1}</span></h5>
-	                        <h5><span className="fw-bold">Vendégek száma:</span> <span>{selectedAppointment.peopleCount}</span></h5>
+	                        <h5><span className="fw-bold">{t('commons.email')}:</span> <span>{selectedAppointment.email}</span></h5>
+	                        <h5><span className="fw-bold">{t('commons.date')}:</span> <span>{moment(selectedAppointment.date).utcOffset(0).format("L HH:mm")}</span></h5>
+	                        <h5><span className="fw-bold">{t('commons.table-id')}:</span> <span>{layoutValue.find(table => table.TableId === selectedAppointment.TableId)?.localId + 1}</span></h5>
+	                        <h5><span className="fw-bold">{t('commons.peoplecount')}:</span> <span>{selectedAppointment.peopleCount}</span></h5>
 
 	                        <div className="text-center d-flex justify-content-between pt-3">
 	                            <IconButton onClick={() => showConfirmalModal(selectedAppointment._id, true, selectedAppointment.TableId, selectedAppointment.date, selectedAppointment.peopleCount)}>

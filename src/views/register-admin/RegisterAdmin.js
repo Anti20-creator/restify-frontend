@@ -3,11 +3,13 @@ import { Button, Card, FormControl, TextField } from '@material-ui/core'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import API from '../../communication/API'
+import { useTranslation } from 'react-i18next'
 
 function RegisterAdmin() {
 
     const navigate = useNavigate()
-    
+    const { t, i18n } = useTranslation()
+
     const register = (e) => {
         e.preventDefault()
         const name = e.target.name.value
@@ -15,12 +17,12 @@ function RegisterAdmin() {
         const email = e.target.email.value
         const password = e.target.password.value
 
-        const loadingToast = toast.loading('Regisztráció folyamatban...')
-        API.post('api/users/register-admin/', {email, password, restaurantName, name}).then(result => {
-            toast.update(loadingToast, {render: 'Sikeres regisztráció', autoClose: 1200, isLoading: false, type: "success"})
+        const loadingToast = toast.loading(t('api.registration-in-progress'))
+        API.post('api/users/register-admin/', {email, password, restaurantName, name, lang: i18n.language}).then(result => {
+            toast.update(loadingToast, {render: t(`api.${result.data.message}`), autoClose: 1200, isLoading: false, type: "success"})
             navigate('../')
         }).catch(err => {    
-            toast.update(loadingToast, {render: 'Sikertelen regisztráció', autoClose: 1200, isLoading: false, type: "error"})
+            toast.update(loadingToast, {render: t(`api.${err.response.data.message}`), autoClose: 1200, isLoading: false, type: "error"})
         })
     }
 
@@ -29,11 +31,11 @@ function RegisterAdmin() {
             <Card className="w-50 p-5 text-center">
                 <form onSubmit={register}>
                     <FormControl>
-                        <TextField name="name" type="text" placeholder="Teljes név" />
-                        <TextField name="restaurantName" type="text" placeholder="Étterem neve" />
-                        <TextField name="email" type="email" placeholder="E-mail" />
-                        <TextField name="password" type="password" placeholder="Jelszó" />
-                        <Button variant="outlined" color="primary" type="submit">Regisztráció</Button>
+                        <TextField name="name" type="text" placeholder={t('commons.full-name')} />
+                        <TextField name="restaurantName" type="text" placeholder={t('commons.restaurant-name')} />
+                        <TextField name="email" type="email" placeholder={t('commons.email')} />
+                        <TextField name="password" type="password" placeholder={t('commons.password')} />
+                        <Button variant="outlined" color="primary" type="submit">{t('sidebar.register')}</Button>
                     </FormControl>
                 </form>
             </Card>

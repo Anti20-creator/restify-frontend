@@ -16,14 +16,20 @@ import { setLiveViewMobileMode, isInMobileModeSelector } from '../../store/featu
 
 function LiveView() {
 
-    const [tables, setTables] = useState([])
-    const mobileMode = useSelector(isInMobileModeSelector)
-    const { width } = useWindowSize()
-    const layoutValue = useSelector(layout)
-    const menu = useSelector(menuItems)
-    const tablesInUse = useSelector(tablesInUseSelector)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const { width } = useWindowSize()
+    const mobileMode = useSelector(isInMobileModeSelector)
+    const layoutValue = useSelector(layout)
+    const tablesInUse = useSelector(tablesInUseSelector)
+    const layoutWidth = useSelector(layoutWidthSelector)
+    const layoutHeight = useSelector(layoutHeightSelector)
+    const menu = useSelector(menuItems)
+    const [tables, setTables] = useState([])
+    const [liveTableId, setLiveTableId] = useState(-1)
+    const [bookTableModalOpen, setBookTableModalOpen] = useState(false)
+    const [selectedTable, setSelectedTable] = useState(-1)
+    const [backgroundImage, setBackgroundImage] = useState('')
 
     useEffect(() => {
         setTables(layoutValue.map((table) => {
@@ -39,12 +45,10 @@ function LiveView() {
             }
         }))
     }, [layoutValue, menu])
-    const [liveTableId, setLiveTableId] = useState(-1)
-    const [bookTableModalOpen, setBookTableModalOpen] = useState(false)
-    const [selectedTable, setSelectedTable] = useState(-1)
-    const [backgroundImage, setBackgroundImage]     = useState('')
-    const layoutWidth                               = useSelector(layoutWidthSelector)
-    const layoutHeight                              = useSelector(layoutHeightSelector)
+
+    useEffect(() => {
+        updateImage()
+    }, [])
 
     const handleTableClick = (id) => {
         setSelectedTable(id)
@@ -60,24 +64,14 @@ function LiveView() {
 
     const updateImage = async() => {
         API.get('/api/layouts/image').then(({data}) => {
-            console.log(data.message)
             setBackgroundImage(data.message + `?ver=${new Date().getTime()}`)
         })
     }
-
-    useEffect(() => {
-        updateImage()
-    }, [])
 
     const bookTable = () => {
         console.log(selectedTable)
         API.post('api/tables/book', {tableId: selectedTable})
     }
-
-    useEffect(() => {
-        console.log(mobileMode)
-    }, [mobileMode])
-
 
   return (
       <>

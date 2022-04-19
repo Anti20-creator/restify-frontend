@@ -5,10 +5,12 @@ import { TextField, Button, Checkbox } from '@mui/material';
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux';
 import { updateSize } from '../../store/features/layoutSlice';
+import { useTranslation } from 'react-i18next'
 
 function EditorSettings({close, initialX, initialY}) {
 
     const dispatch = useDispatch()
+    const { t } = useTranslation()
     const [file, setFile] = useState(null)
     const [fileUploadDisabled, setFileUploadDisabled] = useState(false)
 
@@ -23,8 +25,6 @@ function EditorSettings({close, initialX, initialY}) {
         const sizeX = e.target.elements.sizeX.value
         const sizeY = e.target.elements.sizeY.value
 
-
-        console.log(e.target.elements.delete.checked)
         const formData = new FormData()
         formData.append("image", file)
         formData.append("sizeX", Number(sizeX))
@@ -33,15 +33,13 @@ function EditorSettings({close, initialX, initialY}) {
         formData.append("deleteImage", e.target.elements.delete.checked)
         formData.append("extName", file ? file.name.split('.').pop() : null)
 
-        console.log(formData)
-
-        const loadingToast = toast.loading('Beállítások frissítése...', {position: "bottom-center"})
+        const loadingToast = toast.loading(t(`api.layout-settings-loading`), {position: "bottom-center"})
         API.post('/api/layouts/update', formData).then(response => {
             dispatch(updateSize({sizeX: Number(sizeX), sizeY: Number(sizeY)}))
-            toast.update(loadingToast, {render: 'Beállítások frissítve!', autoClose: 1200, isLoading: false, type: "success"})
+            toast.update(loadingToast, {render: t(`api.${response.data.message}`), autoClose: 1200, isLoading: false, type: "success"})
             close()
         }).catch(err => {
-            toast.update(loadingToast, {render: 'Hiba a frissítés során!', autoClose: 1200, isLoading: false, type: "error"})
+            toast.update(loadingToast, {render: t(`api.${err.response.data.message}`), autoClose: 1200, isLoading: false, type: "error"})
         })
 
     }
@@ -49,16 +47,16 @@ function EditorSettings({close, initialX, initialY}) {
     return (
         <Dialog disableEnforceFocus open={true} onClose={close} className="text-center">
             <form onSubmit={(e) => save(e)} className="p-3">
-                <TextField defaultValue={initialX} variant="standard" name="sizeX" type="number" min="0" placeholder='Szélesség' />
+                <TextField defaultValue={initialX} variant="standard" name="sizeX" type="number" min="0" placeholder={t('commons.width')} />
                 <br />
-                <TextField defaultValue={initialY} variant="standard" name="sizeY" type="number" min="0" placeholder='Magasság' />
+                <TextField defaultValue={initialY} variant="standard" name="sizeY" type="number" min="0" placeholder={t('commons.height')} />
                 <br />
                 <TextField disabled={fileUploadDisabled} variant="standard" name="image" type="file" min="0" className="mx-5" onChange={handleFileChange} accept="image/jpg" />
                 <br />
-                Fénykép törlése: <Checkbox name="delete" onChange={(e) => {setFileUploadDisabled(e.target.checked); }} />
+                {t('commons.delete-photo')}: <Checkbox name="delete" onChange={(e) => {setFileUploadDisabled(e.target.checked); }} />
                 <br />
                 <Button variant="outlined" type="submit">
-                    Mentés
+                    {t('commons.save')}
                 </Button>
             </form>
         </Dialog>

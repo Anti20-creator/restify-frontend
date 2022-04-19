@@ -5,9 +5,12 @@ import API from '../../communication/API'
 import { useDispatch } from 'react-redux'
 import { editCategory, deleteCategory } from '../../store/features/menuSlice'
 import icons from '../../components/menu/icons.json'
+import { useTranslation } from 'react-i18next'
 
 function EditCategory({open, setOpen, category}) {
     
+    const dispatch = useDispatch()
+    const { t, i18n } = useTranslation()
     const [categoryIcon, setCategoryIcon] = useState(category.icon)
 
     useEffect(() => {
@@ -18,12 +21,10 @@ function EditCategory({open, setOpen, category}) {
         setCategoryIcon(e.target.value)
     }
 
-    const dispatch = useDispatch()
-
     const updateCategory = (e) => {
         e.preventDefault()
 
-        const editToast = toast.loading('Kategória frissítése...')
+        const editToast = toast.loading(t('api.updating-category'))
         const newCategory = e.target.elements.category.value
         API.post('/api/menu/modify-category', {
             oldCategory: category.category,
@@ -31,25 +32,25 @@ function EditCategory({open, setOpen, category}) {
             categoryIcon
         }).then(result => {
             dispatch(editCategory({oldCategory: category.category, newCategory: newCategory, categoryIcon}))
-            toast.update(editToast, {render: 'Sikeres frissítés', isLoading: false, autoClose: 1200, type: 'success'})
+            toast.update(editToast, {render: t(`api.${result.data.message}`), isLoading: false, autoClose: 1200, type: 'success'})
             setOpen({category: '', icon: ''})
         }).catch(err => {
-            toast.update(editToast, {render: 'Hiba a frissítés közben...', isLoading: false, autoClose: 1200, type: 'error'})
+            toast.update(editToast, {render: t(`api.${err.response.data.message}`), isLoading: false, autoClose: 1200, type: 'error'})
         })
     }
 
     const removeCategory = (e) => {
         e.preventDefault()
 
-        const editToast = toast.loading('Kategória törlése...')
+        const editToast = toast.loading(t('api.deleting-category'))
         API.delete('/api/menu/delete-category', {data: {
             category: category.category
         }}).then(result => {
             dispatch(deleteCategory(category.category))
-            toast.update(editToast, {render: 'Sikeres törlés!', isLoading: false, autoClose: 1200, type: 'success'})
+            toast.update(editToast, {render: t(`api.${result.data.message}`), isLoading: false, autoClose: 1200, type: 'success'})
             setOpen({category: '', icon: ''})
         }).catch(err => {
-            toast.update(editToast, {render: 'Hiba a törlés közben...', isLoading: false, autoClose: 1200, type: 'error'})
+            toast.update(editToast, {render: t(`api.${err.response.data.message}`), isLoading: false, autoClose: 1200, type: 'error'})
         })
     }
     
@@ -61,10 +62,10 @@ function EditCategory({open, setOpen, category}) {
             aria-describedby="modal-modal-description">
                 <Box>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Kategória szerkesztése
+                        {t('commons.modify-category')}
                     </Typography>
                     <form className="text-center" onSubmit={updateCategory}>
-                        <TextField name="category" defaultValue={category.category} label="Kategória neve" variant="standard" type="text" className="my-2" />
+                        <TextField name="category" defaultValue={category.category} label={t('commons.category-name')} variant="standard" type="text" className="my-2" />
                         <FormControl>
                             <Select
                             value={categoryIcon}
@@ -78,7 +79,7 @@ function EditCategory({open, setOpen, category}) {
                                 </MenuItem>
                                 {
                                     Object.keys(icons).map((icon) => (
-                                        <MenuItem key={icon} value={icon}>{icons[icon].hu}</MenuItem>
+                                        <MenuItem key={icon} value={icon}>{i18n.language === 'en' ? icon : (icons[icon][i18n.language] ? icons[icon][i18n.language] : icon)}</MenuItem>
                                     ))
                                 }
                             </Select>
@@ -86,10 +87,10 @@ function EditCategory({open, setOpen, category}) {
                         <br />
                         <div className="d-flex justify-content-between pt-3">
                             <Button variant="contained" color="primary" className="m-auto mt-2" type="submit">
-                                Mentés
+                                {t('commons.save')}
                             </Button>
                             <Button onClick={removeCategory} variant="contained" color="secondary" className="m-auto mt-2" type="submit">
-                                Törlés
+                                {t('commons.remove')}
                             </Button>
                         </div>
                     </form>

@@ -16,6 +16,7 @@ import { layoutWidthSelector, layoutHeightSelector } from '../../store/features/
 import NestedMenuItem from 'material-ui-nested-menu-item'
 import useWindowSize from '../../store/useWindowSize'
 import { Dialog } from '@mui/material'
+import { useTranslation } from 'react-i18next';
 
 function Editor() {
 
@@ -51,8 +52,6 @@ function Editor() {
             move: dragMoveListener
         }
     })
-        
-
 
     function dragMoveListener (event) {
         const target = event.target
@@ -73,21 +72,16 @@ function Editor() {
                 : table 
         ))
     }
-
-    const nextId = () => {
-        const ids = tables.map(table => table.localId)
-        for(let i = 0; i < ids.length; ++i) {
-            if (!ids.includes(i)) {
-                return i
-            }
-        }
-        return ids.length
-    }
-    
-    const editorNode = createRef()
     
     const dispatch = useDispatch()
     const [outOfSync, setOutOfSync]                 = useState(false)
+    const { width }                                 = useWindowSize()
+    const { t }                                     = useTranslation()
+    const layoutValue                               = useSelector(layout)
+    const modifiedLayoutValue                       = useSelector(modifiedLayout)
+    const layoutHeight                              = useSelector(layoutHeightSelector)
+    const layoutWidth                               = useSelector(layoutWidthSelector)
+    const editorNode                                = createRef()
     const [tables, setTables]                       = useState([])
     const [removedTables, setRemovedTables]         = useState([])
     const [updatedTables, setUpdatedTables]         = useState([])
@@ -97,18 +91,6 @@ function Editor() {
     const [offset, setOffset]                       = useState(false)
     const [backgroundImage, setBackgroundImage]     = useState('')
     const [settingsModalOpen, setSettingsModalOpen] = useState(false)
-    const layoutValue                               = useSelector(layout)
-    const modifiedLayoutValue                       = useSelector(modifiedLayout)
-    const layoutHeight                              = useSelector(layoutHeightSelector)
-    const layoutWidth                               = useSelector(layoutWidthSelector)
-    const { width }                                 = useWindowSize()
-
-    const updateImage = async() => {
-        API.get('/api/layouts/image').then(({data}) => {
-            console.log(data.message)
-            setBackgroundImage(data.message + `?ver=${new Date().getTime()}`)
-        })
-    }
 
     useEffect(() => {
         updateImage()
@@ -140,6 +122,22 @@ function Editor() {
         }))
     }, [layoutValue])
 
+    const updateImage = async() => {
+        API.get('/api/layouts/image').then(({data}) => {
+            console.log(data.message)
+            setBackgroundImage(data.message + `?ver=${new Date().getTime()}`)
+        })
+    }
+
+    const nextId = () => {
+        const ids = tables.map(table => table.localId)
+        for(let i = 0; i < ids.length; ++i) {
+            if (!ids.includes(i)) {
+                return i
+            }
+        }
+        return ids.length
+    }
     
     const openEditorMenu = (e) => {
         e.preventDefault() 
@@ -220,16 +218,8 @@ function Editor() {
     const saveTables = async () => {
         if(modifiedLayoutValue !== null) return
 
-        const savingToast = toast.loading('Elrendezés frissítése...', {
-            position: "bottom-center",
-            progress: undefined,
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: false
-        });
-        const result = await API.post('api/layouts/save', {newTables: tables.filter(table => table.new).map(table => {
+        const savingToast = toast.loading(t('api.updating-layout'), {autoClose: 2000});
+        await API.post('api/layouts/save', {newTables: tables.filter(table => table.new).map(table => {
             return {
                 coordinates: table.coordinates,
                 direction: table.direction,
@@ -259,14 +249,14 @@ function Editor() {
                 databaseID: table.databaseID
             }
         }))}).then((response) => {
-            toast.update(savingToast, { render: "Elrendezés frissítve", type: "success", isLoading: false, autoClose: 2000 })
+            toast.update(savingToast, { render: t('api.layout-updated'), type: "success", isLoading: false, autoClose: 2000 })
             getSocket().emit('layout-modified', {tables: response.data.message})
             dispatch(updateLayout(response.data.message))
             setRemovedTables([])
             setUpdatedTables([])
         })
-        .catch(() => {
-            toast.update(savingToast, { render: "Hiba a frissítés során", type: "error", isLoading: false, autoClose: 2000 })
+        .catch((err) => {
+            toast.update(savingToast, { render: t(`api.${err.response.data.message}`), type: "error", isLoading: false, autoClose: 2000 })
             return
         })
     }
@@ -300,41 +290,41 @@ function Editor() {
 
             {contextMenuOpened && 
                 <ContextMenu locationX={contextMenuPlace.x} locationY={contextMenuPlace.y}>
-                    <NestedMenuItem onClick={() => addTable('rounded', 'average')} label={'Körasztal'} parentMenuOpen={true}>
+                    <NestedMenuItem onClick={() => addTable('rounded', 'average')} label={t('commons.round-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('rounded', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('rounded', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('rounded', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <NestedMenuItem onClick={() => addTable('normal', 'average')} label={'Normál asztal'} parentMenuOpen={true}>
+                    <NestedMenuItem onClick={() => addTable('normal', 'average')} label={t('commons.normal-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('normal', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('normal', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('normal', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <NestedMenuItem onClick={() => addTable('wide', 'small')} label={'Széles asztal'} parentMenuOpen={true}>
+                    <NestedMenuItem onClick={() => addTable('wide', 'small')} label={t('commons.wide-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('wide', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('wide', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('wide', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <MenuItem onClick={() => setSettingsOpen(true)}>Beállítások</MenuItem>
-                    <MenuItem onClick={() => saveTables()}>Mentés</MenuItem>
+                    <MenuItem onClick={() => setSettingsOpen(true)}>{t('commons.settings')}</MenuItem>
+                    <MenuItem onClick={() => saveTables()}>{t('commons.save')}</MenuItem>
                 </ContextMenu>}
 
             {settingsOpen &&
@@ -342,41 +332,41 @@ function Editor() {
  
             {width <= 768 && settingsModalOpen &&
             <Dialog open={true} onClose={() => setSettingsModalOpen(false)}>
-                <NestedMenuItem label={'Körasztal'} parentMenuOpen={true}>
+                <NestedMenuItem label={t('commons.round-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('rounded', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('rounded', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('rounded', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <NestedMenuItem label={'Normál asztal'} parentMenuOpen={true}>
+                    <NestedMenuItem label={t('commons.normal-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('normal', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('normal', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('normal', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <NestedMenuItem label={'Széles asztal'} parentMenuOpen={true}>
+                    <NestedMenuItem label={t('commons.wide-table')} parentMenuOpen={true}>
                         <MenuItem onClick={() => addTable('wide', 'small')}>
-                            Kicsi
+                            {t('commons.small')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('wide', 'average')}>
-                            Közepes
+                            {t('commons.average')}
                         </MenuItem>
                         <MenuItem onClick={() => addTable('wide', 'large')}>
-                            Nagy
+                            {t('commons.big')}
                         </MenuItem>
                     </NestedMenuItem>
-                    <MenuItem onClick={() => setSettingsOpen(true)}>Beállítások</MenuItem>
-                    <MenuItem onClick={() => saveTables()}>Mentés</MenuItem>
+                    <MenuItem onClick={() => setSettingsOpen(true)}>{t('commons.settings')}</MenuItem>
+                    <MenuItem onClick={() => saveTables()}>{t('commons.save')}</MenuItem>
             </Dialog>}
 
             {width <= 768 &&

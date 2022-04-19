@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useRef} from 'react'
 import { Box, Button, Card, CardContent, FormControl, MenuItem, Modal, Select, TextField, Typography, IconButton } from '@material-ui/core'
 import './Menu.css'
 import { ArrowBack, Edit } from '@material-ui/icons'
@@ -11,24 +11,20 @@ import EditCategory from '../../components/menu/EditCategory'
 import EditItem from '../../components/menu/EditItem'
 import { toast } from 'react-toastify'
 import icons from '../../components/menu/icons.json'
+import { useTranslation } from 'react-i18next'
 
 function Menu() {
 
     const dispatch = useDispatch()
+    const { t, i18n } = useTranslation()
+    const menuWrapperRef = useRef(null)
+    const priceUnit = useSelector(getCurrency)
+    const menu = useSelector(menuState)
     const [item, setItem] = useState('')
     const [editCategory, setEditCategory] = useState({category: '', icon: ''})
     const [addModalOpen, setModalOpen] = useState(false)
     const [category, setCategory] = useState('')
-    const menuWrapperRef = useRef(null)
     const [categoryIcon, setCategoryIcon] = useState('')
-    const priceUnit = useSelector(getCurrency)
-
-    useEffect(() => {
-        menuWrapperRef.current.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        })
-    }, [category])
 
     const addCategoryForm = (e) => {
         e.preventDefault()
@@ -45,7 +41,7 @@ function Menu() {
             dispatch(addCategory({category, categoryIcon: icon}))
             setModalOpen(false)
         }).catch(err => {
-            toast.error('Hiba a hozzáadás során!')
+            toast.error(t(`api.${err.response.data.message}`))
         })
 
     }
@@ -59,9 +55,8 @@ function Menu() {
         API.post('/api/menu/add-item', {name, category, price, amount, unit}).then(result => {
             dispatch(addItem({name, category, price, amount, unit}))
             setModalOpen(false)
-        }).catch(err => toast.error('Hiba a hozzáadás során...'))
+        }).catch(err => toast.error(t(`api.${err.response.data.message}`)))
     }
-    const menu = useSelector(menuState)
 
     const formIconChange = (e) => {
         setCategoryIcon(e.target.value)
@@ -73,17 +68,17 @@ function Menu() {
                 {
                     category === '' ?
                     <div className="categories-holder row align-items-center mx-auto">
-                        <div className="col-sm-5 col-md-3 col-10">
+                        <div className="col-lg-3 col-md-4 col-10">
                             <Card onClick={() => setModalOpen(true)} className="m-3 text-center menu-card category-card">
                                 <CardContent className="p-3 d-flex flex-column align-items-center justify-content-center h-100">
                                     <img alt="Category icon" src={'/assets/menu-icons/Pie.svg'} />
-                                    <p className="fw-bold m-0 mt-3">Új kategória</p>
+                                    <p className="fw-bold m-0 mt-3">{t('commons.new-category')}</p>
                                 </CardContent>
                             </Card>
                         </div>
                         {
                             Object.keys(menu.icons).sort().map((key) => (
-                                <div key={key} className="col-sm-5 col-md-3 col-10 position-relative">
+                                <div key={key} className="col-lg-3 col-md-4 col-10 position-relative">
                                     <div className="position-absolute" style={{right: '10%', top: '10%', zIndex: '100'}}>
                                         <IconButton onClick={() => setEditCategory({category: key, icon: menu.icons[key]})}>
                                             <Edit />
@@ -105,12 +100,12 @@ function Menu() {
                             <ArrowBack />
                         </IconButton>
                         <div className="items-holder row align-items-center mx-auto">
-                            <div className="col-sm-4 col-md-3 col-10">
+                            <div className="col-lg-3 col-md-4 col-10">
                                 <Card onClick={() => setModalOpen(true)} className="m-1 text-center menu-card">
                                     <CardContent className="p-3">
                                         <p className="mt-3">&nbsp;</p>
                                         <p>&nbsp;</p>
-                                        <p style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} className="fw-bold">Új étel</p>
+                                        <p style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} className="fw-bold">{t('commons.new-food')}</p>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -143,10 +138,10 @@ function Menu() {
                         category === '' ?
                         <>
                             <Typography id="modal-modal-title" variant="h6" component="h2">
-                                Új kategória létrehozása
+                                {t('commons.create-new-category')}
                             </Typography>
                             <form className="text-center" onSubmit={addCategoryForm}>
-                                <TextField name="category" label="Kategória neve" variant="standard" type="text" className="my-2" />
+                                <TextField name="category" label={t('commons.category-name')} variant="standard" type="text" className="my-2" />
                                 <FormControl>
                                     <Select
                                     value={categoryIcon}
@@ -160,30 +155,30 @@ function Menu() {
                                         </MenuItem>
                                         {
                                             Object.keys(icons).map((icon) => (
-                                                <MenuItem key={icon} value={icon}>{icons[icon].hu}</MenuItem>
+                                                <MenuItem key={icon} value={icon}>{i18n.language === 'en' ? icon : (icons[icon][i18n.language] ? icons[icon][i18n.language] : icon)}</MenuItem>
                                             ))
                                         }
                                     </Select>
                                 </FormControl>
                                 <br />
                                 <Button variant="contained" color="primary" className="m-auto mt-2" type="submit">
-                                    Hozzáad
+                                    {t('commons.add')}
                                 </Button>
                             </form>
                         </>
                         :
                         <>
                             <Typography id="modal-modal-title" variant="h6" component="h2">
-                                Új elem hozzáadása
+                                {t('commons.create-new-menuitem')}
                             </Typography>
                             <form className="text-center" onSubmit={addItemForm}>
-                                <TextField name="food" label="Elem neve" variant="standard" type="text" className="my-2" />
-                                <TextField name="price" label="Ár" variant="standard" type="number" className="my-2" />
-                                <TextField name="amount" label="Mennyiség" variant="standard" type="number" className="my-2" />
-                                <TextField name="unit" label="Egység" variant="standard" type="text" className="my-2" />
+                                <TextField name="food" label={t('commons.food-name')} variant="standard" type="text" className="my-2" />
+                                <TextField name="price" label={t('commons.price')} variant="standard" type="number" className="my-2" />
+                                <TextField name="amount" label={t('commons.amount')} variant="standard" type="number" className="my-2" />
+                                <TextField name="unit" label={t('commons.unit')} variant="standard" type="text" className="my-2" />
                                 <br />
                                 <Button variant="contained" color="primary" className="m-auto mt-2" type="submit">
-                                    Hozzáad
+                                    {t('commons.add')}
                                 </Button>
                             </form>
                         </>

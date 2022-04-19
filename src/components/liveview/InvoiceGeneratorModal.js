@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
+import { useTranslation } from 'react-i18next'
 import './InvoiceGeneratorModal.css'
 
 function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}) {
@@ -17,6 +18,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     const [invoiceName, setInvoiceName] = useState(null)
     const [itemsLeft, setItemsLeft] = useState(items)
     const [itemsToPay, setItemsToPay] = useState([])
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     const getInvoice = async() => {
@@ -25,7 +27,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
       if(invoiceProcess === 'together') {
         const {data} = await API.get(`/api/tables/${tableId}`)
           .catch(err => {
-            toast.error('A számla generálása meghiúsult!')
+            toast.error(t('api.invoice-generating-error'))
             handleClose()
           })
         setInvoiceName(data.message)
@@ -38,7 +40,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
         //dispatch(setItems(itemsLeft))
         setItemsToPay([])
       }).catch(err => {
-        toast.error('A számla generálása meghiúsult!')
+        toast.error(t('api.invoice-generating-error'))
         handleClose()
       })
     }
@@ -48,7 +50,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
 
       const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: Number(e.target.elements.peopleCount.value)})
         .catch(err => {
-          toast.error('A számla generálása meghiúsult!')
+          toast.error(t('api.invoice-generating-error'))
           handleClose()
         })
       setInvoiceName(data.message)
@@ -87,20 +89,20 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     return (
         <Dialog maxWidth={'1000'} onClose={closeDialog} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={closeDialog}>
-          Számla - {useParams().id}
+          {t('commons.invoice')} {/* - {useParams().id} */}
         </DialogTitle>
         <DialogContent dividers className='invoice-dialog-content'>
           {
             !invoiceProcess &&
             <>
               <Button onClick={() => setInvoiceProcess('together') } variant="outlined" className="mx-1">
-                Fizetés egyben
+                {t('commons.pay-all')}
               </Button>
               <Button onClick={() => setInvoiceProcess('split-equal') } variant="outlined" className="mx-1">
-                Fizetés arányosan
+                {t('commons.pay-equal')}
               </Button>
               <Button onClick={() => setInvoiceProcess('split')} variant="outlined" className="mx-1">
-                Részfizetés
+                {t('commons.pay-splitted')}
               </Button>
             </>
           }
@@ -108,11 +110,11 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
             invoiceProcess === 'together' &&
               (!invoiceName ?
               <Typography gutterBottom>
-                Számla generálása folyamatban...
+                {t('commons.invoice-generating-progress')}
               </Typography>
               :
               <Typography gutterBottom>
-                Számla nyomtatásra kész
+                {t('commons.invoice-ready')}
               </Typography>)
           }
           {invoiceProcess === 'split-equal' && 
@@ -125,7 +127,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
                   </form>
                 :
                   <Typography gutterBottom>
-                    Számla előállítva
+                    {t('commons.invoice-ready')}
                   </Typography>
 
               )}
@@ -134,7 +136,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
                 <InvoiceItemSelector itemsLeft={itemsLeft} itemsToPay={itemsToPay} setItemsLeft={setItemsLeft} setItemsToPay={setItemsToPay} />
                 <div className="text-center">
                   <Button disabled={itemsToPay.length === 0} onClick={() => getSplittedInvoice()}>
-                    Számla előállítása
+                    {t('commons.generate-invoice')}
                   </Button>
                 </div>
               </>
@@ -142,7 +144,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
         </DialogContent>
         <DialogActions>
           <Button disabled={!invoiceName} autoFocus onClick={download} color="primary">
-            Számla mentése
+            {t('commons.save-invoice')}
           </Button>
         </DialogActions>
       </Dialog>

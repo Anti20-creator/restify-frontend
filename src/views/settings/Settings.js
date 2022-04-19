@@ -73,7 +73,7 @@ function Settings() {
         ]
         
         if(!openingTimesValidator(openingTimes)) {
-            toast.error('A nyitvatartási idők formátuma nem megfelelő!')
+            toast.error(t('api.invalid-openingtimes-format'))
             return
         }
 
@@ -99,35 +99,35 @@ function Settings() {
             <div className="col-12 mx-auto">
                 <form onSubmit={(e) => submitInfos(e)} className="w-50 text-center mx-auto">
                     <Typography className="text-center" variant="h5">
-                        Számlázási adatok
+                        {t('commons.invoice-details')}
                     </Typography>
-                    <TextField inputRef={cityRef} className="w-100" name="city" placeholder='Város' />
-                    <TextField inputRef={postalCodeRef} className="w-100" name="postalCode" placeholder='Irányítószám' />
-                    <TextField inputRef={addressRef} className="w-100" name="address" placeholder='Cím' />
-                    <TextField inputRef={taxNumberRef} className="w-100" name="taxNumber" placeholder='Adószám' />
-                    <TextField inputRef={phoneNumberRef} className="w-100" name="phoneNumber" placeholder='Telefonszám' />
+                    <TextField inputRef={cityRef} className="w-100" name="city" placeholder={t('commons.city')} />
+                    <TextField inputRef={postalCodeRef} className="w-100" name="postalCode" placeholder={t('commons.postalcode')} />
+                    <TextField inputRef={addressRef} className="w-100" name="address" placeholder={t('commons.address')} />
+                    <TextField inputRef={taxNumberRef} className="w-100" name="taxNumber" placeholder={t('commons.taxnumber')} />
+                    <TextField inputRef={phoneNumberRef} className="w-100" name="phoneNumber" placeholder={t('commons.phonenumber')} />
                     
                     <Typography className="text-center" variant="h5">
-                        Nyitavatartás
+                        {t('commons.opening-hours')}
                     </Typography>
-                    <TextField inputRef={mondayRef} className="w-100" name="monday" placeholder="Hétfői nyitvatartás" />
-                    <TextField inputRef={tuesdayRef} className="w-100" name="tuesday" placeholder="Keddi nyitvatartás" />
-                    <TextField inputRef={wednesdayRef} className="w-100" name="wednesday" placeholder="Szerdai nyitvatartás" />
-                    <TextField inputRef={thursdayRef} className="w-100" name="thursday" placeholder="Csütörtöki nyitvatartás" />
-                    <TextField inputRef={fridayRef} className="w-100" name="friday" placeholder="Pénteki nyitvatartás" />
-                    <TextField inputRef={saturdayRef} className="w-100" name="saturday" placeholder="Szombati nyitvatartás" />
-                    <TextField inputRef={sundayRef} className="w-100" name="sunday" placeholder="Vasárnapi nyitvatartás" />
+                    <TextField inputRef={mondayRef} className="w-100" name="monday" placeholder={t('commons.opening-monday')} />
+                    <TextField inputRef={tuesdayRef} className="w-100" name="tuesday" placeholder={t('commons.opening-tuesday')} />
+                    <TextField inputRef={wednesdayRef} className="w-100" name="wednesday" placeholder={t('commons.opening-wednesday')} />
+                    <TextField inputRef={thursdayRef} className="w-100" name="thursday" placeholder={t('commons.opening-thursday')} />
+                    <TextField inputRef={fridayRef} className="w-100" name="friday" placeholder={t('commons.opening-friday')} />
+                    <TextField inputRef={saturdayRef} className="w-100" name="saturday" placeholder={t('commons.opening-saturday')} />
+                    <TextField inputRef={sundayRef} className="w-100" name="sunday" placeholder={t('commons.opening-sunday')} />
                     
                     <Typography className="text-center" variant="h5">
-                        További beállítások
+                        {t('commons.more-settings')}
                     </Typography>
                     <FormControl className="pb-3" fullWidth>
-                      <InputLabel id="demo-simple-select-label">Pénznem</InputLabel>
+                      <InputLabel id="demo-simple-select-label">{t('commons.currency')}</InputLabel>
                       <Select
                         value={currency}
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        label="Age"
+                        label={t('commons.currency')}
                         onChange={handleCurrencyChange}
                       >
                         <MenuItem value={'HUF'}>HUF</MenuItem>
@@ -136,7 +136,7 @@ function Settings() {
                       </Select>
                     </FormControl>
 
-                    <Button type="submit" variant="outlined" color="primary">Mentés</Button>
+                    <Button type="submit" variant="outlined" color="primary">{t('commons.save')}</Button>
                 </form>
             </div>
         </div>

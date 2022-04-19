@@ -2,6 +2,7 @@ import { Button, Dialog, DialogActions, FormControl } from '@mui/material'
 import React, { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Navbar.css'
+import { t } from 'i18next'
 
 function Navbar() {
 
@@ -34,22 +35,22 @@ function Navbar() {
                 <ul className="navbar-nav me-auto">
                     <Link to="/" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">Belépés</a>
+                            <a className="nav-link">{t('sidebar.login')}</a>
                         </li>
                     </Link>
                     <Link to="/register" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">Regisztráció</a>
+                            <a className="nav-link">{t('sidebar.register')}</a>
                         </li>
                     </Link>
                     <div onClick={showJoinModal}>
                         <li className="nav-item">
-                            <a className="nav-link">Csatlakozás csapathoz</a>
+                            <a className="nav-link">{t('sidebar.join-to-team')}</a>
                         </li>
                     </div>
                     <Link to="/" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">Állományok letöltése</a>
+                            <a className="nav-link">{t('sidebar.download-assets')}</a>
                         </li>
                     </Link>
                 </ul>
@@ -62,7 +63,7 @@ function Navbar() {
                             <input ref={restaurantId} type="text" placeholder='Étterem azonosítója' />
                         </FormControl>
                         <DialogActions className="text-center">
-                            <Button onClick={goToInvitePage} style={{flex: 'auto'}}>Tovább</Button>
+                            <Button onClick={goToInvitePage} style={{flex: 'auto'}}>{t('commons.next')}</Button>
                         </DialogActions>
                     </div>
                 </Dialog>

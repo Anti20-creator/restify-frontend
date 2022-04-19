@@ -1,20 +1,24 @@
-import './App.css';
-import React from 'react'
-import HomePage from './views/homepage/HomePage';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {
-  BrowserRouter
-} from "react-router-dom";
+import './App.css'
+import React, { useEffect } from 'react'
+import HomePage from './views/homepage/HomePage'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { BrowserRouter } from "react-router-dom"
 import { Provider } from 'react-redux'
 import { store } from './store/store'
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 import './localization/translations'
+import 'moment/locale/hu'
 
 function App() {
 
-  const [t, i18n] = useTranslation();
-  i18n.changeLanguage('hu')
+  const { i18n } = useTranslation()
+  const languages = ['en', 'hu']
+
+  useEffect(() => {
+    const browserLanguage = navigator.language || navigator.userLanguage 
+    i18n.changeLanguage(languages.includes(browserLanguage) ? browserLanguage : 'en')
+  }, [])
 
   return (
     <Provider store={store}>

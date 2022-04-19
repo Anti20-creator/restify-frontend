@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch } from 'react-redux';
 import { refreshLayout } from '../../store/features/layoutSlice';
+import { t } from 'i18next';
 
 function OutOfSyncBar({open, setOpen}) {
 
@@ -32,11 +33,11 @@ function OutOfSyncBar({open, setOpen}) {
                 open={open}
                 autoHideDuration={6000}
                 onClose={handleClose}
-                message="Az elrendezés változott"
+                message={t('commons.layout-changed')}
                 action={
                 <React.Fragment>
                     <Button color="secondary" size="small" onClick={update}>
-                        Frissítés
+                        {t('commons.update')}
                     </Button>
                     <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
                     <CloseIcon fontSize="small" />

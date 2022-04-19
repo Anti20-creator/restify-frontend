@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-
 import {
     Avatar, Box,
     IconButton,
@@ -7,60 +6,45 @@ import {
     ListItem, Menu, MenuItem, Fab,
     ListItemAvatar, TextField,
     ListItemText, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button
-} from "@material-ui/core";
-import {SearchOutlined, GroupAdd, MoreVert, Delete, ArrowUpward, ArrowDownward} from "@material-ui/icons";
-import './Team.css'
+} from "@material-ui/core"
+import {SearchOutlined, GroupAdd, MoreVert, Delete, ArrowUpward, ArrowDownward} from "@material-ui/icons"
 import { toast } from 'react-toastify'
+import './Team.css'
 import API from '../../communication/API'
 import useWindowSize from '../../store/useWindowSize'
-
-const columns = [
-    { id: 'user', label: 'Felhasználó' },
-    { id: 'role', label: 'Jogok'},
-    {
-        id: 'invited',
-        label: 'Státusz',
-    },
-    {
-        id: 'date',
-        label: 'Csatlakozott',
-        format: (value) => value.toLocaleISOString(),
-    },
-    { id: 'dots', label: ''}
-];
-
+import { useTranslation } from 'react-i18next'
+import moment from 'moment-timezone'
+import { stringToColor } from '../../utils/stringToColor'
+import { t } from 'i18next'
 
 function Team() {
+    
+    const columns = [
+        { id: 'user', label: t('commons.user') },
+        { id: 'role', label: t('commons.rights')},
+        {
+            id: 'invited',
+            label: t('commons.status'),
+        },
+        {
+            id: 'date',
+            label: t('commons.joined'),
+        },
+        { id: 'dots', label: ''}
+    ];
 
-    const changeRank = (promote) => {
-        const rankToast = toast.loading('Felhasználói jogok módosítása...')
-        API.post('/api/users/update-rank', {
-            email: rowData.email,
-            promote: !promote
-        }).then(result => {
-            setOpenMobileDialog(false)
-            setMembers(members.map(member => member.email === rowData.email ? {...member, isAdmin: !promote} : member))
-            toast.update(rankToast, {render: 'Jogok frissítve!', autoClose: 1200, type: 'success', isLoading: false})
-        }).catch(err => {
-            toast.update(rankToast, {render: 'Hiba a frissítés során!', autoClose: 1200, type: 'error', isLoading: false})
-        })
-    }
+    const { width } = useWindowSize();
+    const { i18n } = useTranslation()
+    const emailRef = useRef('')
     const [rowData, setRowData] = useState({})
     const [anchorEl, setAnchorEl] = useState(null)
     const [openMobileDialog, setOpenMobileDialog] = useState(false)
-    const { height, width } = useWindowSize();
-    const stringToColor = function(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        let colour = '#';
-        for (let i = 0; i < 3; i++) {
-          let value = (hash >> (i * 8)) & 0xFF;
-          colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
-    }
+    const [open, setOpen] = useState(false)
+    const [members, setMembers] = useState([])
+    const [filteredMembers, setFilteredMembers] = useState(members)
+    
+    const handleOpen = () => setOpen(true)
+    const handleClose = () => setOpen(false)
 
     useEffect(() => {
         API.get('/api/users/team').then(result => {
@@ -69,48 +53,59 @@ function Team() {
                 setMembers(result.data.message)
                 setFilteredMembers(result.data.message)
             }else{
-                toast.error('Hiba a csapat betöltése során!', {autoClose: 1500})
+                toast.error(t('api.team-loading-error'), {autoClose: 1500})
                 setMembers([])
             }
         })
     }, [])
+    
+    const changeRank = (promote) => {
+        const rankToast = toast.loading(t('api.updating-ranks'))
+        API.post('/api/users/update-rank', {
+            email: rowData.email,
+            promote: !promote
+        }).then(result => {
+            setOpenMobileDialog(false)
+            setMembers(members.map(member => member.email === rowData.email ? {...member, isAdmin: !promote} : member))
+            toast.update(rankToast, {render: t(`api.${result.data.message}`), autoClose: 1200, type: 'success', isLoading: false})
+        }).catch(err => {
+            console.warn(err.message)
+            toast.update(rankToast, {render: t(`api.${err.response.data.message}`), autoClose: 1200, type: 'error', isLoading: false})
+        })
+    }
 
     const sendInvite = (e) => {
         e.preventDefault()
         const email = e.target.elements.email.value
         if(members.map(member => member.email).includes(email)) {
-            toast.error('Ez a felhasználó már a csapat tagja!', {
+            toast.error(t('api.team-already-exists'), {
                 autoClose: 1500
             })
             return
         }
-        const inviteToast = toast.loading(email + ' meghívása...')
-        API.post('/api/users/send-invite', {emailTo: email}).then(result => {
-            if(result.data.success) {
-                members.push({
-                    email,
-                    isAdmin: false,
-                    fullName: '',
-                })
-                filter()
-                toast.update(inviteToast, { render: email + " meghívva!", type: "success", isLoading: false, autoClose: 2000 })
-            }else{
-                toast.update(inviteToast, { render: "Hiba a meghívás során!", type: "error", isLoading: false, autoClose: 2000 })
-            }
+        const inviteToast = toast.loading(t('api.inviting-user'))
+        API.post('/api/users/send-invite', {emailTo: email, lang: i18n.language}).then(result => {
+            members.push({
+                email,
+                isAdmin: false,
+                fullName: '',
+            })
+            filter()
+            setOpen(false)
+            toast.update(inviteToast, { render: t(`api.${result.data.message}`), type: "success", isLoading: false, autoClose: 2000 })
+        }).catch(err => {    
+            toast.update(inviteToast, { render: t(`api.${err.response.data.message}`), type: "error", isLoading: false, autoClose: 2000 })
         })
-        setOpen(false)
     }
 
     const removeMember = (email) => {
         const userToast = toast.loading(email + ' eltávolítása...')
         API.delete('api/users/delete', {data: {email}}).then(result => {
-            if(result.data.success) {
-                setMembers(members.filter(member => member.email !== email))
-                filter()
-                toast.update(userToast, {render: email + ' eltávolítva!', type: "success", isLoading: false, autoClose: 1200})
-            }
+            setMembers(members.filter(member => member.email !== email))
+            filter()
+            toast.update(userToast, {render: t(`api.${result.data.message}`), type: "success", isLoading: false, autoClose: 1200})
         }).catch(err => {
-            toast.update(userToast, {render: "Hiba az eltávolítás során!", type: "error", isLoading: false, autoClose: 1200})  
+            toast.update(userToast, {render: t(`api.${err.response.data.message}`), type: "error", isLoading: false, autoClose: 1200})  
         })
     }
 
@@ -118,18 +113,9 @@ function Team() {
         return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
     }
 
-    const emailRef = useRef('')
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    const [members, setMembers] = useState([])
-    const [filteredMembers, setFilteredMembers] = useState(members)
-
     const filter = () => {
         setFilteredMembers(members.filter(member => member.email.toLowerCase().includes(emailRef.current.toLowerCase()) || 
         (member.fullName && member.fullName.toLowerCase().includes(emailRef.current.toLowerCase()))))
-
     }
 
     const filterUsers = (e) => {
@@ -146,11 +132,11 @@ function Team() {
             <div className="d-flex align-items-center searchbox justify-content-between px-4" style={{height: '10%'}}>
                 <div className="d-flex flex-grow-1">
                     <SearchOutlined />
-                    <input onKeyUp={filterUsers} type="text" className="search-input w-100" placeholder="Szűrés név vagy e-mail alapján..." />
+                    <input onKeyUp={filterUsers} type="text" className="search-input w-100" placeholder={t('commons.filter-by')} />
                 </div>
                 {width > 768 && <div className="d-flex invite-box flex-grow-1">
                     <Button color="primary" variant="outlined" startIcon={<GroupAdd />} onClick={handleOpen}>
-                        Meghívás
+                        {t('commons.invite')}
                     </Button>
                 </div>}
             </div>
@@ -171,7 +157,7 @@ function Team() {
                 </TableHead>
                 <TableBody>
                     {filteredMembers
-                    .map((member, idx) => {
+                    .map((member) => {
                         return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={member.email}>
                             <TableCell>
@@ -185,13 +171,13 @@ function Team() {
                                 </ListItem>
                             </TableCell>
                             <TableCell>
-                                {member.isAdmin ? 'Admin' : 'Felhasználó'}
+                                {member.isAdmin ? t('commons.admin') : t('commons.user')}
                             </TableCell>
                             <TableCell>
-                                {member.fullName ? 'Aktív' : 'Meghívott'}
+                                {member.fullName ? t('commons.active') : t('commons.invited')}
                             </TableCell>
                             <TableCell>
-                                {member._id ? dateFromObjectId(member._id).toLocaleString() : '' }
+                                {member._id ? moment(dateFromObjectId(member._id)).utcOffset(0).format("L HH:mm") : '' }
                             </TableCell>
                             <TableCell>
                                 <IconButton onClick={(e) => {setRowData(member); setAnchorEl(e.currentTarget)} }>
@@ -215,17 +201,17 @@ function Team() {
                         {'isAdmin' in rowData && rowData.isAdmin ? 
                             <>
                                 <ArrowDownward /> 
-                                Lefokozás
+                                {t('commons.down-rank')}
                             </>
                             :
                             <>
                                 <ArrowUpward />
-                                Előléptetés
+                                {t('commons.up-rank')}
                             </> 
                         }
                     </MenuItem>
                     <MenuItem onClick={() => removeMember(rowData.email)}>
-                        <Delete /> Eltávolítás
+                        <Delete /> {t('commons.remove')}
                     </MenuItem>
                 </Menu>
             </TableContainer>}
@@ -260,13 +246,13 @@ function Team() {
                     <div className="d-flex text-center w-100 justify-content-between pt-3">
                         <Button variant="outlined" color="primary" onClick={() => changeRank('isAdmin' in rowData && rowData.isAdmin)}>
                             {'isAdmin' in rowData && rowData.isAdmin ? 
-                                'Lefokozás'
+                                t('commons.down-rank')
                                 :
-                                'Előléptetés'
+                                t('commons.up-rank')
                             }
                         </Button>
                         <Button variant="outlined" color="secondary" onClick={() => removeMember(rowData.email)}>
-                            Eltávolítás
+                            {t('commons.remove')}
                         </Button>
                     </div>
                 </Box>
@@ -282,13 +268,13 @@ function Team() {
             >
                 <Box>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Felhasználó meghívása
+                        {t('commons.invite-user')}
                     </Typography>
                     <form className="text-center" onSubmit={sendInvite}>
                         <TextField name="email" label="E-mail" variant="standard" type="email" className="my-4" />
                         <br />
                         <Button variant="contained" color="primary" className="m-auto" type="submit">
-                            Meghívó küldése
+                            {t('commons.send-invite')}
                         </Button>
                     </form>
                 </Box>

@@ -4,6 +4,7 @@ import { addItem, removeAll, clear, addOne, removeOne, setItems } from '../store
 import { setModifiedLayout } from '../store/features/layoutSlice'
 import { toast } from 'react-toastify'
 import { receivedAppointment } from '../store/features/appointmentsSlice'
+import { t } from 'i18next'
 import data from './data.json'
 
 let socket = null
@@ -29,7 +30,7 @@ const registerListeners = () => {
 
     socket.on('notify-new-guest', (tableId) => {
         store.dispatch(setInUse({id: tableId, value: true}))
-        toast.info('Új vendég érkezett!', {
+        toast.info(t('commons.new-guest'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -42,7 +43,7 @@ const registerListeners = () => {
     socket.on('guest-leaved', (tableId) => {
         store.dispatch(setInUse({id: tableId, value: false}))
         store.dispatch(clear())
-        toast.info('Egy asztal felszabadult!', {
+        toast.info(t('commons.guest-leaved'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -56,7 +57,7 @@ const registerListeners = () => {
         if(socketId === socket.id) return;
         
         store.dispatch(addItem(order))
-        toast.info('Új számlaelem!', {
+        toast.info(t('commons.order-added'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -70,7 +71,7 @@ const registerListeners = () => {
         if(socketId === socket.id) return;
 
         store.dispatch(removeAll({name: order}))
-        toast.info('Elem törölve a listából!', {
+        toast.info(t('commons.order-removed'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -84,7 +85,7 @@ const registerListeners = () => {
         if(socketId === socket.id) return
 
         store.dispatch(addOne({name: order}))
-        toast.info('Egy rendelés mennyisége nőtt!', {
+        toast.info(t('commons.increase-order'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -98,7 +99,7 @@ const registerListeners = () => {
         if(socketId === socket.id) return
 
         store.dispatch(removeOne({name: order}))
-        toast.info('Egy rendelés mennyisége csökkent!', {
+        toast.info(t('commons.decrease-order'), {
             position: "bottom-center",
             closeOnClick: true,
             progress: undefined,
@@ -109,12 +110,10 @@ const registerListeners = () => {
         });
     })
     socket.on('new-appointment', () => {
-        console.log('new appointment')
         store.dispatch(receivedAppointment())
         socket.emit('leave-appointment')
     })
     socket.on('layout-modified', (layout) => {
-        console.log('Layout modified', layout)
         store.dispatch(setModifiedLayout(layout))
     })
     socket.on('orders-modified', (orders) => {

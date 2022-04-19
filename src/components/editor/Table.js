@@ -5,16 +5,17 @@ import { Add, Delete, Remove, RotateRight, Settings } from '@material-ui/icons'
 
 function Table({rounded, tableCount, type='normal', size='average', direction, coordinates, id, removePeople, addPeople, rotateTable, editable, removeTable, inUse}) {
 
-    const [anchorEl, setAnchorEl] = useState(null)
-    const [borderCounts, setBorderCounts] = useState([0, 0, 0, 0])
-
     const sizes = {
         'small': 80,
         'average': 100,
         'large': 120
     }
+
     const width = sizes[size]
+    
     const strokeDasharray = `36, ${((width/2-2) * 2 * Math.PI - tableCount * 36) / tableCount}`
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [borderCounts, setBorderCounts] = useState([0, 0, 0, 0])
 
     useEffect(() => {
         const newBorderCounts = [0, 0, 0, 0]

@@ -10,7 +10,8 @@ const API = axios.create({
         'Content-Type': 'application/json'
     },
     withCredentials: true,
-    responseType: 'json'
+    responseType: 'json',
+    timeout: 3500
 })
 
 API.interceptors.response.use(
@@ -23,7 +24,7 @@ API.interceptors.response.use(
       const {config: originalReq, response} = error
       console.log(originalReq.url)
       // originalReq.url !== 'auth/jwt/refresh/' && 
-      if ((originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) || originalReq.url.includes('order') ) {
+      if ((originalReq.url !== 'api/users/refresh-token' && !originalReq.isRetryAttempt && response && response.status === 401) || (originalReq.url.includes('order') && !originalReq.isRetryAttempt) ) {
         try {
             await refreshAccessToken()
             originalReq.isRetryAttempt = true

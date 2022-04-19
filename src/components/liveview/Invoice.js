@@ -8,21 +8,23 @@ import { getSocket } from '../../communication/socket';
 import { isTableInUse } from '../../store/features/liveSlice'
 import { getCurrency} from '../../store/features/temporarySlice'
 import { addOne, invoiceItems, removeAll, removeOne, setItems } from '../../store/features/invoiceSlice';
+import { useTranslation } from 'react-i18next'
+import { useParams, useNavigate } from 'react-router-dom'
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
 import useWindowSize from '../../store/useWindowSize'
-import { useParams, useNavigate } from 'react-router-dom'
 
 function Invoice({localId, showLabel=true}) {
 
     const tableId = useParams().id
-    const tableInUse = useSelector(isTableInUse(tableId))
-
+    
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const currentInvoiceItems = useSelector(invoiceItems)
-    const [startPayment, setStartPayment] = useState(false)
-    const currency = useSelector(getCurrency)
+    const { t } = useTranslation()
     const { width } = useWindowSize()
+    const tableInUse = useSelector(isTableInUse(tableId))
+    const currentInvoiceItems = useSelector(invoiceItems)
+    const currency = useSelector(getCurrency)
+    const [startPayment, setStartPayment] = useState(false)
 
     useEffect(() => {
         if(!tableInUse && !startPayment) {
@@ -31,41 +33,11 @@ function Invoice({localId, showLabel=true}) {
         }
     }, [tableInUse])
 
-    const deleteOrder = (rowName) => {
-        API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
-            dispatch(removeAll({name: rowName}))
-        }).catch(err => {
-            toast.error('Hiba a rendelés törlésekor!', {
-                autoClose: 1500
-            })
-        })
-    }
-
-    const increaseQuantity = (rowName) => {
-        API.post('api/tables/increase-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
-            dispatch(addOne({name: rowName}))
-        }).catch(err => {
-            toast.error('Hiba a kérés közben!', {
-                autoClose: 1500
-            })
-        })
-    }
-
-    const decreaseQuantity = (rowName) => {
-        API.post('api/tables/decrease-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
-            dispatch(removeOne({name: rowName}))
-    }).catch(err => {
-        toast.error('Hiba a kérés közben!', {
-            autoClose: 1500
-        })
-    })
-}
-
     useEffect(() => {
         API.get('/api/tables/orders/' + tableId).then(result => {
             dispatch(setItems(result.data.message))
         }).catch(err => {
-            toast.error('Hiba a kérés közben!', {
+            toast.error(t(`api.${err.response.data.message}`), {
                 autoClose: 1500
             })
         })
@@ -75,9 +47,39 @@ function Invoice({localId, showLabel=true}) {
         getSocket().emit('join-table', {tableId})
     }, [tableId])
 
+    const deleteOrder = (rowName) => {
+        API.delete('api/tables/remove-order', { data: {tableId, name: rowName, socketId: getSocket().id} }).then((response) => {
+            dispatch(removeAll({name: rowName}))
+        }).catch(err => {
+            toast.error(t(`api.${err.response.data.message}`), {
+                autoClose: 1500
+            })
+        })
+    }
+
+    const increaseQuantity = (rowName) => {
+        API.post('api/tables/increase-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
+            dispatch(addOne({name: rowName}))
+        }).catch(err => {
+            toast.error(t(`api.${err.response.data.message}`), {
+                autoClose: 1500
+            })
+        })
+    }
+
+    const decreaseQuantity = (rowName) => {
+        API.post('api/tables/decrease-order', {tableId, socketId: getSocket().id, name: rowName}).then(response => {
+            dispatch(removeOne({name: rowName}))
+        }).catch(err => {
+            toast.error(t(`api.${err.response.data.message}`), {
+                autoClose: 1500
+            })
+        })
+    }
+
     return (
         <>
-            {showLabel && <h2 className="text-center pt-2">Számla</h2>}
+            {showLabel && <h2 className="text-center pt-2">{t('commons.invoice')}</h2>}
             {width > 8768 && <TableContainer>
                 <Table stickyHeader aria-label="simple table">
                     <TableHead>
@@ -140,7 +142,7 @@ function Invoice({localId, showLabel=true}) {
             </List>}
             <div style={{padding: (width > 768) ? '0' : '1rem 0rem'}} className="pay-button-holder text-center">
                 <Button color="primary" variant="outlined" onClick={() => setStartPayment(true)}>
-                    Fizetés
+                    {t('commons.pay')}
                 </Button>
             </div>
             <InvoiceGeneratorModal tableId={tableId} items={currentInvoiceItems} tableLocalId={localId} open={startPayment} handleClose={() => {

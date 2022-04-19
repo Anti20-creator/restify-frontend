@@ -1,6 +1,9 @@
 .table-view {
     height: 90%;
 }
+.MuiAppBar-root {
+    max-height: 10%;
+}
 
 .table-view .checkout {
     height: 100%;
@@ -17,7 +20,7 @@
 }
 @media(min-width: 768px) {
     .table-view .checkout .MuiList-root {
-        overflow-y: scroll;
+        overflow-y: auto;
         height: 80%;
     }
 }
@@ -84,4 +87,8 @@
     background: #5E0B15 !important;
     color: white !important;
     transition: 0.5s;
+}
+
+.table-view .items-holder > div > div:last-of-type {
+    margin-bottom: 10px;
 }

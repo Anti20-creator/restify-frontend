@@ -30,13 +30,16 @@ import Settings from '../settings/Settings'
 import Invoices from '../invoices/Invoices'
 import MobileNavbar from '../../components/mobile-navbar/MobileNavbar'
 import Navbar from '../../components/navbar/Navbar';
+import AppointmentRemoval from '../appointment-removal/AppointmentRemoval';
+import { t } from 'i18next'
 
 function HomePage() {
 
+    const dispatch = useDispatch()
+    const dataLoading = useSelector(loadingState)
+    const [isAdmin, setIsAdmin] = useState(false)
     const [authenticated, setAuthenticated] = useState(false)
     const [userLoading, setUserLoading] = useState(true)
-    const dataLoading = useSelector(loadingState)
-    const dispatch = useDispatch()
     
     useEffect(() => {
         API.get('api/users/is-admin').then(result => {
@@ -57,23 +60,29 @@ function HomePage() {
             if(authenticated) {
                 createSocket(store)
 
-                const layout = await API.get('/api/layouts')
-                dispatch(updateLayout(layout.data.message))
+                await API.get('/api/layouts').then(({data}) => {
+                    dispatch(updateLayout(data.message))
+                })
 
-                const size = await API.get('/api/layouts/data')
-                dispatch(updateSize(size.data.message))
+                await API.get('/api/layouts/data').then(({data}) => {
+                    dispatch(updateSize(data.message))
+                })
     
-                const menu = await API.get('/api/menu')
-                dispatch(updateMenu(menu.data.message))
+                await API.get('/api/menu').then(({data}) => {
+                    dispatch(updateMenu(data.message))
+                })
     
-                const tables = await API.get('/api/tables')
-                dispatch(updateTables(tables.data.message))
+                await API.get('/api/tables').then(({data}) => {
+                    dispatch(updateTables(data.message))
+                })
     
-                const appointments = await API.get('/api/appointments')
-                dispatch(updateAppointments(appointments.data.message))
+                await API.get('/api/appointments').then(({data}) => {
+                    dispatch(updateAppointments(data.message))
+                })
 
-                const currency = await API.get('/api/informations/currency')
-                dispatch(setCurrency(currency.data.message))
+                await API.get('/api/informations/currency').then(({data}) => {
+                    dispatch(setCurrency(data.message))
+                })
 
                 dispatch(setLoading(false))
             }
@@ -89,12 +98,10 @@ function HomePage() {
         const result = await API
             .post('api/users/login', {email, password})
             .catch(err => {
-                toast.error('Hibás email vagy jelszó!', {autoClose: 1200, position: 'bottom-center'})
+                toast.error(t(`api.${err.response.data.message}`), {autoClose: 1200, position: 'bottom-center'})
             })
         setAuthenticated(result.status === 200)
     }
-
-    const [isAdmin, setIsAdmin] = useState(false)
 
     return (
         <>
@@ -129,15 +136,16 @@ function HomePage() {
                 <>
                     <Navbar />
                     <Routes>
-                        <Route path='/invite/:restaurantId' element={<RegisterEmployee />} />
-                        <Route path='/register' element={<RegisterAdmin />} />
+                        <Route exact path='/remove-appointment/:restaurantId' element={<AppointmentRemoval />} />
+                        <Route exact path='/register' element={<RegisterAdmin />} />
+                        <Route exact path='/invite/:restaurantId' element={<RegisterEmployee />} />
                         <Route path='*' element={<div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
                         <Card className="w-50 p-5 text-center login-card">
                             <form onSubmit={login}>
                                 <FormControl>
-                                    <TextField name="email" type="email" placeholder="E-mail" />
-                                    <TextField name="password" type="password" placeholder="Jelszó" />
-                                    <Button variant="outlined" color="primary" type="submit">Bejelentkezés</Button>
+                                    <TextField name="email" type="email" placeholder={t('commons.email')} />
+                                    <TextField name="password" type="password" placeholder={t('commons.password')} />
+                                    <Button variant="outlined" color="primary" type="submit">{t('sidebar.login')}</Button>
                                 </FormControl>
                             </form>
                         </Card>

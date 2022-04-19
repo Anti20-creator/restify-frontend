@@ -6,20 +6,23 @@ import API from '../../communication/API'
 import {useDispatch} from 'react-redux'
 import { removeAppointment } from '../../store/features/appointmentsSlice'
 import { getSocket } from '../../communication/socket'
+import { useTranslation } from 'react-i18next'
 
 function DeleteConfirmal({close, id, setSelectedAppointment}) {
 
     const dispatch = useDispatch()
+    const { t, i18n } = useTranslation()
+    
     const deleteAppointment = () => {
-        const loadingToast = toast.loading('Foglalás törlése...')
-        API.delete('/api/appointments/delete-appointment/' + id).then(response => {
+        const loadingToast = toast.loading(t('api.appointment-delete-loading'))
+        API.delete('/api/appointments/delete-appointment/' + id, {data: {lang: i18n.language}}).then(response => {
             dispatch(removeAppointment(id))
             setSelectedAppointment(null)
             close()
-            toast.update(loadingToast, {render: 'Foglalás törölve!', autoClose: 1500, isLoading: false, type: "success"})
+            toast.update(loadingToast, {render: t(`api.${response.data.message}`), autoClose: 1500, isLoading: false, type: "success"})
             getSocket().emit('new-appointment')
         }).catch(err => {
-            toast.update(loadingToast, {render: 'Hiba a törlés során!', autoClose: 1500, isLoading: false, type: "error"})
+            toast.update(loadingToast, {render: t(`api.${err.response.data.message}`), autoClose: 1500, isLoading: false, type: "error"})
         })
     }
 
@@ -27,11 +30,11 @@ function DeleteConfirmal({close, id, setSelectedAppointment}) {
         <Dialog onClose={close} open={true}>
             <div className="p-5">
                 <Typography>
-                    Valóban törölni szeretné a kiválasztott időpontot?
+                    {t('commons.delete-booking-confirmal')}
                 </Typography>
                 <div className="d-flex justify-content-between mt-4">
-                    <Button variant="contained" color="primary" onClick={() => deleteAppointment()}>Jóváhagyás</Button>
-                    <Button variant="outlined" color="secondary" onClick={close}>Mégsem</Button>
+                    <Button variant="contained" color="primary" onClick={() => deleteAppointment()}>{t('commons.approve')}</Button>
+                    <Button variant="outlined" color="secondary" onClick={close}>{t('commons.cancel')}</Button>
                 </div>
             </div>
         </Dialog>

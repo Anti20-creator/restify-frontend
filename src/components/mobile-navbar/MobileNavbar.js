@@ -3,6 +3,7 @@ import './MobileNavbar.css'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import API from '../../communication/API'
+import { t } from 'i18next'
 
 function MobileNavbar({isAdmin}) {
 
@@ -29,42 +30,42 @@ function MobileNavbar({isAdmin}) {
 		    <ul className="navbar-nav">
 		    	<Link onClick={() => toggler.current.click()} to="/">
 		    		<li className="nav-item">
-		        		<p className="nav-link">Élő nézet</p>
+		        		<p className="nav-link">{t('sidebar.live-view')}</p>
 		      		</li>
 	            </Link>
 	            <Link onClick={() => toggler.current.click()} to="/appointments">
 	                <li className="nav-item">
-		        		<p className="nav-link">Foglalások</p>
+		        		<p className="nav-link">{t('sidebar.appointments')}</p>
 		      		</li>
 	            </Link>
 	            <Link onClick={() => toggler.current.click()} to="/team">
 	            	<li className="nav-item">
-		        		<p className="nav-link">Csapattagok</p>
+		        		<p className="nav-link">{t('sidebar.team')}</p>
 		      		</li>
 	            </Link>
 	            {isAdmin && <Link onClick={() => toggler.current.click()} to="/menu">
 	            	<li className="nav-item">
-		        		<p className="nav-link">Menü</p>
+		        		<p className="nav-link">{t('sidebar.menu')}</p>
 		      		</li>
 	            </Link>}
 	            {isAdmin && <Link onClick={() => toggler.current.click()} to="/edit">
 	            	<li className="nav-item">
-		        		<p className="nav-link">Szerkesztő</p>
+		        		<p className="nav-link">{t('sidebar.editor')}</p>
 		      		</li>
 	            </Link>}
 	            <Link onClick={() => toggler.current.click()} to="/invoices">
 	            	<li className="nav-item">
-		        		<p className="nav-link">Számlák</p>
+		        		<p className="nav-link">{t('sidebar.invoices')}</p>
 		      		</li>
 	            </Link>
 	            <Link onClick={() => toggler.current.click()} to="/settings">
 	            	<li className="nav-item">
-		        		<p className="nav-link">Beállítások</p>
+		        		<p className="nav-link">{t('sidebar.settings')}</p>
 		      		</li>
 	            </Link>
 	            <div onClick={() => { toggler.current.click(); logOut() }}>
 	            	<li className="nav-item">
-		        		<p className="nav-link">Kijelentkezés</p>
+		        		<p className="nav-link">{t('sidebar.logout')}</p>
 		      		</li>
 	            </div>
 		    </ul>

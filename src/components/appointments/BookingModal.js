@@ -9,19 +9,21 @@ import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { addAppointment } from '../../store/features/appointmentsSlice'
 import Dialog from '@mui/material/Dialog'
-const moment = require('moment-timezone')
+import { useTranslation } from 'react-i18next';
+import moment from 'moment-timezone'
 
 function BookingModal({addModalOpen, setModalOpen, tableIds}) {
 
-    const [value, setValue] = React.useState(null)
+    const dispatch = useDispatch()
+    const { t, i18n } = useTranslation()
+    const peopleCountRef = useRef(null)
+    const [value, setValue] = useState(null)
     const [localId, setLocalId] = useState(-1)
     const [openConfirmal, setOpenConfirmal] = useState(false)
     const [conflictingData, setConflictingData] = useState([])
     const [isLoading, setLoading] = useState(false)
     const [error, setError] = useState(false)
-    const peopleCountRef = useRef(null)
     const [formData, setFormData] = useState(null)
-    const dispatch = useDispatch()
 
     useEffect(() => {
         if(openConfirmal) {
@@ -58,27 +60,19 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
 
     const bookForDate = () => {
         if(error) {
-            toast.error('A foglalás nem hagyható jóvá', {autoClose: 1200})
+            toast.error(t('api.appointment-error'), {autoClose: 1200})
             return
         }
 
-        const searchingToast = toast.loading('Időpont keresése...', {
-            position: "bottom-center",
-            closeOnClick: true,
-            progress: undefined,
-            autoClose: 2000,
-            hideProgressBar: false,
-            pauseOnHover: true,
-            draggable: false,
-        });
-        API.post('/api/appointments/book-for-guest', formData).then(result => {
-            toast.update(searchingToast, { render: "Sikeres foglalás!", type: "success", isLoading: false, autoClose: 2000 })
+        const searchingToast = toast.loading(t('api.appointment-lookup'), {autoClose: 2000});
+        API.post('/api/appointments/book-for-guest', {...formData, lang: i18n.language}).then(result => {
+            toast.update(searchingToast, { render: t('api.appointment-booked'), type: "success", isLoading: false, autoClose: 2000 })
             dispatch(addAppointment(result.data.message))
             setModalOpen(false)
             setOpenConfirmal(false)
             getSocket().emit('new-appointment')
         }).catch(err => {
-            toast.update(searchingToast, { render: "Nincs üres asztal a megadott időpontban!", type: "error", isLoading: false, autoClose: 2000 })
+            toast.update(searchingToast, { render: t(`api.${err.response.data.message}`), type: "error", isLoading: false, autoClose: 2000 })
         })
     }
 
@@ -86,22 +80,22 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
         e.preventDefault()
 
         if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value)) || e.target.elements.email.value.trim() === ''){
-            toast.error('Az e-mail formátuma nem megfelelő!')
+            toast.error(t('api.email-format-error'))
             return
         }
         
         if(isNaN(Date.parse(e.target.elements.date.value))) {
-            toast.error('A dátum formátuma nem megfelelő!')
+            toast.error(t('api.date-format-error'))
             return    
         }
         
         if(parseInt(e.target.elements.peopleCount.value) < 1) {
-            toast.error('Legalább 1 vendégnek érkeznie kell!')
+            toast.error(t('api.peoplecount-error'))
             return
         }
         
         if(localId < 0) {
-            toast.error('Válasszon ki egy asztalt!')
+            toast.error(t('api.no-table-selected'))
             return
         }
 
@@ -119,7 +113,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
             >
             <Box>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Időpont keresése
+                    {t('commons.search-appointment')}
                 </Typography>
                 <form className="text-center" onSubmit={submitForm}>
                     <TextField name="email" label="E-mail" variant="standard" type="email" className="my-4" />
@@ -128,7 +122,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                     <DateTimePicker
                         minDate={new Date()}
                         renderInput={(props) => <TextField name="date" {...props} />}
-                        label="Válassz dátumot"
+                        label={t('commons.choose-date')}
                         ampm={false}
                         value={value}
                         onChange={(newValue) => {
@@ -137,20 +131,21 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                     />
                     </LocalizationProvider>
                     <br />
-                    <TextField ref={peopleCountRef} name="peopleCount" label="Vendégek száma" variant="standard" type="number" className="my-4" />
+                    <TextField ref={peopleCountRef} name="peopleCount" label={t('commons.peoplecount')} variant="standard" type="number" className="my-4" />
                     <br />
                     <FormControl className="w-75 my-4">
-                        <InputLabel id="demo-controlled-open-select-label">Asztal</InputLabel>
+                        <InputLabel id="demo-controlled-open-select-label">{t('commons.table')}</InputLabel>
                         <Select value={localId} onChange={(e) => setLocalId(e.target.value)}>
-                            {tableIds.map((ids) => (
-                                <MenuItem key={ids.localId + 1} value={ids.localId + 1}>Asztal #{ids.localId + 1}</MenuItem>
-                            ))
+                            {
+                                tableIds.map((ids) => (
+                                    <MenuItem key={ids.localId + 1} value={ids.localId + 1}>{t('commons.table')} #{ids.localId + 1}</MenuItem>
+                                ))
                             }
                         </Select>
                     </FormControl>
                     <br />
                     <Button variant="contained" color="primary" className="m-auto mx-2" type="submit">
-                        Foglalás indítása
+                        {t('commons.start-booking')}
                     </Button>          
                 </form>
             </Box>
@@ -158,10 +153,10 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
 
         <Dialog disableEnforceFocus open={openConfirmal}>
             <div className="p-3">
-                <h5>Dátum: {moment(value).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}</h5>
-                <h5>Asztal: {localId} </h5>
+                <h5>{t('commons.date')}: {moment(value).utcOffset(0).format("L HH:mm")}</h5>
+                <h5>{t('commons.table')}: {localId} </h5>
 
-                <h6 className="mt-4 text-decoration-underline">Esedékes ütközések</h6>
+                <h6 className="mt-4 text-decoration-underline">{t('commons.optional-conflicts')}</h6>
                 <List className="mb-3 px-3">
                     {
                         isLoading ?
@@ -170,19 +165,19 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                         conflictingData.map((appointment, idx) => (
                             <ListItem key={idx}>
                                 <ListItemText>
-                                    {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
+                                    {moment(appointment.date).utcOffset(0).format("L HH:mm")}
                                 </ListItemText>
                             </ListItem>
                         ))
                     }
 
                     {conflictingData.length === 0 && !isLoading && 
-                        <p> Nincs a közelben időpont a megadott asztalhoz. </p>}
+                        <p> {t('commons.no-appointment-conflicts')} </p>}
                 </List>
 
                 <div className="d-flex justify-content-between">
-                    <Button variant="contained" color="primary" onClick={bookForDate}>Jóváhagyás</Button>
-                    <Button variant="outlined" color="secondary" onClick={() => setOpenConfirmal(false)}>Mégsem</Button>
+                    <Button variant="contained" color="primary" onClick={bookForDate}>{t('commons.approve')}</Button>
+                    <Button variant="outlined" color="secondary" onClick={() => setOpenConfirmal(false)}>{t('commons.cancel')}</Button>
                 </div>
             </div>
         </Dialog>

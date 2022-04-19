@@ -11,34 +11,30 @@ import {
 } from '@material-ui/core';
 import { SearchOutlined, Delete, Add } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-import { useSelector, useDispatch } from 'react-redux';
-import { tableIds } from '../../store/features/liveSlice';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import useWindowSize from '../../store/useWindowSize'
 import DeleteConfirmal from './DeleteConfirmal';
-const moment = require('moment-timezone')
+import { t } from 'i18next'
+import moment from 'moment-timezone'
+import { stringToColor } from '../../utils/stringToColor'
 
-const columns = [
-    { id: 'email', label: 'E-mail' },
-    {
-        id: 'date',
-        label: 'Időpont',
-        format: (value) => value.toLocaleISOString(),
-    },
-    {
-        id: 'tableId',
-        label: 'Asztal ID',
-    },
-    { id: 'peopleCount', label: 'Személyek száma'},
-    { id: 'delete', label: ''}
-];
+function ConfirmedAppointments({filterAppoinments, selectedAppointment, filteredAppointments, handleChange, layoutValue, selectedDate, handleDateChange, setModalOpen, setSelectedAppointment, table, colors}) {
+    
+    const columns = [
+        { id: 'email', label: t('commons.email') },
+        {
+            id: 'date',
+            label: t('commons.date')
+        },
+        {
+            id: 'tableId',
+            label: t('commons.table-id')
+        },
+        { id: 'peopleCount', label: t('commons.peoplecount')},
+        { id: 'delete', label: ''}
+    ];
 
-function ConfirmedAppointments({filterAppoinments, selectedAppointment, filteredAppointments, handleChange, layoutValue, selectedDate, handleDateChange, setModalOpen, setSelectedAppointment, stringToColor, table, colors}) {
-
-    const dispatch = useDispatch()
+    const { width } = useWindowSize()
     const [deleteId, setDeleteId] = useState(null)
 
     const openDeleteConfirmal = (id) => {
@@ -46,22 +42,19 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
         setDeleteId(id)
     }
 
-	const {width} = useWindowSize()
-	const tables = useSelector(tableIds)
-
 	return (
 		<>
 		<div className="d-flex align-items-center searchbox justify-content-between px-4" style={{height: '10%'}}>
                 <div className="d-flex align-items-center">
                     <div className="d-flex align-items-center flex-grow-1">
                         <SearchOutlined />
-                        <input onKeyUp={filterAppoinments} type="text" className="search-input w-100" placeholder="Szűrés email alapján" />
+                        <input onKeyUp={filterAppoinments} type="text" className="search-input w-100" placeholder={t('commons.filter-by-email')} />
                     </div>
                     {width > 768 && 
                         <>
                             <div className="d-flex align-items-center flex-grow-1">
                                 <FormControl variant="filled" className={"m-2"} style={{minWidth: 120}}>
-                                    <InputLabel id="demo-simple-select-label">Asztal</InputLabel>
+                                    <InputLabel id="demo-simple-select-label">{t('commons.table')}</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
@@ -83,7 +76,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                         format="MM/dd/yyyy"
                                         margin="normal"
                                         id="date-picker-inline"
-                                        label="Date picker inline"
+                                        label={t('commons.date')}
                                         value={selectedDate.current}
                                         onChange={handleDateChange}
                                         KeyboardButtonProps={{
@@ -96,7 +89,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                 </div>
                 {width > 768 && <div className="d-flex invite-box flex-grow-1 book-box">
                     <Button color="primary" variant="outlined" onClick={() => setModalOpen(true)}>
-                        Hozzáadás
+                        {t('commons.add')}
                     </Button>
                 </div>}
             </div>
@@ -145,7 +138,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                 {appointment.email}
                             </TableCell>
                             <TableCell>
-                                {moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}
+                                {moment(appointment.date).utcOffset(0).format("L LT", {trim: false})}
                             </TableCell>
                             <TableCell>
                                 {table ? table.localId + 1 : appointment.TableId }
@@ -174,7 +167,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                     { appointment.email.charAt(0) }
                                 </Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={appointment.email} secondary={moment(appointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")} />
+                            <ListItemText primary={appointment.email} secondary={moment(appointment.date).utcOffset(0).format("L HH:mm")} />
                         </ListItem>
                     ))}
                 </List>}
@@ -191,14 +184,14 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                     aria-describedby="modal-modal-description"
                     className="team-dialog">
                     <Box>
-                        <h5><span className="fw-bold">Email:</span> <span>{selectedAppointment.email}</span></h5>
-                        <h5><span className="fw-bold">Dátum:</span> <span>{moment(selectedAppointment.date).utcOffset(0).format("YYYY.MM.DD. HH:mm:ss")}</span></h5>
-                        <h5><span className="fw-bold">Asztal ID:</span> <span>{layoutValue.find(table => table.TableId === selectedAppointment.TableId)?.localId + 1}</span></h5>
-                        <h5><span className="fw-bold">Vendégek száma:</span> <span>{selectedAppointment.peopleCount}</span></h5>
+                        <h5><span className="fw-bold">{t('commons.email')}:</span> <span>{selectedAppointment.email}</span></h5>
+                        <h5><span className="fw-bold">{t('commons.date')}:</span> <span>{moment(selectedAppointment.date).utcOffset(0).format("L HH:mm")}</span></h5>
+                        <h5><span className="fw-bold">{t('commons.table-id')}:</span> <span>{layoutValue.find(table => table.TableId === selectedAppointment.TableId)?.localId + 1}</span></h5>
+                        <h5><span className="fw-bold">{t('commons.peoplecount')}:</span> <span>{selectedAppointment.peopleCount}</span></h5>
 
                         <div className="text-center pt-3">
                             <Button onClick={() => openDeleteConfirmal(selectedAppointment._id)} variant="outlined" color="secondary">
-                                Eltávolítás
+                                {t('commons.remove')}
                             </Button>
                         </div>
                     </Box>

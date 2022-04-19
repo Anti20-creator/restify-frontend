@@ -5,6 +5,8 @@ import { TableContainer, TableRow, TableCell, TableBody, TableHead, IconButton, 
 import API from '../../communication/API'
 import useWindowSize from '../../store/useWindowSize'
 import { TablePagination } from '@material-ui/core'
+import moment from 'moment-timezone'
+import { t } from 'i18next'
 
 function Invoices() {
 
@@ -13,8 +15,9 @@ function Invoices() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const { width } = useWindowSize();
-
+    
     useEffect(() => {
+        moment.locale('hu')
         API.get('/api/invoices').then(({data}) => {
             setInvoices(data.message)
         })
@@ -43,13 +46,13 @@ function Invoices() {
                     <TableHead>
                         <TableRow>
                             <TableCell>
-                                Számla neve
+                                {t('commons.invoice-name')}
                             </TableCell>
                             <TableCell>
-                                Kiállító
+                                {t('commons.exhibitor')}
                             </TableCell>
                             <TableCell>
-                                Számla kiállításának dátuma
+                                {t('commons.date')}
                             </TableCell>
                             <TableCell>
                             </TableCell>
@@ -67,7 +70,7 @@ function Invoices() {
                                     {invoice.email}
                                 </TableCell>
                                 <TableCell>
-                                    {new Date(invoice.date).toLocaleString()}
+                                    {moment(invoice.date).utcOffset(0).format('L HH:mm')}
                                 </TableCell>
                                 <TableCell>
                                     <IconButton onClick={(e) => {setRowData(invoice)} }>
@@ -93,7 +96,7 @@ function Invoices() {
             <List>
                 {invoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((invoice) => (
                     <ListItem style={{borderBottom: '1px solid #ececec'}}>
-                        <ListItemText primary={invoice.date} secondary={invoice.email} />
+                        <ListItemText primary={moment(invoice.date).utcOffset(0).format("L HH:mm")} secondary={invoice.email} />
                         <ListItemSecondaryAction>
                             <IconButton onClick={(e) => {setRowData(invoice)}} edge="end" aria-label="save">
                               <Save />

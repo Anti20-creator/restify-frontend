@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import './TableDialog.css'
 import useWindowSize from '../../store/useWindowSize'
+import { useTranslation } from 'react-i18next';
 
 function TableDialog() {
 
@@ -20,23 +21,22 @@ function TableDialog() {
     const currentInvoiceItems = useSelector(invoiceItems)
     const [foodText, setFoodText] = useState('')
     const [receiptOpen, setReceiptOpen] = useState(false)
-    const { width, height } = useWindowSize()
+    const { width } = useWindowSize()
+    const { t } = useTranslation()
 
     const cancelTable = () => {
         if(currentInvoiceItems.length > 0) {
-            toast.error('Ez az asztal jelenleg nem mondható le!', {
+            toast.error(t('api.remove-booked-table'), {
                 autoClose: 1500
             })
         }else{
             API.post('/api/tables/free-table', {tableId}).then(result => {
-                if(result.data.success) {
                     getSocket().emit('leave-table', {tableId: tableId}); 
                     navigate('../../')
-                }else{
-                    toast.error('Ez az asztal jelenleg nem mondható le!', {
-                        autoClose: 1500
-                    })
-                }
+            }).catch(err => {
+                toast.error(t(`api.${err.response.data.message}`), {
+                    autoClose: 1500
+                })
             })
         }
     }
@@ -50,13 +50,13 @@ function TableDialog() {
                         <Close />
                     </IconButton>
                     <Typography variant="h6">
-                        Asztal
+                        {t('commons.table')}
                     </Typography>
                     <Button color="inherit" onClick={() => cancelTable()}>
-                        Asztal lemondása
+                        {t('commons.table-unbook')}
                     </Button>
                     <Button color="inherit" onClick={() => { getSocket().emit('leave-table', {tableId: tableId}); navigate('../../') }}>
-                        Bezárás
+                        {t('commons.close')}
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -66,7 +66,7 @@ function TableDialog() {
                     <div className="searchbox">
                         <div className="d-flex align-items-center flex-grow-1">
                             <SearchOutlined />
-                            <input onInput={(e) => {setFoodText(e.target.value)}} type="text" className="search-input w-100" placeholder="Ételek keresése" />
+                            <input onInput={(e) => {setFoodText(e.target.value)}} type="text" className="search-input w-100" placeholder={t('commons.search-foods')} />
                         </div>
                     </div>
                     <div className="col-12 items-holder">
@@ -91,7 +91,7 @@ function TableDialog() {
                         <Close />
                     </IconButton>
                     <Typography variant="h6">
-                        Számla
+                        {t('commons.invoice')}
                     </Typography>
                 </Toolbar>
             </AppBar>

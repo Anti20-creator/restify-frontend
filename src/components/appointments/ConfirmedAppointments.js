@@ -38,7 +38,6 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
     const [deleteId, setDeleteId] = useState(null)
 
     const openDeleteConfirmal = (id) => {
-        console.log(id)
         setDeleteId(id)
     }
 
@@ -133,7 +132,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
 
                         const table = layoutValue.find(table => table.TableId === appointment.TableId)
                         return (
-                        <TableRow style={{backgroundColor: colors[idx]}} hover role="checkbox" tabIndex={-1} key={appointment._id}>
+                        <TableRow className={colors[idx]} hover role="checkbox" tabIndex={-1} key={appointment._id}>
                             <TableCell>
                                 {appointment.email}
                             </TableCell>
@@ -161,7 +160,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                 <List>
                     {filteredAppointments.sort((a, b) => moment(a.date) < moment(b.date) ? -1 : 1)
                         .map((appointment, idx) => (
-                        <ListItem style={{backgroundColor: colors[idx]}} onClick={() => setSelectedAppointment(appointment)} key={appointment._id}>
+                        <ListItem className={colors[idx]} onClick={() => setSelectedAppointment(appointment)} key={appointment._id}>
                             <ListItemAvatar>
                                 <Avatar style={{backgroundColor: stringToColor(appointment.email)}}>
                                     { appointment.email.charAt(0) }

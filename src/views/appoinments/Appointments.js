@@ -3,7 +3,6 @@ import {  Tab, AppBar } from '@material-ui/core';
 import { TabList, TabPanel, TabContext } from '@material-ui/lab'
 import './Appointments.css'
 import API from '../../communication/API';
-import { getSocket } from '../../communication/socket';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { appointmentsState, seenAppointments, seenAllAppointments, updateAppointments } from '../../store/features/appointmentsSlice';
@@ -13,6 +12,7 @@ import ConfirmedAppointments from '../../components/appointments/ConfirmedAppoin
 import UnConfirmedAppointments from '../../components/appointments/UnConfirmedAppointments'
 import AppointmentConfirmalModal from '../../components/appointments/AppointmentConfirmalModal'
 import { useTranslation } from 'react-i18next';
+import moment from 'moment-timezone'
 
 function Appointments() {
 
@@ -37,7 +37,6 @@ function Appointments() {
                 dispatch(seenAppointments())
                 dispatch(updateAppointments(response.data.message))
             }).catch(err => {
-                console.log(err)
                 toast.error(t(`api.${err.response.data.message}`), {
                     autoClose: 1500
                 })
@@ -57,15 +56,17 @@ function Appointments() {
         const newColors = [] 
         for (const appointment of filteredAppointments) {
             let newColor = ""
-            for (const otherAppointment of appointments.filter(a => a.TableId === appointment.TableId)) {
+            for (const otherAppointment of appointments.filter(a => a.TableId === appointment.TableId && a.confirmed)) {
                 if(appointment._id === otherAppointment._id) {
                     continue
                 }
 
                 if(Math.abs(new Date(appointment.date) - new Date(otherAppointment.date)) <= 3_600_000 * 1.5) {
-                    newColor = "#ef5350"
+                    newColor = "error"
+                    break
                 }else if(Math.abs(new Date(appointment.date) - new Date(otherAppointment.date)) <= 3_600_000 * 3 && newColor === '') {
-                    newColor = "#ff9800"
+                    newColor = "warning"
+                    break
                 }
             }
             newColors.push(newColor)

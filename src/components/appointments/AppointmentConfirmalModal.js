@@ -26,7 +26,6 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
     }, [data])
 
 	useEffect(() => {
-		console.log(tableData)
 		if(tableData && tableData.tableId !== 'any') {
 			API.post('/api/appointments/booking-conflicts', {date: tableData.date.toString(), tableId: tableData.tableId, peopleCount: Number(tableData.peopleCount)}).then((result) => {
 				setOptionalConflicts(result.data.message)

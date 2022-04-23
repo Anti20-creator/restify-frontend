@@ -69,7 +69,6 @@ function LiveView() {
     }
 
     const bookTable = () => {
-        console.log(selectedTable)
         API.post('api/tables/book', {tableId: selectedTable})
     }
 
@@ -80,7 +79,8 @@ function LiveView() {
                         backgroundImage: !mobileMode ?  `url(${backgroundImage})` : '', 
                         backgroundSize: 'cover', 
                         backgroundRepeat: 'no-repeat', 
-                        backgroundPosition: 'center'}}>
+                        backgroundPosition: 'center', 
+                        borderWidth: '1px', borderColor:'black', borderStyle:'solid'}}>
         {
             !mobileMode ?
             tables.map((table) => (
@@ -104,7 +104,7 @@ function LiveView() {
                 {
                     tables.map((table) => (
                         <>
-                            <ListItem onClick={() => handleTableClick(table.TableId)}>
+                            <ListItem backgroundColor={{backgroundColor: tablesInUse.includes(table.TableId) ? 'red': ''}} onClick={() => handleTableClick(table.TableId)}>
                                 <ListItemText>
                                     Asztal #{ table.localId + 1 }
                                 </ListItemText>

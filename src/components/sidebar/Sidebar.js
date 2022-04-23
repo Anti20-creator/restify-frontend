@@ -6,11 +6,13 @@ import 'animate.css'
 import API from '../../communication/API'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 function Sidebar({isAdmin}) {
 
     const navigate = useNavigate()
     const location = useLocation()
+    const { i18n } = useTranslation()
     
     const logOut = () => {
         API.get('api/users/logout').then(() => {
@@ -66,6 +68,12 @@ function Sidebar({isAdmin}) {
             <div className="d-flex sidebar-row " role="button" onClick={logOut}>
                 <ExitToApp />
                 <p className={"pl-2"}>{t('sidebar.logout')}</p>
+            </div>
+
+            <div className="language-selector">
+                <p onClick={() => i18n.changeLanguage('hu')} className={i18n.language === 'hu' ? 'active': ''}>HU</p>
+                <span> | </span>
+                <p onClick={() => i18n.changeLanguage('en')} className={i18n.language === 'en' ? 'active': ''}>EN</p>
             </div>
         </div>
     )

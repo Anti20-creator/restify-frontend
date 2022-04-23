@@ -93,7 +93,9 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                        );
 	                    })}
 	                </TableBody>
-	                <TablePagination
+	                </Table>
+	                {filteredAppointments.length > rowsPerPage && <TablePagination
+					  style={{display: 'inline'}}
 	                  rowsPerPageOptions={[25, 40, 55]}
 	                  component="div"
 	                  count={filteredAppointments.length}
@@ -101,8 +103,7 @@ function UnConfirmedAppointments({filteredAppointments, selectedAppointment, sho
 	                  page={page}
 	                  onPageChange={handleChangePage}
 	                  onRowsPerPageChange={handleChangeRowsPerPage}
-	                />
-	                </Table>
+	                />}
 	            </TableContainer>}
 	            {width <= 768 &&
 	                <>

@@ -13,7 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import InvoiceGeneratorModal from './InvoiceGeneratorModal';
 import useWindowSize from '../../store/useWindowSize'
 
-function Invoice({localId, showLabel=true}) {
+function Invoice({showLabel=true}) {
 
     const tableId = useParams().id
     
@@ -145,9 +145,8 @@ function Invoice({localId, showLabel=true}) {
                     {t('commons.pay')}
                 </Button>
             </div>
-            <InvoiceGeneratorModal tableId={tableId} items={currentInvoiceItems} tableLocalId={localId} open={startPayment} handleClose={() => {
+            <InvoiceGeneratorModal tableId={tableId} items={currentInvoiceItems} open={startPayment} handleClose={() => {
                 setStartPayment(false)
-                //dispatch(setItems([]))
             }} />
         </>
     )

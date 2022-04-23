@@ -4,28 +4,26 @@ import InvoiceItemSelector from './InvoiceItemSelector';
 import { Button, DialogActions, DialogContent, DialogTitle, Typography, TextField } from '@material-ui/core';
 import Dialog from '@mui/material/Dialog';
 import { getSocket } from '../../communication/socket'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
 import { useTranslation } from 'react-i18next'
 import './InvoiceGeneratorModal.css'
 
-function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}) {
+function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
 
     const navigate = useNavigate()
     const [invoiceProcess, setInvoiceProcess] = useState(null)
     const [invoiceName, setInvoiceName] = useState(null)
     const [itemsLeft, setItemsLeft] = useState(items)
     const [itemsToPay, setItemsToPay] = useState([])
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const dispatch = useDispatch()
 
     const getInvoice = async() => {
-      console.log('invoice')
-      console.log(invoiceProcess)
       if(invoiceProcess === 'together') {
-        const {data} = await API.get(`/api/tables/${tableId}`)
+        const {data} = await API.post(`/api/tables/${tableId}`, {lang: i18n.language})
           .catch(err => {
             toast.error(t('api.invoice-generating-error'))
             handleClose()
@@ -35,9 +33,8 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     }
 
     const getSplittedInvoice = () => {
-      API.post(`/api/tables/${tableId}/split`, {items: itemsToPay}).then(({data}) => {
+      API.post(`/api/tables/${tableId}/split`, {items: itemsToPay, lang: i18n.language}).then(({data}) => {
         setInvoiceName(data.message)
-        //dispatch(setItems(itemsLeft))
         setItemsToPay([])
       }).catch(err => {
         toast.error(t('api.invoice-generating-error'))
@@ -48,7 +45,7 @@ function InvoiceGeneratorModal({tableId, tableLocalId, open, handleClose, items}
     const getSplittedEqualInvoice = async(e) => {
       e.preventDefault()
 
-      const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: Number(e.target.elements.peopleCount.value)})
+      const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: Number(e.target.elements.peopleCount.value), lang: i18n.language})
         .catch(err => {
           toast.error(t('api.invoice-generating-error'))
           handleClose()

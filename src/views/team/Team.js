@@ -48,7 +48,6 @@ function Team() {
 
     useEffect(() => {
         API.get('/api/users/team').then(result => {
-            console.log(result.data.message)
             if(result.data.success) {
                 setMembers(result.data.message)
                 setFilteredMembers(result.data.message)
@@ -190,6 +189,7 @@ function Team() {
                 </TableBody>
                 </Table>
                 <Menu
+                    trans={false}
                     anchorEl={anchorEl}
                     id="account-menu"
                     open={anchorEl !== null}

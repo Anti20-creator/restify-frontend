@@ -9,19 +9,19 @@ import '../../localization/translations'
 function Settings() {
 
     const { t } = useTranslation();
-    const cityRef = useRef(null)
-    const postalCodeRef = useRef(null)
-    const addressRef = useRef(null)
-    const taxNumberRef = useRef(null)
-    const phoneNumberRef = useRef(null)
-    const mondayRef = useRef(null)
-    const tuesdayRef = useRef(null)
-    const wednesdayRef = useRef(null)
-    const thursdayRef = useRef(null)
-    const fridayRef = useRef(null)
-    const saturdayRef = useRef(null)
-    const sundayRef = useRef(null)
-    const [currency, setCurrency] = useState(null)
+    const cityRef = useRef('')
+    const postalCodeRef = useRef('')
+    const addressRef = useRef('')
+    const taxNumberRef = useRef('')
+    const phoneNumberRef = useRef('')
+    const mondayRef = useRef('')
+    const tuesdayRef = useRef('')
+    const wednesdayRef = useRef('')
+    const thursdayRef = useRef('')
+    const fridayRef = useRef('')
+    const saturdayRef = useRef('')
+    const sundayRef = useRef('')
+    const [currency, setCurrency] = useState('USD')
 
     const handleCurrencyChange = (e) => {
         setCurrency(e.target.value)
@@ -29,7 +29,6 @@ function Settings() {
 
     useEffect(() => {
         API.get('/api/informations').then(({data}) => {
-            console.log(data)
             cityRef.current.value = data.message.city ?? ''
             postalCodeRef.current.value = data.message.postalCode ?? ''
             addressRef.current.value = data.message.address ?? ''

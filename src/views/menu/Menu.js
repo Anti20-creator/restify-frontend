@@ -111,7 +111,7 @@ function Menu() {
                             </div>
                             {
                                 Object.keys(menu.items[category]).sort().map((key) => (
-                                    <div key={key} className="col-sm-4 col-md-3 col-10">
+                                    <div key={key} className="col-lg-3 col-md-4 col-10">
                                         <Card onClick={() => {setItem(key) }} className="m-1 text-center h-100 menu-card">
                                             <CardContent className="p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                                                 <p className="fw-bold">{key}</p>

@@ -21,3 +21,22 @@
 .MuiTabs-flexContainer button {
     flex: 1;
 }
+
+.appointments .error {
+    background-color: #ef5350;
+}
+.appointments .error:hover {
+    background-color: #e22421 !important;
+}
+.appointments .error td, .appointments .error p, .appointments .error span {
+    color: white;
+}
+.appointments .warning {
+    background-color: #ff9800;
+}
+.appointments .warning:hover {
+    background-color: #d47f00 !important;
+}
+.appointments .warning td, .appointments .warning p, .appointments .warning span {
+    color: white;
+}

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { Modal, Box, Typography, Button, TextField, Select, FormControl, InputLabel, MenuItem, ListItem, ListItemText, List, CircularProgress } from '@material-ui/core'
+import { Box, Typography, Button, TextField, Select, FormControl, InputLabel, MenuItem, ListItem, ListItemText, List, CircularProgress } from '@material-ui/core'
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateTimePicker from '@mui/lab/DateTimePicker';
@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import { addAppointment } from '../../store/features/appointmentsSlice'
 import Dialog from '@mui/material/Dialog'
 import { useTranslation } from 'react-i18next';
+import Modal from '@mui/material/Modal'
 import moment from 'moment-timezone'
 
 function BookingModal({addModalOpen, setModalOpen, tableIds}) {
@@ -36,6 +37,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                 setConflictingData(result.data.message)
                 setError(false)
                 setLoading(false)
+                setFormData(null)
             }).catch(err => {
                 setError(true)
                 setLoading(false)
@@ -68,7 +70,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
         API.post('/api/appointments/book-for-guest', {...formData, lang: i18n.language}).then(result => {
             toast.update(searchingToast, { render: t('api.appointment-booked'), type: "success", isLoading: false, autoClose: 2000 })
             dispatch(addAppointment(result.data.message))
-            setModalOpen(false)
+            closeModal()
             setOpenConfirmal(false)
             getSocket().emit('new-appointment')
         }).catch(err => {
@@ -103,11 +105,18 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
         saveFormData(e)
     }
 
+    const closeModal = () => {
+        setValue(null)
+        setLocalId(-1)
+        setModalOpen(false)
+        setFormData(null)
+    }
+
   return (
     <>
         <Modal
             open={addModalOpen}
-            onClose={() => setModalOpen(false)}
+            onClose={() => closeModal()}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
             >
@@ -135,7 +144,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                     <br />
                     <FormControl className="w-75 my-4">
                         <InputLabel id="demo-controlled-open-select-label">{t('commons.table')}</InputLabel>
-                        <Select value={localId} onChange={(e) => setLocalId(e.target.value)}>
+                        <Select value={localId === -1 ? '' : localId} onChange={(e) => setLocalId(e.target.value)}>
                             {
                                 tableIds.map((ids) => (
                                     <MenuItem key={ids.localId + 1} value={ids.localId + 1}>{t('commons.table')} #{ids.localId + 1}</MenuItem>

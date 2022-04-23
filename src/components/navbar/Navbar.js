@@ -35,22 +35,22 @@ function Navbar() {
                 <ul className="navbar-nav me-auto">
                     <Link to="/" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">{t('sidebar.login')}</a>
+                            <p className="nav-link m-0">{t('sidebar.login')}</p>
                         </li>
                     </Link>
                     <Link to="/register" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">{t('sidebar.register')}</a>
+                            <p className="nav-link m-0">{t('sidebar.register')}</p>
                         </li>
                     </Link>
                     <div onClick={showJoinModal}>
                         <li className="nav-item">
-                            <a className="nav-link">{t('sidebar.join-to-team')}</a>
+                            <p className="nav-link m-0">{t('sidebar.join-to-team')}</p>
                         </li>
                     </div>
                     <Link to="/" onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
-                            <a className="nav-link">{t('sidebar.download-assets')}</a>
+                            <p className="nav-link m-0">{t('sidebar.download-assets')}</p>
                         </li>
                     </Link>
                 </ul>

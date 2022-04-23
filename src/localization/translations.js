@@ -91,6 +91,27 @@ const resources = {
                 "team-already-exists": "This user is already part of the team!",
 
                 "removing-appointment": "Deleting appointment...",
+                "missing-parameter": "Parameters missing from request!",
+                "body-type-error": "Error in types of request body!",
+                "user-cant-remove": "User can't be removed!",
+
+                "invalid-email": "Invalid e-mail format!",
+                "invalid-username": "Your name must be longer!",
+                "short-password": "Your password should be longer!",
+                "short-restaurantname": "Name of the restaurant should be longer!",
+                "opening-times-invalid": "Invalid opening times given!",
+                "invalid-currency": "Invalid currency was given!",
+                "invalid-tablesize": "Invalid tablesize!",
+                "invalid-tablecount": "Invalid tablecount!",
+                "invalid-tabletype": "Invalid tabletype!",
+                "invalid-tabledirection": "Invalid tabledirection!",
+                "small-y": "Layout height is too small!",
+                "small-x": "Layout width is too small!",
+                "short-foodname": "Short foodname!",
+                "short-categoryname": "Short categoryname!",
+                "small-quantity": "Quantity must be positive!",
+                "short-iconname": "Icon name is too short!",
+                "short-unitname": "Unit is too short!"
             },
             sidebar: {
                 "live-view": "Live view",
@@ -127,7 +148,7 @@ const resources = {
                 "start-booking": "Start booking",
                 "add": "Add",
                 "email": "E-mail",
-                "table-id": "Asztal ID",
+                "table-id": "Table ID",
                 "remove": "Remove",
                 "approved": "Approved",
                 "unapproved": "Incoming",
@@ -210,7 +231,8 @@ const resources = {
                 "order-added": "New invoiceitem!",
                 "order-removed": "Item deleted from invoice!",
                 "increase-order": "Quantity of invoiceitem increased!",
-                "decrease-order": "Quantity of invoiceitem decreased!"
+                "decrease-order": "Quantity of invoiceitem decreased!",
+                "unit": "Unit"
             }
         }
     },
@@ -302,7 +324,28 @@ const resources = {
                 "team-loading-error": "Hiba a csapat betöltése során!",
                 "team-already-exists": "Ez a felhasználó már a csapat tagja!",
 
-                "removing-appointment": "Időpont lemondása..."
+                "removing-appointment": "Időpont lemondása...",
+                "missing-parameter": "Hiányzó adatok a kérés feldolgozása során!",
+                "body-type-error": "Típushiba a kérés adataiban!",
+                "user-cant-remove": "A felhasználó nem törölhető!",
+
+                "invalid-email": "Érvénytelen e-mail formátum!",
+                "invalid-username": "A nevednek hosszabbnak kell lennie!",
+                "short-password": "A jelszó túl rövid!",
+                "short-restaurantname": "Az étterem neve túl rövid!",
+                "opening-times-invalid": "Érvénytelen nyitvatartási idők!",
+                "invalid-currency": "Érvénytelen valuta!",
+                "invalid-tablesize": "Érvénytelen asztalméret!",
+                "invalid-tablecount": "Érvénytelen férőhely az asztalnál!",
+                "invalid-tabletype": "Érvénytelen asztaltípus!",
+                "invalid-tabledirection": "Érvénytelen forgat!",
+                "small-y": "Túl kicsi az alaprajz magassága!",
+                "small-x": "Túl kicsi az alaprajz szélessége!",
+                "short-foodname": "Rövid ételnév!",
+                "short-categoryname": "Rövid kategórianév!",
+                "small-quantity": "A mennyiségnek pozitívnak kell lennie!",
+                "short-iconname": "Túl rövid az ikon neve!",
+                "short-unitname": "Túl rövid az egység neve!"
             },
             sidebar: {
                 "live-view": "Élő nézet",
@@ -422,7 +465,8 @@ const resources = {
                 "order-added": "Új számlaelem!",
                 "order-removed": "Elem törölve a listából!",
                 "increase-order": "Egy rendelés mennyisége nőtt!",
-                "decrease-order": "Egy rendelés mennyisége csökkent!"
+                "decrease-order": "Egy rendelés mennyisége csökkent!",
+                "unit": "Egység"
             }
         }
     }

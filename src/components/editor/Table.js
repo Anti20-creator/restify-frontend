@@ -13,7 +13,7 @@ function Table({rounded, tableCount, type='normal', size='average', direction, c
 
     const width = sizes[size]
     
-    const strokeDasharray = `36, ${((width/2-2) * 2 * Math.PI - tableCount * 36) / tableCount}`
+    const strokeDasharray = !(tableCount > 6 && type === 'rounded') ? `36, ${((width/2-2) * 2 * Math.PI - tableCount * 36) / tableCount}` : `25, ${((width/2-2) * 2 * Math.PI - tableCount * 25) / tableCount}`
     const [anchorEl, setAnchorEl] = useState(null)
     const [borderCounts, setBorderCounts] = useState([0, 0, 0, 0])
 

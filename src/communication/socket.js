@@ -1,7 +1,7 @@
 ﻿import { io } from 'socket.io-client'
 import { setInUse } from '../store/features/liveSlice'
 import { addItem, removeAll, clear, addOne, removeOne, setItems } from '../store/features/invoiceSlice'
-import { setModifiedLayout } from '../store/features/layoutSlice'
+import { setModifiedLayout, setModifiedLayoutSize } from '../store/features/layoutSlice'
 import { toast } from 'react-toastify'
 import { receivedAppointment } from '../store/features/appointmentsSlice'
 import { t } from 'i18next'
@@ -118,6 +118,9 @@ const registerListeners = () => {
     })
     socket.on('orders-modified', (orders) => {
         store.dispatch(setItems(orders))
+    })
+    socket.on('layout-size-modified', (sizeX, sizeY) => {
+        store.dispatch(setModifiedLayoutSize(sizeX, sizeY))
     })
 }
 

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux';
 import { updateSize } from '../../store/features/layoutSlice';
 import { useTranslation } from 'react-i18next'
+import { getSocket } from '../../communication/socket';
 
 function EditorSettings({close, initialX, initialY}) {
 
@@ -24,6 +25,11 @@ function EditorSettings({close, initialX, initialY}) {
         const sizeX = e.target.elements.sizeX.value
         const sizeY = e.target.elements.sizeY.value
 
+        if(sizeX < 0 || sizeY < 0) {
+            //TODO
+            return;
+        }
+
         const formData = new FormData()
         formData.append("image", file)
         formData.append("sizeX", Number(sizeX))
@@ -35,6 +41,7 @@ function EditorSettings({close, initialX, initialY}) {
         const loadingToast = toast.loading(t(`api.layout-settings-loading`), {position: "bottom-center"})
         API.post('/api/layouts/update', formData).then(response => {
             dispatch(updateSize({sizeX: Number(sizeX), sizeY: Number(sizeY)}))
+            getSocket().emit('layout-size-modified', {sizeX: Number(sizeX), sizeY: Number(sizeY)})
             toast.update(loadingToast, {render: t(`api.${response.data.message}`), autoClose: 1200, isLoading: false, type: "success"})
             close()
         }).catch(err => {

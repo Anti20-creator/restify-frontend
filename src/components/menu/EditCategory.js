@@ -24,8 +24,17 @@ function EditCategory({open, setOpen, category}) {
     const updateCategory = (e) => {
         e.preventDefault()
 
-        const editToast = toast.loading(t('api.updating-category'))
         const newCategory = e.target.elements.category.value
+        if(newCategory.trim().length === 0) {
+            toast.error(t('api.short-categoryname'))
+            return
+        }
+        if(categoryIcon.trim().length === 0) {
+            toast.error(t('api.short-iconname'))
+            return
+        }
+
+        const editToast = toast.loading(t('api.updating-category'))
         API.post('/api/menu/modify-category', {
             oldCategory: category.category,
             category: newCategory,

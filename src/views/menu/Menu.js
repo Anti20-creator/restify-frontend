@@ -30,10 +30,16 @@ function Menu() {
         e.preventDefault()
         const category = e.target.elements.category.value
         const icon = e.target.elements.icon.value
-        if(!icon || !category) {
+        if(category.trim().length === 0) {
+            toast.error(t('api.short-categoryname'))
+            return
+        }
+        if(icon.trim().length === 0) {
+            toast.error(t('api.short-iconname'))
             return
         }
         if(Object.keys(menu.icons).includes(category)) {
+            toast.error(t('api.existing-category'))
             return
         }
         

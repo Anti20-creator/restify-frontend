@@ -11,14 +11,39 @@ function RegisterEmployee() {
     const navigate = useNavigate()
     const { t, i18n } = useTranslation()
 
+    const validateFields = (name, email, password, secretPin) => {
+        if(name.trim().length < 4) {
+            toast.error(t('api.short-username'), {autoClose: 1200})
+            return false
+        }
+        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            toast.error(t('api.invalid-email'), {autoClose: 1200})
+            return false
+        }
+        if(password.trim().length < 5) {
+            toast.error(t('api.short-password'), {autoClose: 1200})
+            return false
+        }
+        if(secretPin.trim().length !== 4) {
+            toast.error(t('api.short-restaurantpin'), {autoClose: 1200})
+            return false
+        }
+        return true
+    }
+
+
     const register = (e) => {
         e.preventDefault()
-        const registerToast = toast.loading(t('api.registration-in-progress'))
         const name = e.target.name.value
         const email = e.target.email.value
         const password = e.target.password.value
         const secretPin = e.target.pin.value
-    
+
+        if(!validateFields(name, email, password, secretPin)) {
+            return
+        }
+        
+        const registerToast = toast.loading(t('api.registration-in-progress'))
         API.post('api/users/register-employee/' + restaurantId, {email, password, secretPin, name, lang: i18n.language}).then(result => {
             toast.update(registerToast, {render: t(`api.${result.data.message}`), autoClose: 1200, isLoading: false, type: "success"})
             navigate('../')

@@ -37,7 +37,6 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                 setConflictingData(result.data.message)
                 setError(false)
                 setLoading(false)
-                setFormData(null)
             }).catch(err => {
                 setError(true)
                 setLoading(false)

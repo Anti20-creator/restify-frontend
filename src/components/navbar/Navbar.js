@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogActions, FormControl } from '@mui/material'
+import { Button, Dialog } from '@mui/material'
+import { TextField } from '@material-ui/core'
 import React, { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Navbar.css'
@@ -16,7 +17,9 @@ function Navbar() {
         togglerRef.current.click()
     }
 
-    const goToInvitePage = () => {
+    const goToInvitePage = (e) => {
+        e.preventDefault()
+
         setModalOpen(false)
         navigate('invite/' + restaurantId.current.value)
         restaurantId.current.value = ''
@@ -43,7 +46,7 @@ function Navbar() {
                             <p className="nav-link m-0">{t('sidebar.register')}</p>
                         </li>
                     </Link>
-                    <div onClick={showJoinModal}>
+                    <div role="button" onClick={showJoinModal}>
                         <li className="nav-item">
                             <p className="nav-link m-0">{t('sidebar.join-to-team')}</p>
                         </li>
@@ -59,12 +62,11 @@ function Navbar() {
             {modalOpen && 
                 <Dialog open={true} onClose={() => setModalOpen(false)}>
                     <div className="px-5 py-4">
-                        <FormControl>
-                            <input ref={restaurantId} type="text" placeholder='Étterem azonosítója' />
-                        </FormControl>
-                        <DialogActions className="text-center">
+                        <form className="text-center" onSubmit={goToInvitePage}>
+                            <TextField inputRef={restaurantId} type="text" placeholder='Étterem azonosítója' />
+                            <br />
                             <Button onClick={goToInvitePage} style={{flex: 'auto'}}>{t('commons.next')}</Button>
-                        </DialogActions>
+                        </form>
                     </div>
                 </Dialog>
             }

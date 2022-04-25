@@ -22,10 +22,7 @@ function Editor() {
 
     interact('.draggable')
         .draggable({
-        //onstart: () => setContextMenuOpened(false),
-        // enable inertial throwing
         inertia: false,
-        // keep the element within the area of it's parent
         modifiers: [
             interact.modifiers.restrictRect({
                 restriction: 'parent',
@@ -36,33 +33,20 @@ function Editor() {
                     left: 0,    // the left edge must be >= 0
                 }
             }),
-            interact.modifiers.snap({
-                targets: [
-                  interact.snappers.grid({ x: 5, y: 5 })
-                ],
-                range: Infinity,
-                relativePoints: [ { x: 0, y: 0 } ]
-            }),
         ],
-        // enable autoScroll
         autoScroll: false,
-
         listeners: {
-            // call this function on every dragmove event
             move: dragMoveListener
         }
     })
 
     function dragMoveListener (event) {
         const target = event.target
-        // keep the dragged position in the data-x/data-y attributes
         const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
         const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
 
-        // translate the element
         target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
 
-        // update the position attributes
         target.setAttribute('data-x', x)
         target.setAttribute('data-y', y)
         setTables(
@@ -262,7 +246,7 @@ function Editor() {
   return (
       <>
         <div ref={editorNode} className="w-100 h-100 editor" onContextMenu={openEditorMenu} onDragStart={() => setContextMenuOpened(false)} onClick={() => setContextMenuOpened(false)}>
-            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', borderWidth: '1px', borderColor:'black', borderStyle:'solid'}}>
+            <div style={{width: layoutWidth, height: layoutHeight, backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}>
                 {
                     tables.map((table) => {
                         const key = table.localId

@@ -505,6 +505,7 @@ describe('Mobile tests', () => {
       cy.wait(500)
     }
     
+    cy.wait(3000)
     cy.get('.MuiFab-root').first().click()
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
     

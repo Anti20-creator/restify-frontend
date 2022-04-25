@@ -4,7 +4,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch } from 'react-redux';
-import { refreshLayout } from '../../store/features/layoutSlice';
+import { refreshLayout, refreshLayoutSize } from '../../store/features/layoutSlice';
 import { t } from 'i18next';
 
 function OutOfSyncBar({open, setOpen}) {
@@ -20,6 +20,7 @@ function OutOfSyncBar({open, setOpen}) {
 
     const update = () => {
         dispatch(refreshLayout())
+        dispatch(refreshLayoutSize())
         setOpen(false)
     }
 

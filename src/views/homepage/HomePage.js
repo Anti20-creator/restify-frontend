@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from "../../components/sidebar/Sidebar";
 import Team from '../team/Team'
-import Appointments from '../appoinments/Appointments';
+import Appointments from '../appointments/Appointments';
 import Menu from '../menu/Menu'
 import Editor from '../editor/Editor';
 import LiveView from '../liveview/LiveView';

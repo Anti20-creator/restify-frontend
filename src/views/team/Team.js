@@ -68,7 +68,6 @@ function Team() {
             setMembers(members.map(member => member.email === rowData.email ? {...member, isAdmin: !promote} : member))
             toast.update(rankToast, {render: t(`api.${result.data.message}`), autoClose: 1200, type: 'success', isLoading: false})
         }).catch(err => {
-            console.warn(err.message)
             toast.update(rankToast, {render: t(`api.${err.response.data.message}`), autoClose: 1200, type: 'error', isLoading: false})
         })
     }
@@ -76,12 +75,21 @@ function Team() {
     const sendInvite = (e) => {
         e.preventDefault()
         const email = e.target.elements.email.value
+        
+        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            toast.error(t('api.invalid-email'), {
+                autoClose: 1500
+            })
+            return
+        }
+        
         if(members.map(member => member.email).includes(email)) {
             toast.error(t('api.team-already-exists'), {
                 autoClose: 1500
             })
             return
         }
+
         const inviteToast = toast.loading(t('api.inviting-user'))
         API.post('/api/users/send-invite', {emailTo: email, lang: i18n.language}).then(result => {
             members.push({

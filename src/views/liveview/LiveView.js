@@ -26,7 +26,6 @@ function LiveView() {
     const layoutHeight = useSelector(layoutHeightSelector)
     const menu = useSelector(menuItems)
     const [tables, setTables] = useState([])
-    const [liveTableId, setLiveTableId] = useState(-1)
     const [bookTableModalOpen, setBookTableModalOpen] = useState(false)
     const [selectedTable, setSelectedTable] = useState(-1)
     const [backgroundImage, setBackgroundImage] = useState('')
@@ -54,7 +53,6 @@ function LiveView() {
         setSelectedTable(id)
         if(tablesInUse.includes(id)) {
             // Table is booked
-            setLiveTableId(id)
             navigate('/table/' + id)
         }else{
             // Table is not booked
@@ -79,8 +77,7 @@ function LiveView() {
                         backgroundImage: !mobileMode ?  `url(${backgroundImage})` : '', 
                         backgroundSize: 'cover', 
                         backgroundRepeat: 'no-repeat', 
-                        backgroundPosition: 'center', 
-                        borderWidth: '1px', borderColor:'black', borderStyle:'solid'}}>
+                        backgroundPosition: 'center'}}>
         {
             !mobileMode ?
             tables.map((table) => (
@@ -104,8 +101,8 @@ function LiveView() {
                 {
                     tables.map((table) => (
                         <>
-                            <ListItem backgroundColor={{backgroundColor: tablesInUse.includes(table.TableId) ? 'red': ''}} onClick={() => handleTableClick(table.TableId)}>
-                                <ListItemText>
+                            <ListItem style={{backgroundColor: tablesInUse.includes(table.TableId) ? 'red': ''}} onClick={() => handleTableClick(table.TableId)}>
+                                <ListItemText style={{color: tablesInUse.includes(table.TableId) ? 'white': 'black'}}>
                                     Asztal #{ table.localId + 1 }
                                 </ListItemText>
                             </ListItem>

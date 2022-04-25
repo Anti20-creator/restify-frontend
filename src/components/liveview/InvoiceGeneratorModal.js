@@ -45,7 +45,13 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
     const getSplittedEqualInvoice = async(e) => {
       e.preventDefault()
 
-      const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: Number(e.target.elements.peopleCount.value), lang: i18n.language})
+      const peopleCount = Number(e.target.elements.peopleCount.value)
+      if(peopleCount < 1) {
+        toast.error(t('api.too-few-people'))
+        return
+      }
+
+      const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: peopleCount, lang: i18n.language})
         .catch(err => {
           toast.error(t('api.invoice-generating-error'))
           handleClose()

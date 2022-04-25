@@ -96,7 +96,7 @@ const resources = {
                 "user-cant-remove": "User can't be removed!",
 
                 "invalid-email": "Invalid e-mail format!",
-                "invalid-username": "Your name must be longer!",
+                "short-username": "Your name must be longer!",
                 "short-password": "Your password should be longer!",
                 "short-restaurantname": "Name of the restaurant should be longer!",
                 "opening-times-invalid": "Invalid opening times given!",
@@ -111,7 +111,11 @@ const resources = {
                 "short-categoryname": "Short categoryname!",
                 "small-quantity": "Quantity must be positive!",
                 "short-iconname": "Icon name is too short!",
-                "short-unitname": "Unit is too short!"
+                "short-unitname": "Unit is too short!",
+                "too-few-people": "Too few guests!",
+                "short-restaurantpin": "Short restaurant PIN code!",
+                "unexpected-error": "Unexpected error!",
+                "existing-category": "This category exists already!"
             },
             sidebar: {
                 "live-view": "Live view",
@@ -330,7 +334,7 @@ const resources = {
                 "user-cant-remove": "A felhasználó nem törölhető!",
 
                 "invalid-email": "Érvénytelen e-mail formátum!",
-                "invalid-username": "A nevednek hosszabbnak kell lennie!",
+                "short-username": "A nevednek hosszabbnak kell lennie!",
                 "short-password": "A jelszó túl rövid!",
                 "short-restaurantname": "Az étterem neve túl rövid!",
                 "opening-times-invalid": "Érvénytelen nyitvatartási idők!",
@@ -345,7 +349,11 @@ const resources = {
                 "short-categoryname": "Rövid kategórianév!",
                 "small-quantity": "A mennyiségnek pozitívnak kell lennie!",
                 "short-iconname": "Túl rövid az ikon neve!",
-                "short-unitname": "Túl rövid az egység neve!"
+                "short-unitname": "Túl rövid az egység neve!",
+                "too-few-people": "Túl kevés vendég!",
+                "short-restaurantpin": "Rövid a PIN kód!",
+                "unexpected-error": "Váratlan hiba történt!",
+                "existing-category": "Ez a kategória már létezik!"
             },
             sidebar: {
                 "live-view": "Élő nézet",

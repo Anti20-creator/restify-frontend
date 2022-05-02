@@ -27,6 +27,7 @@ export const layoutSlice = createSlice({
             }
         },
         setModifiedLayoutSize: (state, action) => {
+            console.log(action.payload)
             if (!window.location.href.includes("edit")) {
                 state.sizeX = action.payload.sizeX
                 state.sizeY = action.payload.sizeY
@@ -35,7 +36,9 @@ export const layoutSlice = createSlice({
             }
         },
         refreshLayout: (state) => {
-            state.value = state.modified ? state.modified.slice() : []
+            if (state.modified) {
+                state.value = state.modified.slice()
+            }
             state.modified = null
         },
         refreshLayoutSize: (state) => {
@@ -52,7 +55,7 @@ export const layoutSlice = createSlice({
 
 export const { updateLayout, setModifiedLayout, refreshLayout, updateSize, setModifiedLayoutSize, refreshLayoutSize } = layoutSlice.actions
 export const layout = state => state.layout.value
-export const modifiedLayout = state => state.layout.modified
+export const modifiedLayout = state => state.layout.modified || state.layout.modifiedSize
 export const layoutWidthSelector = state => state.layout.sizeX
 export const layoutHeightSelector = state => state.layout.sizeY
 

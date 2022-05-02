@@ -40,3 +40,13 @@
 .appointments .warning td, .appointments .warning p, .appointments .warning span {
     color: white;
 }
+
+@media(max-width: 768px) {
+    .MuiTabs-flexContainer > .MuiButtonBase-root span {
+        height: 100% !important;
+    }
+    .MuiTabs-root {
+        height: 100% !important;
+        min-height: 0px !important;
+    }
+}

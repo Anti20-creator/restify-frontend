@@ -51,11 +51,11 @@ function Navbar() {
                             <p className="nav-link m-0">{t('sidebar.join-to-team')}</p>
                         </li>
                     </div>
-                    <Link to="/" onClick={() => togglerRef.current.click()}>
+                    <a href={process.env.PUBLIC_URL + "/build.zip"} download={"build.zip"} onClick={() => togglerRef.current.click()}>
                         <li className="nav-item">
                             <p className="nav-link m-0">{t('sidebar.download-assets')}</p>
                         </li>
-                    </Link>
+                    </a>
                 </ul>
             </div>
             </nav>

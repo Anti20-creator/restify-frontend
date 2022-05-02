@@ -58,11 +58,11 @@ function MobileNavbar({isAdmin}) {
 		        		<p className="nav-link">{t('sidebar.invoices')}</p>
 		      		</li>
 	            </Link>
-	            <Link onClick={() => toggler.current.click()} to="/settings">
+	            {isAdmin && <Link onClick={() => toggler.current.click()} to="/settings">
 	            	<li className="nav-item">
 		        		<p className="nav-link">{t('sidebar.settings')}</p>
 		      		</li>
-	            </Link>
+	            </Link>}
 	            <div onClick={() => { toggler.current.click(); logOut() }}>
 	            	<li className="nav-item">
 		        		<p className="nav-link">{t('sidebar.logout')}</p>

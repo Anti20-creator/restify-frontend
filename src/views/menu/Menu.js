@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { Box, Button, Card, CardContent, FormControl, MenuItem, Modal, Select, TextField, Typography, IconButton } from '@material-ui/core'
 import './Menu.css'
 import { ArrowBack, Edit } from '@material-ui/icons'
@@ -25,6 +25,12 @@ function Menu() {
     const [addModalOpen, setModalOpen] = useState(false)
     const [category, setCategory] = useState('')
     const [categoryIcon, setCategoryIcon] = useState('')
+
+    useEffect(() => {
+        if(addModalOpen) {
+            setCategoryIcon('')
+        }
+    }, [addModalOpen])
 
     const addCategoryForm = (e) => {
         e.preventDefault()

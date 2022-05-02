@@ -25,9 +25,14 @@ function EditorSettings({close, initialX, initialY}) {
         const sizeX = e.target.elements.sizeX.value
         const sizeY = e.target.elements.sizeY.value
 
-        if(sizeX < 0 || sizeY < 0) {
-            //TODO
-            return;
+        if(sizeX < 200) {
+            toast.error(t('api.small-x'), {autoClose: 1200})
+            return
+        }
+
+        if(sizeY < 200) {
+            toast.error(t('api.small-y'), {autoClose: 1200})
+            return
         }
 
         const formData = new FormData()
@@ -57,7 +62,7 @@ function EditorSettings({close, initialX, initialY}) {
                 <br />
                 <TextField defaultValue={initialY} variant="standard" name="sizeY" type="number" min="0" placeholder={t('commons.height')} />
                 <br />
-                <TextField disabled={fileUploadDisabled} variant="standard" name="image" type="file" min="0" className="mx-5" onChange={handleFileChange} accept="image/jpg" />
+                <TextField disabled={fileUploadDisabled} variant="standard" name="image" type="file" min="0" className="mx-5" onChange={handleFileChange} accept=".jpg, .jpeg, .png" />
                 <br />
                 {t('commons.delete-photo')}: <Checkbox name="delete" onChange={(e) => {setFileUploadDisabled(e.target.checked); }} />
                 <br />

@@ -7,3 +7,12 @@
 .desktop-navbar a:hover {
     cursor: pointer;
 }
+
+@media(max-width: 768px) {
+    .desktop-navbar .nav-link {
+        padding-left: 1rem;
+    }
+    .desktop-navbar .navbar-toggler {
+        margin-right: 1rem;
+    }
+}

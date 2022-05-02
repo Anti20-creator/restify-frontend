@@ -81,6 +81,7 @@ const resources = {
                 "registration-in-progress": "Registrating user...",
                 "inviting-user": "Inviting user...",
                 "updating-ranks": "Updating rank...",
+                "loading-removing-user": "Removing user...",
 
                 "email-format-error": "E-mail format is incorrect!",
                 "date-format-error": "Date format is incorrect!",
@@ -113,9 +114,15 @@ const resources = {
                 "short-iconname": "Icon name is too short!",
                 "short-unitname": "Unit is too short!",
                 "too-few-people": "Too few guests!",
-                "short-restaurantpin": "Short restaurant PIN code!",
+                "short-restaurantpin": "Length of restaurant PIN code must be 6 chars!",
                 "unexpected-error": "Unexpected error!",
-                "existing-category": "This category exists already!"
+                "existing-category": "This category exists already!",
+                "bad-layout-sizes": "The size of the layout is not good!",
+                "cant-modify-layout": "Can't modify layout without updating the site!",
+                "invalid-appointment-pin-length": "Length of appointment PIN code must be 6 chars!",
+                "no-access": "No access for the given request!",
+                "layout-image-not-found": "No deletable background image found!",
+                "bad-restaurant-id-format": "Bad restaurant ID format!"
             },
             sidebar: {
                 "live-view": "Live view",
@@ -319,6 +326,7 @@ const resources = {
                 "registration-in-progress": "Regisztráció folyamatban...",
                 "inviting-user": "Felhasználó meghívása...",
                 "updating-ranks": "Felhasználói jogok módosítása...",
+                "loading-removing-user": "Felhasználó eltávolítása...",
 
                 "email-format-error": "Az e-mail formátuma nem megfelelő!",
                 "date-format-error": "A dátum formátuma nem megfelelő!",
@@ -351,9 +359,17 @@ const resources = {
                 "short-iconname": "Túl rövid az ikon neve!",
                 "short-unitname": "Túl rövid az egység neve!",
                 "too-few-people": "Túl kevés vendég!",
-                "short-restaurantpin": "Rövid a PIN kód!",
+                "short-restaurantpin": "A PIN kód hosszának 6 karakternek kell lennie!",
                 "unexpected-error": "Váratlan hiba történt!",
-                "existing-category": "Ez a kategória már létezik!"
+                "existing-category": "Ez a kategória már létezik!",
+                "bad-layout-sizes": "Az alaprajz mérete nem megfelelő!",
+                "cant-modify-layout": "Nem lehetséges a mentés az oldal frissítése nélkül!",
+                "invalid-appointment-pin-length": "A PIN kód hosszának 6 karakternek kell lennie!",
+                "no-access": "Nincs hozzáférés a megadott kéréshez!",
+                "layout-image-not-found": "Nem található eltávolítandó háttérkép!",
+                "bad-restaurant-id-format": "Nem megfelelő az étterem azonosító formátuma!",
+                "snippet-sent": "Snippet has been sent!",
+                "snippet-sent-error": "Failed to send snippet!"
             },
             sidebar: {
                 "live-view": "Élő nézet",

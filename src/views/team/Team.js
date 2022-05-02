@@ -106,7 +106,7 @@ function Team() {
     }
 
     const removeMember = (email) => {
-        const userToast = toast.loading(email + ' eltávolítása...')
+        const userToast = toast.loading(t('api.loading-removing-user'))
         API.delete('api/users/delete', {data: {email}}).then(result => {
             setMembers(members.filter(member => member.email !== email))
             filter()
@@ -117,7 +117,7 @@ function Team() {
     }
 
     const dateFromObjectId = function (objectId) {
-        return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+        return (parseInt(objectId.substring(0, 8), 16) * 1000)
     }
 
     const filter = () => {
@@ -184,7 +184,7 @@ function Team() {
                                 {member.fullName ? t('commons.active') : t('commons.invited')}
                             </TableCell>
                             <TableCell>
-                                {member._id ? moment(dateFromObjectId(member._id)).utcOffset(0).format("L HH:mm") : '' }
+                                {member._id ? moment(dateFromObjectId(member._id)).format("L HH:mm") : '' }
                             </TableCell>
                             <TableCell>
                                 <IconButton onClick={(e) => {setRowData(member); setAnchorEl(e.currentTarget)} }>

@@ -26,7 +26,7 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
         const {data} = await API.post(`/api/tables/${tableId}`, {lang: i18n.language})
           .catch(err => {
             toast.error(t('api.invoice-generating-error'))
-            handleClose()
+            closeDialog()
           })
         setInvoiceName(data.message)
       }
@@ -38,7 +38,7 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
         setItemsToPay([])
       }).catch(err => {
         toast.error(t('api.invoice-generating-error'))
-        handleClose()
+        closeDialog()
       })
     }
 
@@ -51,12 +51,14 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
         return
       }
 
-      const {data} = await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: peopleCount, lang: i18n.language})
+      await API.post(`/api/tables/${tableId}/split-equal`, {peopleCount: peopleCount, lang: i18n.language})
+        .then(result => {
+          setInvoiceName(result.data.message)
+        })
         .catch(err => {
           toast.error(t('api.invoice-generating-error'))
-          handleClose()
+          closeDialog()
         })
-      setInvoiceName(data.message)
     }
 
     const download = async() => {
@@ -79,10 +81,10 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
     }, [invoiceProcess])
 
     const closeDialog = () => {
+      handleClose()
       setInvoiceName(null)
       setInvoiceProcess(null)
       dispatch(setInvoiceViewOpen(false))
-      handleClose()
     }
 
     useEffect(() => {

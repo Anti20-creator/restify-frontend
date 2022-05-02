@@ -137,7 +137,7 @@ function ConfirmedAppointments({filterAppoinments, selectedAppointment, filtered
                                 {appointment.email}
                             </TableCell>
                             <TableCell>
-                                {moment(appointment.date).utcOffset(0).format("L LT", {trim: false})}
+                                {moment(appointment.date).utcOffset(0).format("L HH:mm")}
                             </TableCell>
                             <TableCell>
                                 {table ? table.localId + 1 : appointment.TableId }

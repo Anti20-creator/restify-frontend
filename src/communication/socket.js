@@ -120,6 +120,7 @@ const registerListeners = () => {
         store.dispatch(setItems(orders))
     })
     socket.on('layout-size-modified', (sizeX, sizeY) => {
+        console.log('layout-size-modified-socket')
         store.dispatch(setModifiedLayoutSize(sizeX, sizeY))
     })
 }

@@ -24,7 +24,7 @@ function RegisterEmployee() {
             toast.error(t('api.short-password'), {autoClose: 1200})
             return false
         }
-        if(secretPin.trim().length !== 4) {
+        if(secretPin.trim().length !== 6) {
             toast.error(t('api.short-restaurantpin'), {autoClose: 1200})
             return false
         }
@@ -54,7 +54,7 @@ function RegisterEmployee() {
     
     return (
         <div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
-            <Card className="w-50 p-5 text-center">
+            <Card className="w-50 p-5 text-center register-employee-card">
                 <form onSubmit={register}>
                     <FormControl>
                     <TextField name="name" type="text" placeholder={t('commons.full-name')} />

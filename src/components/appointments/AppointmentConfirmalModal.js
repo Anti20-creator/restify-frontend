@@ -17,24 +17,20 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
 	const { t, i18n } = useTranslation()
 	const [optionalConflicts, setOptionalConflicts] = useState([])
 	const [isLoading, setLoading] = useState(true)
-	const [error, setError] = useState(false)
+	const [error, setError] = useState(null)
 	const [newTable, setNewTable] = useState(null)
 	const [tableData, setTableData] = useState(data)
-
-	useEffect(() => {
-    	setTableData(data)
-    }, [data])
 
 	useEffect(() => {
 		if(tableData && tableData.tableId !== 'any') {
 			API.post('/api/appointments/booking-conflicts', {date: tableData.date.toString(), tableId: tableData.tableId, peopleCount: Number(tableData.peopleCount)}).then((result) => {
 				setOptionalConflicts(result.data.message)
 				setLoading(false)
-				setError(false)
+				setError(null)
 			}).catch(err => {
 				setOptionalConflicts([])
 				setLoading(false)
-				setError(true)
+				setError(err.response.data.message)
 			})
 		}
 	}, [tableData])
@@ -89,19 +85,24 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
 									<CircularProgress />
 									:
 									!error ?
-									optionalConflicts.map((appointment, idx) => (
-										<ListItem key={idx}>
+										optionalConflicts.map((appointment, idx) => (
+											<ListItem key={idx}>
+												<ListItemText>
+													{moment(appointment.date).utcOffset(0).format("L HH:mm")}
+												</ListItemText>
+											</ListItem>
+										))
+									:
+										<ListItem>
 											<ListItemText>
-												{moment(appointment.date).utcOffset(0).format("L HH:mm")}
+												{
+													error === 'too-many-people' ? 
+													t('api.too-many-people')
+													:
+													t('commons.error-while-searching')
+												}
 											</ListItemText>
 										</ListItem>
-									))
-									:
-									<ListItem>
-										<ListItemText>
-											{t('commons.error-while-searching')}
-										</ListItemText>
-									</ListItem>
 								}
 
 								{optionalConflicts.length === 0 && !isLoading && !error &&
@@ -129,7 +130,7 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
 					{
 						tableData.tableId !== 'any' ?
 						<div className="d-flex justify-content-between">
-							<Button variant="contained" color="primary" onClick={() => confirmAppointment(data.id, data.accept, data.tableId)}>{t('commons.approve')}</Button>
+							<Button disabled={error} variant="contained" color="primary" onClick={() => confirmAppointment(data.id, data.accept, data.tableId)}>{t('commons.approve')}</Button>
 							<Button variant="outlined" color="secondary" onClick={closeConfirmalModal}>{t('commons.cancel')}</Button>
 						</div>
 						:

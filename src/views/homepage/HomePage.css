@@ -39,4 +39,7 @@
     .content-wrapper {
         height: calc(100% - 56px) !important;
     }
+    .appointment-removal-card, .register-employee-card {
+        width: 90% !important;
+    }
 }

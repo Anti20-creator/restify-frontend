@@ -59,12 +59,12 @@ function Sidebar({isAdmin}) {
                     <p className={"pl-2"}>{t('sidebar.invoices')}</p>
                 </div>
             </Link>
-            <Link to="/settings">
+            {isAdmin && <Link to="/settings">
                 <div className={"d-flex sidebar-row "  + (location.pathname === '/settings' ? 'active' : '')}>
                     <Settings />
                     <p className={"pl-2"}>{t('sidebar.settings')}</p>
                 </div>
-            </Link>
+            </Link>}
             <div className="d-flex sidebar-row " role="button" onClick={logOut}>
                 <ExitToApp />
                 <p className={"pl-2"}>{t('sidebar.logout')}</p>

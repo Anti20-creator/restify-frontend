@@ -6,13 +6,12 @@ import { MenuItem, Fab } from '@material-ui/core';
 import { Settings } from '@material-ui/icons'
 import API from '../../communication/API';
 import { useDispatch, useSelector } from 'react-redux'
-import { layout, modifiedLayout, updateLayout } from '../../store/features/layoutSlice'
+import { layout, modifiedLayout, updateLayout, layoutWidthSelector, layoutHeightSelector } from '../../store/features/layoutSlice'
 import OutOfSyncBar from '../../components/editor/OutOfSyncBar';
 import { getSocket } from '../../communication/socket';
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import EditorSettings from '../../components/editor/EditorSettings';
-import { layoutWidthSelector, layoutHeightSelector } from '../../store/features/layoutSlice'
 import NestedMenuItem from 'material-ui-nested-menu-item'
 import useWindowSize from '../../store/useWindowSize'
 import { Dialog } from '@mui/material'
@@ -78,7 +77,7 @@ function Editor() {
 
     useEffect(() => {
         updateImage()
-    }, [])
+    }, [modifiedLayoutValue])
 
     useEffect(() => {
         if(modifiedLayoutValue !== null) {
@@ -198,7 +197,10 @@ function Editor() {
     }
 
     const saveTables = async () => {
-        if(modifiedLayoutValue !== null) return
+        if(modifiedLayoutValue !== null) {
+            toast.error(t('api.cant-modify-layout'))
+            return
+        }
 
         const savingToast = toast.loading(t('api.updating-layout'), {autoClose: 2000});
         await API.post('api/layouts/save', {newTables: tables.filter(table => table.new).map(table => {

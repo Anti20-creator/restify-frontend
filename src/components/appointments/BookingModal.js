@@ -80,7 +80,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
     const submitForm = (e) => {
         e.preventDefault()
 
-        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value)) || e.target.elements.email.value.trim() === ''){
+        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
             toast.error(t('api.email-format-error'))
             return
         }

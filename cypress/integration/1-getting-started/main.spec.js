@@ -434,7 +434,7 @@ describe('Registering employee', () => {
     cy.get('input').eq(0).type(faker.name.findName())
     cy.get('input').eq(1).type(invitedEmail)
     cy.get('input').eq(2).type("123456")
-    cy.get('input').eq(3).type("1234")
+    cy.get('input').eq(3).type("123456")
 
     cy.get('button').last().click()
 
@@ -451,7 +451,7 @@ describe('Registering employee', () => {
 
     cy.wait(1200)
 
-    cy.get('.sidebar-row').should('have.length', 6)
+    cy.get('.sidebar-row').should('have.length', 5)
 
   })
 

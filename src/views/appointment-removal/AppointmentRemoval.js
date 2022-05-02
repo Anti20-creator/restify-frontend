@@ -4,11 +4,13 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import API from '../../communication/API'
 import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 function AppointmentRemoval() {
 
-    const { restaurantId } = useParams()
+    const { appointmentId } = useParams()
     const [posted, setPosted] = useState(false)
+    const { i18n } = useTranslation()
 
     useEffect(() => {
         return () => setPosted(false)
@@ -16,12 +18,21 @@ function AppointmentRemoval() {
 
     const removeAppointment = (e) => {
         e.preventDefault()
-        const registerToast = toast.loading(t('api.removing-appointment'))
-        const appointmentId = e.target.id.valie
         const email = e.target.email.value
         const pin = e.target.pin.value
-    
-        API.delete('api/appointments/disclaim', {data:{email, pin, restaurantId, id: appointmentId}}).then(result => {
+
+        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
+            toast.error(t('api.email-format-error'))
+            return
+        }
+
+        if(pin.trim().length !== 6) {
+            toast.error(t('api.invalid-appointment-pin-length'))
+            return
+        }
+        
+        const registerToast = toast.loading(t('api.removing-appointment'))
+        API.delete('api/appointments/disclaim', {data:{email, pin, id: appointmentId, lang: i18n.language}}).then(result => {
             toast.update(registerToast, {render: t(`api.${result.data.message}`), autoClose: 1200, isLoading: false, type: "success"})
             setPosted(true)
         }).catch(err => {
@@ -31,12 +42,11 @@ function AppointmentRemoval() {
 
     return (
         <div className="text-center d-flex align-items-center w-100 h-100 justify-content-center">
-            <Card className="w-50 p-5 text-center">
+            <Card className="w-50 p-5 text-center appointment-removal-card">
                 {
                     !posted ? 
                     <form onSubmit={removeAppointment}>
                         <FormControl>
-                            <TextField name="id" type="text" placeholder={t('commons.appointment-id')} />
                             <TextField name="email" type="email" placeholder={t('commons.email')} />
                             <TextField name="pin" type="text" placeholder={t('commons.appointment-pin')} />
                             <Button variant="outlined" color="primary" type="submit">{t('commons.remove')}</Button>

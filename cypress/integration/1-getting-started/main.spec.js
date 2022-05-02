@@ -1,4 +1,5 @@
 /* eslint-disable jest/valid-title */
+import data from '../../../src/communication/data.json'
 const {faker} = require('@faker-js/faker')
 
 Cypress.on('uncaught:exception', (err, runnable) => {
@@ -16,16 +17,22 @@ const appointmentDate = getNextMonday()
 let globalRestaurantId = null
 
 describe('Delete cookies', () => {
-    it('', () => {
-      cy.visit('https://192.168.31.214:4000')
-      cy.clearCookies()
-    })
+  it('', () => {
+    cy.visit(data.base_uri)
+    cy.clearCookies()
+    cy.setCookie('Refresh-token', '')
+    cy.setCookie('Authorization', '')
+  })
+})
+  
+Cypress.Cookies.defaults({
+  preserve: ['Refresh-token', 'Authorization']
 })
 
 describe('Register a new user', () => {
 
   it('Registering the user', () => {
-    cy.visit('http://192.168.31.161:3000/register')
+    cy.visit('http://localhost:3000/register')
 
     cy.get('input').eq(0).type(faker.name.findName())
     cy.get('input').eq(1).type(faker.company.companyName())
@@ -34,7 +41,7 @@ describe('Register a new user', () => {
 
     cy.get('button').last().click()
     cy.wait(800)
-    cy.url().should('eq', 'http://192.168.31.161:3000/')
+    cy.url().should('eq', 'http://localhost:3000/')
 
 
     const date = getNextMonday()
@@ -54,6 +61,8 @@ describe('Testing logging in', () => {
     cy.get('button').last().click()
 
     cy.get('.sidebar-row').should('have.length', 8)
+
+    cy.wait(2500)
   })
 
 })
@@ -62,13 +71,15 @@ describe('Test settings page', () => {
 
   it('Go to settings page', () => {
 
-    cy.visit('http://192.168.31.161:3000/settings')
+    cy.visit('http://localhost:3000/settings')
+
+    cy.wait(2500)
 
   })
 
   it('Add informations and modify opening times', () => {
 
-    cy.wait(6000)
+    cy.wait(4000)
 
     const city = faker.address.city()
 
@@ -101,7 +112,7 @@ describe('Test editor', () => {
 
   it('Add table', () => {
 
-    cy.visit('http://192.168.31.161:3000/edit')
+    cy.visit('http://localhost:3000/edit')
 
     cy.get('.editor').rightclick(100, 100)
     cy.get('div[role="presentation"] .MuiList-root > div').eq(1).click()
@@ -131,7 +142,7 @@ describe('Test editor', () => {
 describe('Test Menu page', () => {
 
   it('Visit menu page', () => {
-    cy.visit('http://192.168.31.161:3000/menu')
+    cy.visit('http://localhost:3000/menu')
   })
 
   it('Check if only one category card are appearing', () => {
@@ -179,7 +190,7 @@ describe('Test Menu page', () => {
 describe('Test live view page', () => {
 
   it('Go to Restify home page', () => {
-    cy.visit('http://192.168.31.161:3000/')
+    cy.visit('http://localhost:3000/')
   })
 
   it('Find a table which is not in use', () => {
@@ -226,7 +237,7 @@ describe('Test live view page', () => {
     cy.get('.table-display.in-use').first().click()
     cy.wait(200)
     cy.get('.MuiToolbar-root button').eq(1).click()
-    cy.wait(500)
+    cy.wait(2500)
 
   })
 
@@ -237,6 +248,8 @@ describe('Test live view page', () => {
     cy.get('.table-display:not(.in-use)').last().click()
     cy.get('.MuiDialogActions-root .MuiButtonBase-root').first().click()
 
+    cy.wait(500)
+
   })
 
   it('Make orders #2 - complex', () => {
@@ -246,7 +259,7 @@ describe('Test live view page', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.MuiCardContent-root').eq(i).click()
-      cy.wait(1000)
+      cy.wait(2000)
     }
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
 
@@ -283,14 +296,14 @@ describe('Test live view page', () => {
 describe('Test team page', () => {
 
   it('Go to team page', () => {
-    cy.visit('http://192.168.31.161:3000/team')
+    cy.visit('http://localhost:3000/team')
   })
 
   it('Invite new member', () => {
 
     cy.get('.team table tbody tr').should('have.length', 1)
     cy.get('.team .invite-box button').first().click()
-    cy.intercept('POST', 'https://192.168.31.214:4000/api/users/send-invite').as('invite')
+    cy.intercept('POST', data.base_uri + '/api/users/send-invite').as('invite')
     cy.get('.MuiBox-root input').type(invitedEmail)
     cy.get('.MuiBox-root button').first().click()
 
@@ -304,11 +317,11 @@ describe('Get tables', () => {
 
   it('Get tables', () => {
 
-    cy.request('GET', 'https://192.168.31.214:4000/api/users/restaurant-id').then((response) => {
+    cy.request('GET', data.base_uri + '/api/users/restaurant-id').then((response) => {
 
       const restaurantId = response.body.message
       globalRestaurantId = restaurantId
-      cy.request('GET', 'https://192.168.31.214:4000/api/layouts').then((response) => {
+      cy.request('GET', data.base_uri + '/api/layouts').then((response) => {
         const tableIds = response.body.message.map(table => table.TableId)
 
         for(const tableId of tableIds) {
@@ -316,7 +329,7 @@ describe('Get tables', () => {
           const date = getNextMonday()
           date.setHours(15, 0, 0, 0)
 
-          cy.request('POST', 'https://192.168.31.214:4000/api/appointments/book', {
+          cy.request('POST', data.base_uri + '/api/appointments/book', {
             restaurantId: restaurantId,
             tableId: tableId,
             date: date.toString(),
@@ -337,7 +350,7 @@ describe('Get tables', () => {
 describe('Test appointments', () => {
 
   it('Go to appointments', () => {
-    cy.visit('http://192.168.31.161:3000/appointments')
+    cy.visit('http://localhost:3000/appointments')
   })
 
   it('Go to unconfirmed bookings', () => {
@@ -352,12 +365,12 @@ describe('Test appointments', () => {
     cy.get('.MuiTableContainer-root tbody tr').first().find('button').first().click()
     cy.wait(500)
     cy.get('div[role="presentation"] button').first().click()
-    cy.wait(1000)
+    cy.wait(1500)
 
     cy.get('.MuiTableContainer-root tbody tr').first().find('button').last().click()
     cy.wait(500)
     cy.get('div[role="presentation"] button').first().click()
-    cy.wait(1000)
+    cy.wait(1500)
 
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 0)
 
@@ -410,7 +423,7 @@ describe('Test invoices page', () => {
 
   it('Go to invoices page', () => {
 
-    cy.visit('http://192.168.31.161:3000/invoices')
+    cy.visit('http://localhost:3000/invoices')
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
 
   })
@@ -429,7 +442,7 @@ describe('Logout', () => {
 describe('Registering employee', () => {
   it('Register employee', () => {
 
-    cy.visit('http://192.168.31.161:3000/invite/' + globalRestaurantId)
+    cy.visit('http://localhost:3000/invite/' + globalRestaurantId)
 
     cy.get('input').eq(0).type(faker.name.findName())
     cy.get('input').eq(1).type(invitedEmail)
@@ -456,7 +469,7 @@ describe('Registering employee', () => {
   })
 
   it('Check no invoice', () => {
-    cy.visit('http://192.168.31.161:3000/invoices')
+    cy.visit('http://localhost:3000/invoices')
 
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 0)
   })
@@ -536,11 +549,11 @@ describe('Mobile tests - appointments', () => {
 
   it('Create bookings', () => {
 
-    cy.request('GET', 'https://192.168.31.214:4000/api/users/restaurant-id').then((response) => {
+    cy.request('GET', data.base_uri + '/api/users/restaurant-id').then((response) => {
 
       const restaurantId = response.body.message
       globalRestaurantId = restaurantId
-      cy.request('GET', 'https://192.168.31.214:4000/api/layouts').then((response) => {
+      cy.request('GET', data.base_uri + '/api/layouts').then((response) => {
         const tableIds = response.body.message.map(table => table.TableId)
 
         for(const tableId of tableIds) {
@@ -550,7 +563,7 @@ describe('Mobile tests - appointments', () => {
 
           cy.log(date.toString())
 
-          cy.request('POST', 'https://192.168.31.214:4000/api/appointments/book', {
+          cy.request('POST', data.base_uri + '/api/appointments/book', {
             restaurantId: restaurantId,
             tableId: tableId,
             date: date.toString(),
@@ -703,7 +716,7 @@ describe('Mobile tests - Editor page', () => {
   })
 
   it('Navigate to editor page', () => {
-    cy.visit('http://192.168.31.161:3000/edit')
+    cy.visit('http://localhost:3000/edit')
   })
 
   it('Modify table', () => {
@@ -732,7 +745,7 @@ describe('Mobile tests - Invoices page', () => {
   })
 
   it('Navigate to invoices page', () => {
-    cy.visit('http://192.168.31.161:3000/invoices')
+    cy.visit('http://localhost:3000/invoices')
   })
 
   it('Check invoices', () => {

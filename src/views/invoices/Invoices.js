@@ -6,6 +6,7 @@ import API from '../../communication/API'
 import useWindowSize from '../../store/useWindowSize'
 import { TablePagination } from '@material-ui/core'
 import moment from 'moment-timezone'
+import data from '../../communication/data.json'
 import { t } from 'i18next'
 
 function Invoices() {
@@ -30,7 +31,7 @@ function Invoices() {
     }, [rowData])
 
     const download = async() => {
-        window.open('https://192.168.31.214:4000/api/invoices/download/' + rowData.invoiceName)
+        window.open(data.base_uri + '/api/invoices/download/' + rowData.invoiceName)
     }
 
     const handleChangeRowsPerPage = (event) => {

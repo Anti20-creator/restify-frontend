@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setInvoiceViewOpen } from '../../store/features/temporarySlice'
 import { useTranslation } from 'react-i18next'
+import data from '../../communication/data.json'
 import './InvoiceGeneratorModal.css'
 
 function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
@@ -64,7 +65,7 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
     const download = async() => {
       if(!invoiceName) return
 
-      window.open('https://192.168.31.214:4000/api/invoices/download/' + invoiceName)
+      window.open(data.base_uri + '/api/invoices/download/' + invoiceName)
       getSocket().emit('guest-leaved', {tableId})
       handleClose()
       if(invoiceProcess !== 'split' || (invoiceProcess === 'split' && itemsLeft.length === 0)) {

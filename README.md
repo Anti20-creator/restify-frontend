@@ -1,70 +1,29 @@
-# Getting Started with Create React App
+﻿# Telepítés
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Az `npm i` parancs kiadása minden szükséges csomagot telepít az csomagkezelő segítségével.
+Ehhez szükséges, hogy legyen telepített Node.JS és npm az eszközön.
+A fejlesztés során a node 16.13.1-es, míg az npm 8.1.2-es verziója volt használva.
 
-## Available Scripts
+# Szükséges beállítások a futtatás előtt
 
-In the project directory, you can run:
+Az src/communication/data.json állományban a "base_uri" címet be kell állítani a megfelelő backend címre.
+Alapértelmezetten ez a https://localhost:4000-re van állítva.
 
-### `npm start`
+# Futtatás
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Az `npm start` parancs kiadás hatására elindul a frontend, mely a localhost 3000-es portján tekinthető meg.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Tesztelés
 
-### `npm test`
+Az `npm run e2e` parancs hatására megnyílik a cypress tesztelő környezete, ahol kiválasztható az egyetlen tesztállomány futtatása.
+A fejlesztés során a tesztek a Chrome 100-as verziójában futottak.
+Fontos megjegyzés, hogy a backend paramétereinek megfelelően illeszkedniük a frontendes tesztek futásához, ellenkező esetben nem generálódik például számla és nem lesz ismerhető az éttermek PIN kódja.
+.env fájl megkötései a backenden: \
+- TESTING: 0 \
+- PRODUCTION: 0 \
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Emelett a cypress/integration/all-page-tests/main.spec.js fájl két fontos URL-t haszál. A frontend url-jét, mely a FRONTEND_URL változó segítségével állítható, alapból a `http://localhost:3000` cím van beállítva. A másik pedig a már korábban ismertett backend URL, amely a communication/data.json fájlban állítható.
 
-### `npm run build`
+# Build
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Az npm run build segítségével készíthető el az optimalizált változat. Fontos kiemelni, hogy a public mappában elérhető build.zip állományt frissen kell tartani, amennyiben a scheduler projektből új build áll elő.

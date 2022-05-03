@@ -1,6 +1,7 @@
 /* eslint-disable jest/valid-title */
 import data from '../../../src/communication/data.json'
 const {faker} = require('@faker-js/faker')
+const FRONTEND_URL = 'http://localhost:3000'
 
 Cypress.on('uncaught:exception', (err, runnable) => {
   return false
@@ -19,7 +20,6 @@ let globalRestaurantId = null
 describe('Delete cookies', () => {
   it('', () => {
     cy.visit(data.base_uri)
-    cy.clearCookies()
     cy.setCookie('Refresh-token', '')
     cy.setCookie('Authorization', '')
   })
@@ -32,7 +32,7 @@ Cypress.Cookies.defaults({
 describe('Register a new user', () => {
 
   it('Registering the user', () => {
-    cy.visit('http://localhost:3000/register')
+    cy.visit(FRONTEND_URL + '/register')
 
     cy.get('input').eq(0).type(faker.name.findName())
     cy.get('input').eq(1).type(faker.company.companyName())
@@ -41,7 +41,7 @@ describe('Register a new user', () => {
 
     cy.get('button').last().click()
     cy.wait(800)
-    cy.url().should('eq', 'http://localhost:3000/')
+    cy.url().should('eq', FRONTEND_URL)
 
 
     const date = getNextMonday()
@@ -71,7 +71,7 @@ describe('Test settings page', () => {
 
   it('Go to settings page', () => {
 
-    cy.visit('http://localhost:3000/settings')
+    cy.visit(FRONTEND_URL + '/settings')
 
     cy.wait(2500)
 
@@ -112,7 +112,7 @@ describe('Test editor', () => {
 
   it('Add table', () => {
 
-    cy.visit('http://localhost:3000/edit')
+    cy.visit(FRONTEND_URL + '/edit')
 
     cy.get('.editor').rightclick(100, 100)
     cy.get('div[role="presentation"] .MuiList-root > div').eq(1).click()
@@ -142,7 +142,7 @@ describe('Test editor', () => {
 describe('Test Menu page', () => {
 
   it('Visit menu page', () => {
-    cy.visit('http://localhost:3000/menu')
+    cy.visit(FRONTEND_URL + '/menu')
   })
 
   it('Check if only one category card are appearing', () => {
@@ -190,7 +190,7 @@ describe('Test Menu page', () => {
 describe('Test live view page', () => {
 
   it('Go to Restify home page', () => {
-    cy.visit('http://localhost:3000/')
+    cy.visit(FRONTEND_URL)
   })
 
   it('Find a table which is not in use', () => {
@@ -296,7 +296,7 @@ describe('Test live view page', () => {
 describe('Test team page', () => {
 
   it('Go to team page', () => {
-    cy.visit('http://localhost:3000/team')
+    cy.visit(FRONTEND_URL + '/team')
   })
 
   it('Invite new member', () => {
@@ -350,7 +350,7 @@ describe('Get tables', () => {
 describe('Test appointments', () => {
 
   it('Go to appointments', () => {
-    cy.visit('http://localhost:3000/appointments')
+    cy.visit(FRONTEND_URL + '/appointments')
   })
 
   it('Go to unconfirmed bookings', () => {
@@ -423,7 +423,7 @@ describe('Test invoices page', () => {
 
   it('Go to invoices page', () => {
 
-    cy.visit('http://localhost:3000/invoices')
+    cy.visit(FRONTEND_URL + '/invoices')
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
 
   })
@@ -442,7 +442,7 @@ describe('Logout', () => {
 describe('Registering employee', () => {
   it('Register employee', () => {
 
-    cy.visit('http://localhost:3000/invite/' + globalRestaurantId)
+    cy.visit(FRONTEND_URL + '/invite/' + globalRestaurantId)
 
     cy.get('input').eq(0).type(faker.name.findName())
     cy.get('input').eq(1).type(invitedEmail)
@@ -469,7 +469,7 @@ describe('Registering employee', () => {
   })
 
   it('Check no invoice', () => {
-    cy.visit('http://localhost:3000/invoices')
+    cy.visit(FRONTEND_URL + '/invoices')
 
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 0)
   })
@@ -716,7 +716,7 @@ describe('Mobile tests - Editor page', () => {
   })
 
   it('Navigate to editor page', () => {
-    cy.visit('http://localhost:3000/edit')
+    cy.visit(FRONTEND_URL + '/edit')
   })
 
   it('Modify table', () => {
@@ -745,7 +745,7 @@ describe('Mobile tests - Invoices page', () => {
   })
 
   it('Navigate to invoices page', () => {
-    cy.visit('http://localhost:3000/invoices')
+    cy.visit(FRONTEND_URL + '/invoices')
   })
 
   it('Check invoices', () => {

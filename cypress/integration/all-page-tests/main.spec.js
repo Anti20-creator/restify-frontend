@@ -1,4 +1,4 @@
-/* eslint-disable jest/valid-title */
+﻿/* eslint-disable jest/valid-title */
 import data from '../../../src/communication/data.json'
 const {faker} = require('@faker-js/faker')
 const FRONTEND_URL = 'http://localhost:3000'
@@ -41,7 +41,7 @@ describe('Register a new user', () => {
 
     cy.get('button').last().click()
     cy.wait(800)
-    cy.url().should('eq', FRONTEND_URL)
+    cy.url().should('eq', FRONTEND_URL + '/')
 
 
     const date = getNextMonday()

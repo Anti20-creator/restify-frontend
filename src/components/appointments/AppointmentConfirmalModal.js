@@ -72,7 +72,7 @@ function AppointmentConfirmalModal({data, closeConfirmalModal, setData}) {
 		<Dialog disableEnforceFocus open={true} onClose={closeConfirmalModal} className="text-center">
 				<div className="p-3">
 					<h5>{t('commons.date')}: {moment(data.date).utcOffset(0).format("L HH:mm")}</h5>
-					<h5>{t('commons.table')}: {data.tableId === 'any' ? t('commons.any-table') : data.tableId} </h5>
+					<h5>{t('commons.table')}: {data.tableId === 'any' ? t('commons.any-table') : (layoutValue.find(table => table.TableId === data.tableId)?.localId + 1) } </h5>
 
 					{
 						tableData.tableId !== 'any' ?

@@ -161,7 +161,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
 
         <Dialog disableEnforceFocus open={openConfirmal}>
             <div className="p-3">
-                <h5>{t('commons.date')}: {moment(value).utcOffset(0).format("L HH:mm")}</h5>
+                <h5>{t('commons.date')}: {moment(value).format("L HH:mm")}</h5>
                 <h5>{t('commons.table')}: {localId} </h5>
 
                 <h6 className="mt-4 text-decoration-underline">{t('commons.optional-conflicts')}</h6>

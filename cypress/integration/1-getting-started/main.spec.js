@@ -210,7 +210,7 @@ describe('Test live view page', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.MuiCardContent-root').eq(i).click()
-      cy.wait(300)
+      cy.wait(1500)
     }
 
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
@@ -269,7 +269,7 @@ describe('Test live view page', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.checkout .MuiList-root > div').eq(1).find('button').eq(2).click()
-      cy.wait(1000)
+      cy.wait(1500)
     }
     cy.wait(1000)
     cy.get('.checkout .MuiList-root > div').eq(1).find('div').last().should('have.text', '6')
@@ -515,7 +515,7 @@ describe('Mobile tests', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.MuiCardContent-root').eq(i).click()
-      cy.wait(500)
+      cy.wait(1500)
     }
     
     cy.wait(3000)
@@ -603,7 +603,7 @@ describe('Mobile tests - appointments', () => {
 
     const month = appointmentDate.getMonth() < 9 ? '0' + parseInt(appointmentDate.getMonth() + 1) : appointmentDate.getMonth() + 1
     const day = appointmentDate.getDate() < 10 ? '0' + appointmentDate.getDate() : appointmentDate.getDate()
-    cy.get('div[role="presentation"] input').eq(1).type(month + day + appointmentDate.getFullYear() + faker.datatype.number({min: 10, max: 20}) + faker.random.arrayElement(['00', 15, 30, 45]))
+    cy.get('div[role="presentation"] input').eq(1).type(month + day + appointmentDate.getFullYear() + faker.datatype.number({min: 10, max: 15}) + faker.random.arrayElement(['00', 15, 30, 45]))
     cy.get('div[role="presentation"] input').eq(2).type(2)
     cy.get('div[role="presentation"] .MuiFormControl-root').last().click(30, 30)
     cy.get('div[role="presentation"] ul li').first().click()

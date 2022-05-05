@@ -518,7 +518,7 @@ describe('Mobile tests', () => {
       cy.wait(1500)
     }
     
-    cy.wait(3000)
+    cy.wait(7000)
     cy.get('.MuiFab-root').first().click()
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
     
@@ -579,9 +579,7 @@ describe('Mobile tests - appointments', () => {
   })
 
   it('Go to appointments page', () => {
-    cy.get('.navbar-toggler-icon').click()
-    cy.get('.navbar-nav .nav-item').eq(1).click()
-    cy.reload()
+    cy.visit(FRONTEND_URL + '/appointments')
   })
 
   it('Find previously made appointments', () => {
@@ -685,8 +683,7 @@ describe('Mobile tests - Menu page', () => {
   })
 
   it('Go to menu page', () => {
-    cy.get('.navbar-toggler-icon').click()
-    cy.get('.navbar-nav .nav-item').eq(3).click()
+    cy.visit(FRONTEND_URL + '/menu')
     cy.wait(2000)
   })
 

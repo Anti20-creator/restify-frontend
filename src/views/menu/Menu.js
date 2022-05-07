@@ -34,8 +34,9 @@ function Menu() {
 
     const addCategoryForm = (e) => {
         e.preventDefault()
+        console.warn(e.target.elements)
         const category = e.target.elements.category.value
-        const icon = e.target.elements.icon.value
+        const icon = e.target.elements['icon-dropdown'].value
         if(category.trim().length === 0) {
             toast.error(t('api.short-categoryname'))
             return
@@ -64,6 +65,20 @@ function Menu() {
         const price = Number(e.target.elements.price.value)
         const amount = Number(e.target.elements.amount.value)
         const unit = e.target.elements.unit.value
+
+        if(name.trim().length === 0) {
+            toast.error(t('api.short-foodname'))
+            return
+        }
+        if(amount.trim().length === 0) {
+            toast.error(t('api.short-amountname'))
+            return
+        }
+        if(unit.trim().length === 0) {
+            toast.error(t('api.short-unitname'))
+            return
+        }
+
         API.post('/api/menu/add-item', {name, category, price, amount, unit}).then(result => {
             dispatch(addItem({name, category, price, amount, unit}))
             setModalOpen(false)

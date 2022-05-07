@@ -70,8 +70,8 @@ function Menu() {
             toast.error(t('api.short-foodname'))
             return
         }
-        if(amount.trim().length === 0) {
-            toast.error(t('api.short-amountname'))
+        if(amount === 0) {
+            toast.error(t('api.small-quantity'))
             return
         }
         if(unit.trim().length === 0) {

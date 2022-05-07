@@ -1,6 +1,6 @@
 {
   "Noodles": {
-    "hu": "Tészta"
+    "hu": "Leves"
   },
   "Bread": {
     "hu": "Kenyér"
@@ -13,5 +13,95 @@
   },
   "Fish Food": {
     "hu": "Halétel"
+  },
+  "Apple": {
+    "hu": "Alma"
+  },
+  "Eggs": {
+    "hu": "Tojások"
+  },
+  "Lettuce": {
+    "hu": "Saláta"
+  },
+  "Pizza": {
+    "hu": "Pizza"
+  },
+  "Sushi": {
+    "hu": "Sushi"
+  },
+  "Sauce": {
+    "hu": "Szósz"
+  },
+  "Kebab": {
+    "hu": "Kebab"
+  },
+  "Tea": {
+    "hu": "Tea"
+  },
+  "Wine": {
+    "hu": "Bor"
+  },
+  "Wrap": {
+    "hu": "Wrap"
+  },
+  "Taco": {
+    "hu": "Taco"
+  },
+  "Vegan": {
+    "hu": "Vegán"
+  },
+  "Rice": {
+    "hu": "Rizs"
+  },
+  "Prawn": {
+    "hu": "Garnéla"
+  },
+  "Pastry Bag": {
+    "hu": "Cukrászzacskó"
+  },
+  "Pancake": {
+    "hu": "Palacsinta"
+  },
+  "Octopus": {
+    "hu": "Polip"
+  },
+  "Ice Cream": {
+    "hu": "Jégkrém"
+  },
+  "Hot Dog": {
+    "hu": "Hot dog"
+  },
+  "Hamburger": {
+    "hu": "Hamburger"
+  },
+  "French Fries": {
+    "hu": "Sült krumpli"
+  },
+  "Doughnut": {
+    "hu": "Fánk"
+  },
+  "Crab": {
+    "hu": "Rák"
+  },
+  "Cookies": {
+    "hu": "Keksz"
+  },
+  "Cocktail": {
+    "hu": "Koktél"
+  },
+  "Chili": {
+    "hu": "Chili"
+  },
+  "Cafe": {
+    "hu": "Kávé"
+  },
+  "Beer": {
+    "hu": "Sör"
+  },
+  "Bacon": {
+    "hu": "Szalonna"
+  },
+  "Espresso Cup": {
+    "hu": "Eszpresszó"
   }
 }

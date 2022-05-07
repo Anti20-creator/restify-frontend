@@ -37,6 +37,10 @@
     margin: 0 10px !important;
 }
 
+#menu-icon-dropdown .MuiPaper-root {
+    overflow-y: auto;
+}
+
 @media(max-width: 768px) {
     .categories-holder {
         justify-content: center;

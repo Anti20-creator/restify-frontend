@@ -149,27 +149,27 @@ function Menu() {
                     {
                         category === '' ?
                         <>
-                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                            <Typography variant="h6" component="h2">
                                 {t('commons.create-new-category')}
                             </Typography>
                             <form className="text-center" onSubmit={addCategoryForm}>
                                 <TextField name="category" label={t('commons.category-name')} variant="standard" type="text" className="my-2" />
                                 <FormControl>
                                     <Select
-                                    value={categoryIcon}
-                                    onChange={formIconChange}
-                                    displayEmpty
-                                    name="icon"
-                                    inputProps={{ 'aria-label': 'Without label' }}
-                                    >
-                                        <MenuItem value="">
-                                            <em>-</em>
-                                        </MenuItem>
-                                        {
-                                            Object.keys(icons).map((icon) => (
-                                                <MenuItem key={icon} value={icon}>{i18n.language === 'en' ? icon : (icons[icon][i18n.language] ? icons[icon][i18n.language] : icon)}</MenuItem>
-                                            ))
-                                        }
+                                        value={categoryIcon}
+                                        onChange={formIconChange}
+                                        displayEmpty
+                                        name="icon-dropdown"
+                                        inputProps={{ 'aria-label': 'Without label' }}
+                                        >
+                                            <MenuItem value="">
+                                                <em>-</em>
+                                            </MenuItem>
+                                            {
+                                                Object.keys(icons).map((icon) => (
+                                                    <MenuItem key={icon} value={icon}>{i18n.language === 'en' ? icon : (icons[icon][i18n.language] ? icons[icon][i18n.language] : icon)}</MenuItem>
+                                                ))
+                                            }
                                     </Select>
                                 </FormControl>
                                 <br />

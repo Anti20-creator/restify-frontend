@@ -70,7 +70,7 @@ function EditCategory({open, setOpen, category}) {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description">
                 <Box>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                    <Typography variant="h6" component="h2">
                         {t('commons.modify-category')}
                     </Typography>
                     <form className="text-center" onSubmit={updateCategory}>
@@ -80,7 +80,7 @@ function EditCategory({open, setOpen, category}) {
                             value={categoryIcon}
                             onChange={formIconChange}
                             displayEmpty
-                            name="icon"
+                            name="icon-dropdown"
                             inputProps={{ 'aria-label': 'Without label' }}
                             >
                                 <MenuItem value="">

@@ -639,17 +639,19 @@ describe('Test team page', () => {
     cy.get('.MuiBox-root button').first().click()
 
     cy.wait('@invite')
+    cy.wait(1200)
     cy.get('.team table tbody tr').should('have.length', 2)
-
+    
   })
-
+  
   it('Invite the member again', () => {
-
+    
     cy.get('.team table tbody tr').should('have.length', 2)
     cy.get('.team .invite-box button').first().click()
     cy.get('.MuiBox-root input').type(invitedEmail)
     cy.get('.MuiBox-root button').first().click()
-
+    cy.wait(1500)
+    
     cy.get('div[role="presentation"]').should('have.length', 1)
     cy.get('div[role="presentation"]').click(0, 0)
 
@@ -668,6 +670,8 @@ describe('Test team page', () => {
     cy.wait('@invite')
     cy.get('.team table tbody tr').should('have.length', 3)
     
+    cy.wait(1500)
+
     cy.get('.team table tbody tr').last().find(".MuiButtonBase-root").click()
     cy.get('div[role="presentation"]').last().find(".MuiList-root .MuiButtonBase-root").last().click()
     
@@ -689,10 +693,10 @@ describe('Make appointments with API', () => {
       cy.request('GET', data.base_uri + '/api/layouts').then((response) => {
         const tableIds = response.body.message.map(table => table.TableId)
 
-        for(const tableId of tableIds) {
+        const date = appointmentDate
+        date.setHours(15, 0, 0, 0)
 
-          const date = appointmentDate
-          date.setHours(15, 0, 0, 0)
+        for(const tableId of tableIds) {
 
           cy.request('POST', data.base_uri + '/api/appointments/book', {
             restaurantId: restaurantId,
@@ -702,9 +706,20 @@ describe('Make appointments with API', () => {
             email: faker.internet.email(),
             lang: 'en'
           })
-
+          
           cy.wait(1200)
         }
+        
+        date.setHours(16, 0, 0, 0)
+        cy.request('POST', data.base_uri + '/api/appointments/book', {
+          restaurantId: restaurantId,
+          tableId: 'any',
+          date: date.toString(),
+          peopleCount: 2,
+          email: faker.internet.email(),
+          lang: 'en'
+        })
+        
       })
 
     })
@@ -721,7 +736,7 @@ describe('Test appointments', () => {
   it('Accept and decline booking', () => {
     
     cy.get('.MuiTabs-root button').last().click()
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 4)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 5)
 
     for(let i = 0; i < 2; ++i) {
       cy.get('.MuiTableContainer-root tbody tr').first().find('button').first().click()
@@ -729,13 +744,22 @@ describe('Test appointments', () => {
       cy.get('div[role="presentation"] button').first().click()
       cy.wait(1500)
     }
-
+    
     for(let i = 0; i < 2; ++i) {
       cy.get('.MuiTableContainer-root tbody tr').first().find('button').last().click()
       cy.wait(500)
       cy.get('div[role="presentation"] button').first().click()
       cy.wait(1500)
     }
+
+    cy.get('.MuiTableContainer-root tbody tr').first().find('button').first().click()
+    cy.wait(500)
+    cy.get('div[role="presentation"]').last().find('.MuiSelect-root').first().click(30, 30)
+    cy.get('div[role="presentation"] ul li').last().click()
+    cy.get('div[role="presentation"] button').first().click()
+    cy.wait(1500)
+    cy.get('div[role="presentation"] button').first().click()
+    cy.wait(1500)
 
     cy.get('.MuiTableContainer-root tbody tr').should('have.length', 0)
 
@@ -751,13 +775,13 @@ describe('Test appointments', () => {
 
     cy.wait(400)
 
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 3)
     
     cy.get('.MuiTableContainer-root tbody tr').find('button').first().click()
     cy.get('div[role="presentation"] button').first().click()
     cy.wait(2000)
     
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 1)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
 
   })
 
@@ -779,7 +803,7 @@ describe('Test appointments', () => {
 
     cy.wait(1200)
 
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 3)
     
   })
 
@@ -800,7 +824,7 @@ describe('Test appointments', () => {
     cy.wait(300)
     cy.get('div[role="presentation"]').click(0, 0)
 
-    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 2)
+    cy.get('.MuiTableContainer-root tbody tr').should('have.length', 3)
 
   })
 
@@ -997,7 +1021,7 @@ describe('Mobile tests - appointments', () => {
 
     cy.wait(400)
 
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 2)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 3)
 
   })
 
@@ -1020,7 +1044,7 @@ describe('Mobile tests - appointments', () => {
 
     cy.wait(1200)
 
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 3)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 4)
     
   })
 
@@ -1052,7 +1076,7 @@ describe('Mobile tests - appointments', () => {
 
     cy.get('.MuiTabs-root button').first().click()
     cy.wait(1500)
-    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 5)
+    cy.get('.MuiList-root > .MuiListItem-root').should('have.length', 6)
   })
 
 })

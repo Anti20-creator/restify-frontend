@@ -71,7 +71,7 @@ function Invoices() {
                                     {invoice.email}
                                 </TableCell>
                                 <TableCell>
-                                    {moment(invoice.date).utcOffset(0).format('L HH:mm')}
+                                    {moment(invoice.date).format('L HH:mm')}
                                 </TableCell>
                                 <TableCell>
                                     <IconButton onClick={(e) => {setRowData(invoice)} }>

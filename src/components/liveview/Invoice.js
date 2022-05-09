@@ -1,4 +1,4 @@
-import { Button, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, List, ListItem } from '@material-ui/core';
+import { Button, IconButton, List, ListItem } from '@material-ui/core';
 import { Add, Delete, Remove } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -80,40 +80,7 @@ function Invoice({showLabel=true}) {
     return (
         <>
             {showLabel && <h2 className="text-center pt-2">{t('commons.invoice')}</h2>}
-            {width > 8768 && <TableContainer>
-                <Table stickyHeader aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Név</TableCell>
-                            <TableCell align="center">Mennyiség</TableCell>
-                            <TableCell align="right">Ár</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {currentInvoiceItems.map((row) => (
-                        <TableRow key={row.name}>
-                            <TableCell component="th" scope="row">
-                                <IconButton className="invoice-remove-button" onClick={() => deleteOrder(row.name)}>
-                                    <Delete />
-                                </IconButton>
-                                {row.name}
-                            </TableCell>
-                            <TableCell className="invoice-quantity" align="center" style={{whiteSpace: 'nowrap'}}>
-                                <IconButton className="invoice-minus-button" onClick={() => decreaseQuantity(row.name)}>
-                                    <Remove />
-                                </IconButton>
-                                {row.quantity}
-                                <IconButton className="invoice-plus-button" onClick={() => increaseQuantity(row.name)}>
-                                    <Add />
-                                </IconButton>
-                            </TableCell>
-                            <TableCell align="right">{row.price}</TableCell>
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>}
-            {width <= 8768 && <List>
+            <List>
                 {
                     currentInvoiceItems.map(row => (
                         <div key={row.name}>
@@ -139,7 +106,7 @@ function Invoice({showLabel=true}) {
                         </div>
                     ))
                 }
-            </List>}
+            </List>
             <div style={{padding: (width > 768) ? '0' : '1rem 0rem'}} className="pay-button-holder text-center">
                 <Button color="primary" variant="outlined" onClick={() => setStartPayment(true)}>
                     {t('commons.pay')}

@@ -30,6 +30,8 @@ import MobileNavbar from '../../components/mobile-navbar/MobileNavbar'
 import Navbar from '../../components/navbar/Navbar';
 import AppointmentRemoval from '../appointment-removal/AppointmentRemoval';
 import Login from '../login/Login';
+import { t } from 'i18next'
+import { toast } from 'react-toastify';
 
 function HomePage() {
 
@@ -58,29 +60,33 @@ function HomePage() {
             if(authenticated) {
                 createSocket(store)
 
-                await API.get('/api/layouts').then(({data}) => {
-                    dispatch(updateLayout(data.message))
-                })
+                try {
+                    await API.get('/api/layouts').then(({data}) => {
+                        dispatch(updateLayout(data.message))
+                    })
 
-                await API.get('/api/layouts/data').then(({data}) => {
-                    dispatch(updateSize(data.message))
-                })
-    
-                await API.get('/api/menu').then(({data}) => {
-                    dispatch(updateMenu(data.message))
-                })
-    
-                await API.get('/api/tables').then(({data}) => {
-                    dispatch(updateTables(data.message))
-                })
-    
-                await API.get('/api/appointments').then(({data}) => {
-                    dispatch(updateAppointments(data.message))
-                })
+                    await API.get('/api/layouts/data').then(({data}) => {
+                        dispatch(updateSize(data.message))
+                    })
+        
+                    await API.get('/api/menu').then(({data}) => {
+                        dispatch(updateMenu(data.message))
+                    })
+        
+                    await API.get('/api/tables').then(({data}) => {
+                        dispatch(updateTables(data.message))
+                    })
+        
+                    await API.get('/api/appointments').then(({data}) => {
+                        dispatch(updateAppointments(data.message))
+                    })
 
-                await API.get('/api/informations/currency').then(({data}) => {
-                    dispatch(setCurrency(data.message))
-                })
+                    await API.get('/api/informations/currency').then(({data}) => {
+                        dispatch(setCurrency(data.message))
+                    })
+                }catch(e) {
+                    toast.error(t('api.unexpected-error'), {autoClose: 1200})
+                }
 
                 dispatch(setLoading(false))
             }

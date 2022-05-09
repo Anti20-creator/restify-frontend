@@ -93,9 +93,9 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
     }
     
     return (
-        <Dialog maxWidth={'1000'} onClose={closeDialog} aria-labelledby="customized-dialog-title" open={open}>
+        <Dialog className="invoice-dialog" maxWidth={'1000'} onClose={closeDialog} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={closeDialog}>
-          {t('commons.invoice')} {/* - {useParams().id} */}
+          {t('commons.invoice')}
         </DialogTitle>
         <DialogContent dividers className='invoice-dialog-content'>
           {

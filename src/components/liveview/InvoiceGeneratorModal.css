@@ -1,4 +1,8 @@
 @media(max-width: 768px) {
+    .invoice-dialog > div > .MuiPaper-root {
+        width: 90%;
+    }
+
     .invoice-dialog-content {
         display: flex;
         flex-direction: column;

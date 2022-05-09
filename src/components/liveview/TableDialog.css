@@ -1,3 +1,7 @@
+.unbook-button {
+	margin-left: 3rem !important;
+}
+
 @media(max-width: 768px) {
 	.table-view {
 		flex-direction: column;
@@ -7,6 +11,9 @@
 	}
 	.table-view .checkout {
 		display: none;
+	}
+	.unbook-button {
+		margin-left: 1rem !important;
 	}
 }
 

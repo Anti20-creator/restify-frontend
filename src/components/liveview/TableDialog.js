@@ -52,7 +52,7 @@ function TableDialog() {
                     <Typography variant="h6">
                         {t('commons.table')}
                     </Typography>
-                    <Button color="inherit" onClick={() => cancelTable()}>
+                    <Button color="inherit" onClick={() => cancelTable()} className="unbook-button">
                         {t('commons.table-unbook')}
                     </Button>
                     <Button color="inherit" onClick={() => { getSocket().emit('leave-table', {tableId: tableId}); navigate('../../') }}>

@@ -31,7 +31,7 @@ function Invoice({showLabel=true}) {
             getSocket().emit('leave-table', {tableId: tableId}); 
             navigate('../..')
         }
-    }, [tableInUse])
+    }, [tableInUse]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         API.get('/api/tables/orders/' + tableId).then(result => {

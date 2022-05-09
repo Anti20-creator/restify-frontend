@@ -22,6 +22,16 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
     const { t, i18n } = useTranslation()
     const dispatch = useDispatch()
 
+    useEffect(() => {
+      if(invoiceProcess && invoiceProcess !== 'split') {
+        getInvoice()
+      }
+    }, [invoiceProcess]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+      setItemsLeft(items)
+    }, [items])
+
     const getInvoice = async() => {
       if(invoiceProcess === 'together') {
         const {data} = await API.post(`/api/tables/${tableId}`, {lang: i18n.language})
@@ -75,22 +85,12 @@ function InvoiceGeneratorModal({tableId, open, handleClose, items}) {
       setInvoiceProcess(null)
     }
 
-    useEffect(() => {
-      if(invoiceProcess && invoiceProcess !== 'split') {
-        getInvoice()
-      }
-    }, [invoiceProcess])
-
     const closeDialog = () => {
       handleClose()
       setInvoiceName(null)
       setInvoiceProcess(null)
       dispatch(setInvoiceViewOpen(false))
     }
-
-    useEffect(() => {
-      setItemsLeft(items)
-    }, [items])
     
     return (
         <Dialog maxWidth={'1000'} onClose={closeDialog} aria-labelledby="customized-dialog-title" open={open}>

@@ -103,7 +103,7 @@ function Editor() {
                 tableCount: table.tableCount
             }
         }))
-    }, [layoutValue])
+    }, [layoutValue]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateImage = async() => {
         API.get('/api/layouts/image').then(({data}) => {

@@ -76,7 +76,7 @@ function Team() {
         e.preventDefault()
         const email = e.target.elements.email.value
         
-        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        if(!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             toast.error(t('api.invalid-email'), {
                 autoClose: 1500
             })
@@ -132,7 +132,7 @@ function Team() {
 
     useEffect(() => {
         filter()
-    }, [members])
+    }, [members]) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div className={"w-100 m-auto team h-100 p-3"}>

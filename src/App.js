@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     const browserLanguage = navigator.language || navigator.userLanguage 
     i18n.changeLanguage(languages.includes(browserLanguage) ? browserLanguage : 'en')
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Provider store={store}>

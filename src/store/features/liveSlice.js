@@ -23,6 +23,7 @@ const liveSlice = createSlice({
 export const { updateTables, setInUse } = liveSlice.actions
 export const tablesInUseSelector = state => {
     const result = []
+    // eslint-disable-next-line array-callback-return
     Object.keys(state.live.tables).map(id => {
         if(state.live.tables[id]) {
             result.push(id)

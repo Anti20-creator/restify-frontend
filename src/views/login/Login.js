@@ -12,7 +12,7 @@ function Login({setAuthenticated, setUserLoading}) {
         const email = e.target.email.value
         const password = e.target.password.value
 
-        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
+        if(!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
             toast.error(t('api.email-format-error'))
             return
         }

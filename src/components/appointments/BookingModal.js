@@ -42,6 +42,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                 setLoading(false)
             })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openConfirmal])
 
     const saveFormData = (e) => {
@@ -80,7 +81,7 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
     const submitForm = (e) => {
         e.preventDefault()
 
-        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
+        if(!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(e.target.elements.email.value))){
             toast.error(t('api.email-format-error'))
             return
         }

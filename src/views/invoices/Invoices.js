@@ -28,7 +28,7 @@ function Invoices() {
         if(rowData) {
             download()
         }
-    }, [rowData])
+    }, [rowData]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const download = async() => {
         window.open(data.base_uri + '/api/invoices/download/' + rowData.invoiceName)

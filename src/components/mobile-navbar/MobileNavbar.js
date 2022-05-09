@@ -20,6 +20,7 @@ function MobileNavbar({isAdmin}) {
 	return(
 		<>
 		<nav className="navbar navbar-expand-md bg-dark navbar-dark mobile-navbar">
+		  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
 		  <a className="navbar-brand">Restify</a>
 
 		  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">

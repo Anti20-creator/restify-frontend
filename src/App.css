@@ -57,8 +57,10 @@ div[role="presentation"] > .MuiPaper-root {
   div[role="presentation"] > .MuiPaper-root {
     overflow-y: auto;
   }
+}
+
+@media(max-width: 480px) {
   .Toastify__toast-container.Toastify__toast-container--bottom-center {
-    margin:  0 auto;
     width: 90%;
     bottom: 1rem;
     left: 5%;

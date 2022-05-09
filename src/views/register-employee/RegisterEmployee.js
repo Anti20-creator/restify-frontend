@@ -16,7 +16,7 @@ function RegisterEmployee() {
             toast.error(t('api.short-username'), {autoClose: 1200})
             return false
         }
-        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        if(!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             toast.error(t('api.invalid-email'), {autoClose: 1200})
             return false
         }

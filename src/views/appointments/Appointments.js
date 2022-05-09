@@ -12,7 +12,6 @@ import ConfirmedAppointments from '../../components/appointments/ConfirmedAppoin
 import UnConfirmedAppointments from '../../components/appointments/UnConfirmedAppointments'
 import AppointmentConfirmalModal from '../../components/appointments/AppointmentConfirmalModal'
 import { useTranslation } from 'react-i18next';
-import moment from 'moment-timezone'
 
 function Appointments() {
 
@@ -42,7 +41,7 @@ function Appointments() {
                 })
             })
         }
-    }, [seenAllAppointmentsSelector])
+    }, [seenAllAppointmentsSelector]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if(tab === '1') {
@@ -50,7 +49,7 @@ function Appointments() {
         }else{
             setFilteredAppointments(appointments.filter(appointment => !appointment.confirmed))
         }
-    }, [appointments])
+    }, [appointments]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const newColors = [] 

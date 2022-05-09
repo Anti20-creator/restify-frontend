@@ -1,4 +1,4 @@
-﻿import { io } from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { setInUse } from '../store/features/liveSlice'
 import { addItem, removeAll, clear, addOne, removeOne, setItems } from '../store/features/invoiceSlice'
 import { setModifiedLayout, setModifiedLayoutSize } from '../store/features/layoutSlice'

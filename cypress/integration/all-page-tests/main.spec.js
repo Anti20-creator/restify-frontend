@@ -474,7 +474,7 @@ describe('Test live view page', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.MuiCardContent-root').eq(i).click()
-      cy.wait(1500)
+      cy.wait(2000)
     }
 
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
@@ -546,13 +546,13 @@ describe('Test live view page', () => {
 
     for(let i = 0; i < 5; ++i) {
       cy.get('.checkout .MuiList-root > div').eq(1).find('button').eq(2).click()
-      cy.wait(1500)
+      cy.wait(2000)
     }
     cy.wait(1000)
     cy.get('.checkout .MuiList-root > div').eq(1).find('div').last().should('have.text', '6')
 
     cy.get('.checkout .MuiList-root > div').eq(2).find('button').eq(1).click()
-    cy.wait(500)
+    cy.wait(2000)
 
     cy.get('.checkout .MuiList-root > div').should('have.length', 3)
 
@@ -946,7 +946,7 @@ describe('Mobile tests - live view', () => {
     
     for(let i = 0; i < 5; ++i) {
       cy.get('.MuiCardContent-root').eq(i).click()
-      cy.wait(1500)
+      cy.wait(2000)
     }
     
     cy.wait(7000)
@@ -954,9 +954,9 @@ describe('Mobile tests - live view', () => {
     cy.get('.checkout .MuiList-root > div').should('have.length', 5)
     
     cy.get('.checkout .MuiList-root > div').first().find('button').first().click()
-    cy.wait(1000)
+    cy.wait(2000)
     cy.get('.checkout .MuiList-root > div').first().find('button').eq(1).click()
-    cy.wait(1000)
+    cy.wait(2000)
     cy.get('.checkout .MuiList-root > div').should('have.length', 3)
     
     cy.get('.checkout .MuiList-root > div').first().find('button').eq(2).click()
@@ -966,7 +966,7 @@ describe('Mobile tests - live view', () => {
     cy.get('div[role="presentation"]').last().find('button').eq(1).click()
     cy.get('div[role="presentation"]').last().find('input').type("2")
     cy.get('div[role="presentation"]').last().find('button').first().click()
-    cy.wait(1000)
+    cy.wait(2000)
     cy.get('div[role="presentation"]').last().find('button').last().click()
   })
 })

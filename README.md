@@ -9,9 +9,9 @@ A fejlesztés során a node 16.13.1-es, míg az npm 8.1.2-es verziója volt hasz
 Az src/communication/data.json állományban a "base_uri" címet be kell állítani a megfelelő backend címre.
 Alapértelmezetten ez a https://localhost:4000-re van állítva.
 
-# Futtatás
+# Futtatás fejlesztés során
 
-Az `npm start` parancs kiadás hatására elindul a frontend, mely a localhost 3000-es portján tekinthető meg.
+Az `npm start` parancs kiadás hatására elindul a frontend hot reload üzemmódban, mely a localhost 3000-es portján tekinthető meg.
 
 # Tesztelés
 
@@ -19,8 +19,8 @@ Az `npm run e2e` parancs hatására megnyílik a cypress tesztelő környezete, 
 A fejlesztés során a tesztek a Chrome 100-as verziójában futottak.
 Fontos megjegyzés, hogy a backend paramétereinek megfelelően illeszkedniük a frontendes tesztek futásához, ellenkező esetben nem generálódik például számla és nem lesz ismerhető az éttermek PIN kódja.
 .env fájl megkötései a backenden: 
-- TESTING: 0 \
-- PRODUCTION: 0 
+- TESTING=0 \
+- PRODUCTION=0 
 
 Emelett a cypress/integration/all-page-tests/main.spec.js fájl két fontos URL-t haszál. A frontend url-jét, mely a FRONTEND_URL változó segítségével állítható, alapból a `http://localhost:3000` cím van beállítva. A másik pedig a már korábban ismertett backend URL, amely a communication/data.json fájlban állítható.
 
@@ -30,4 +30,5 @@ Az `npm run build` segítségével készíthető el az optimalizált változat. 
 
 # Build futtatása
 
-A `serve -s build` parancs hatására elindul a `http://localhost:5000` címen a build mappában található kliens.
+A `serve -s build -l 3000` parancs hatására elindul a `http://localhost:3000` címen a build mappában található kliens.
+Ajánlott ezt a változatot futtani a teszteléshez, hiszen sokkal gyorsabb, mint az `npm start` nyomán induló kliens.

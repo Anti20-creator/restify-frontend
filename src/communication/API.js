@@ -26,7 +26,9 @@ API.interceptors.response.use(
       const {config: originalReq, response} = error
       if ((exceptionURLs.every(ex => !originalReq.url.includes(ex)) && !originalReq.isRetryAttempt && response && response.status === 401) || (originalReq.url.includes('order') && !originalReq.isRetryAttempt) ) {
         try {
-            await refreshAccessToken()
+ 	    if(!originalReq.url.includes('order')) {
+	    	await refreshAccessToken()
+	    }
             originalReq.isRetryAttempt = true
             return API.request(originalReq)
         } catch (e) {

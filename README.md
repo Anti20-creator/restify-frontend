@@ -15,6 +15,7 @@ Az `npm start` parancs kiadás hatására elindul a frontend hot reload üzemmó
 
 # Tesztelés
 
+Az adatbázisban lévő objektumokat célszerű a tesztelés előtt törölni, hiszen bár csekély az esélye, de lehetséges, hogy az e-mail címek generálása során két egyforma generálódik két külön tesztben, mely a tesztek hibás futásátá eredményezné. 
 Az `npm run e2e` parancs hatására megnyílik a cypress tesztelő környezete, ahol kiválasztható az egyetlen tesztállomány futtatása.
 A fejlesztés során a tesztek a Chrome 100-as verziójában futottak.
 Fontos megjegyzés, hogy a backend paramétereinek megfelelően illeszkedniük a frontendes tesztek futásához, ellenkező esetben nem generálódik például számla és nem lesz ismerhető az éttermek PIN kódja.
@@ -32,3 +33,4 @@ Az `npm run build` segítségével készíthető el az optimalizált változat. 
 
 A `serve -s build -l 3000` parancs hatására elindul a `http://localhost:3000` címen a build mappában található kliens.
 Ajánlott ezt a változatot futtani a teszteléshez, hiszen sokkal gyorsabb, mint az `npm start` nyomán induló kliens.
+A `serve` csomag a következő paranccsal telepíthető: `npm install -g serve`.

@@ -8,7 +8,7 @@ import { Provider } from 'react-redux'
 import { store } from './store/store'
 import { useTranslation } from 'react-i18next'
 import './localization/translations'
-import 'moment/locale/hu'
+import 'moment/min/locales'
 
 function App() {
 

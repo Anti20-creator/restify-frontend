@@ -34,3 +34,4 @@ Az `npm run build` segítségével készíthető el az optimalizált változat. 
 A `serve -s build -l 3000` parancs hatására elindul a `http://localhost:3000` címen a build mappában található kliens.
 Ajánlott ezt a változatot futtani a teszteléshez, hiszen sokkal gyorsabb, mint az `npm start` nyomán induló kliens.
 A `serve` csomag a következő paranccsal telepíthető: `npm install -g serve`.
+Lehetséges, hogy a backend-et külön biztonságosnak kell nyilvánítani a böngészőben, ezt a `https://localhost:4000`-es cím vagy az átállított backend cím elérésével lehet megtenni, ahol a speciális beállításoknál el kell fogadni, hogy kockázatok mellett lépünk tovább.

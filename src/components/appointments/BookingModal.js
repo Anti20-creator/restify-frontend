@@ -171,13 +171,25 @@ function BookingModal({addModalOpen, setModalOpen, tableIds}) {
                         isLoading ?
                         <CircularProgress />
                         :
-                        conflictingData.map((appointment, idx) => (
-                            <ListItem key={idx}>
+                        !error ?
+                            conflictingData.map((appointment, idx) => (
+                                <ListItem key={idx}>
+                                    <ListItemText>
+                                        {moment(appointment.date).utcOffset(0).format("L HH:mm")}
+                                    </ListItemText>
+                                </ListItem>
+                            ))
+                        :
+                            <ListItem>
                                 <ListItemText>
-                                    {moment(appointment.date).utcOffset(0).format("L HH:mm")}
+                                    {
+                                        error === 'too-many-people' ? 
+                                        t('api.too-many-people')
+                                        :
+                                        t('commons.error-while-searching')
+                                    }
                                 </ListItemText>
                             </ListItem>
-                        ))
                     }
 
                     {conflictingData.length === 0 && !isLoading && 

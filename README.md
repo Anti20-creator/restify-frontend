@@ -15,6 +15,7 @@ Az `npm start` parancs kiadás hatására elindul a frontend hot reload üzemmó
 
 # Tesztelés
 
+(Linux rendszereken az apt-get parancs segítségével további csomagok is telepítendőek a Cypresshez, Windowson erre nincs szükség!)
 Az adatbázisban lévő objektumokat célszerű a tesztelés előtt törölni, hiszen bár csekély az esélye, de lehetséges, hogy az e-mail címek generálása során két egyforma generálódik két külön tesztben, mely a tesztek hibás futásátá eredményezné. 
 Az `npm run e2e` parancs hatására megnyílik a cypress tesztelő környezete, ahol kiválasztható az egyetlen tesztállomány futtatása.
 A fejlesztés során a tesztek a Chrome 100-as verziójában futottak.
